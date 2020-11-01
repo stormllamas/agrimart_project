@@ -1,0 +1,167 @@
+.sidenav {
+  .collapsible-header {
+    padding: 0 32px;
+    i {
+      width: 24px;
+      margin-right: 32px;
+    }
+  }
+  .collapsible-body {
+    ul li a {
+      padding-left: 45px;
+    }
+  }
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.sidenav .user-view i.material-icons {
+  font-size: 64px;
+}
+
+.collapsible-body {
+  .input-field {
+    margin-bottom: 0
+  }
+}
+
+.pulse {
+  z-index: 2;
+}
+
+.input-field {
+  .select-wrapper {
+    width: 100%;
+  }
+
+  input, .materialize-textarea {
+    color: #9e9e9e;
+
+    &:focus {
+      border-bottom: 1px solid $light-green !important;
+      box-shadow: 0 1px 0 0 $light-green !important;
+
+      &+label {
+        color: $light-green !important;
+      }
+    }
+  }
+  
+  .prefix.active {
+    color: $light-green;
+  }
+}
+
+.preloader-wrapper {
+  height: 100px;
+  width: 100%;
+
+  &.visible {
+    display: block !important;
+  }
+}
+
+.loader {
+  position: absolute;
+  z-index: 2000000;
+
+  &.fixed {
+    position: fixed;
+    top: 40%;
+    left: 47%;
+  }
+}
+
+#toast-container {
+  max-height:48px
+}
+
+.toast {
+  .red { background-color: $red }
+  .orange { background-color: $orange }
+  .blue { background-color: $blue }
+  .green { background-color: $green }
+}
+
+.mxw {
+  &-750 {
+    max-width: 750px;
+  }
+}
+
+.tabs .tab a:focus, .tabs .tab a:focus.active {
+  background-color: rgba(178, 246, 199, 0.2);
+  outline: none;
+}
+.tabs .indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background-color: #58b160;
+  will-change: left, right;
+}
+
+.active-tab {
+  display: block !important;
+  transition: height 2s ease-in-out;
+}
+
+
+ul.tabs {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+[type="radio"]:checked+span:after, [type="radio"].with-gap:checked+span:after {
+  background-color: $green !important;
+}
+[type="radio"]:checked+span:after, [type="radio"].with-gap:checked+span:before, [type="radio"].with-gap:checked+span:after {
+  border: 2px solid $green !important;
+}
+
+.carousel-slider {
+  min-height: 0 !important;
+
+  .carousel-item {
+    min-height: 0 !important;
+  }
+}
+
+.carousel {
+  height: 62vw;
+  max-height: 350px;
+}
+
+#toast-container {
+  top: 45px !important;
+}
+
+input[disabled] {
+  padding-left: 1rem !important;
+}
+
+.secondary-content {
+  &.top-right {
+    position: absolute;
+    top: 25%;
+    right: 8px
+  }
+}
+
+.pagination li.active {
+  background-color: #38a0e6;
+}
+
+.btn-full {
+  width: 100%
+}
+
+.input-field input[type=search] {
+  color: #fff;
+
+  &:focus {
+    color: #222;
+  }
+}

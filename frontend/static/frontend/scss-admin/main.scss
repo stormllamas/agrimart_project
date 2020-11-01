@@ -1,0 +1,54 @@
+@import 'config';
+// @import 'utilities';
+// @import 'navbar';
+// @import 'defaults';
+// @import 'pagination';
+// @import 'admin';
+// @import 'accounts';
+// @import 'manager';
+
+body {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500;
+  line-height: 1.6;
+  background: #fff;
+  color: #222;
+
+  .disable-scrollbar {
+    overflow: hidden;
+  }
+}
+
+#header {
+  background: $dark-green;
+  padding: 15px 40px;
+
+  #branding {
+  
+    #admin-header {
+      font-family: 'Bree Serif', sans-serif;
+      color: #fff;
+        
+      img {
+        height: 50px;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+div.breadcrumbs {
+  background: $green;
+}
+
+.module h2, .module caption, .inline-group h2 {
+  background: $green;
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+  background: $green;
+
+  &:hover {
+    background: $dark-green;
+  }
+}

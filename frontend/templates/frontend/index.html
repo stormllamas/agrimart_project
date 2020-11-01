@@ -1,0 +1,51 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agrimart</title>
+  <link rel="icon" {% if site_config.site_logo %} href="{{ site_config.site_logo.url }}" {% endif %} />
+  <!--Import Google Icon Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Quicksand:wght@300;500;700&family=Roboto:wght@300;400;500;700&family=Nunito:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Custom Stylesheet-->
+  <link rel="stylesheet" href="{% static 'frontend/dist/css/main.css' %}" >
+  <!--Font Awesome-->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"/>
+</head>
+<body>
+  <div id="agrimart"></div>
+  <script src="https://www.paypal.com/sdk/js?client-id=AdZa6nDijY_Zrxrsm0GFvuAZnR4-wGAa2-i-sIlCYjG_id6yLbqUlwDCnxEK66OFCq9v_wBqejFCx1jF&currency=PHP&intent=authorize"></script>
+  <script src="{% static 'frontend/main.js' %}"></script>
+  <script src="{% static 'frontend/jquery-3.3.1.min.js' %} "></script>
+  <!-- Import 2 packages of materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.scrollfire/1.4.0/jquery.scrollfire.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi8DvnA6CTed6XFHBnbXggQG1Ry7YhktA&libraries=places"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <!-- Default Statcounter code for Quezon Agrimart http://quezonagrimart.com.ph -->
+  <!-- <script type="text/javascript">
+    var sc_project=12377308; 
+    var sc_invisible=1; 
+    var sc_security="361f6f9c"; 
+    var sc_https=1; 
+  </script>
+  <script type="text/javascript"
+    src="https://www.statcounter.com/counter/counter.js" async>
+  </script>
+  <noscript>
+    <div class="statcounter">
+      <a title="Web Analytics"
+      href="https://statcounter.com/" target="_blank"><img class="statcounter"
+      src="https://c.statcounter.com/12377308/0/361f6f9c/1/" alt="Web
+      Analytics"></a>
+    </div>
+  </noscript> -->
+  <!-- End of Statcounter Code -->
+</body>
+</html>

@@ -1,0 +1,98 @@
+$scrollbar-color: #cfcfcf;
+$scrollbar-hover-color: #b8b5b5;
+$selected-hover-color: #d8d7d7;
+
+$dark-green: #1C4203;
+$green: #519533;
+$light-green: #E5F4C8;
+$yellow-green: #90A33A;
+$maroon: #A7395B;
+$orange: rgb(255, 136, 0);
+$light-gray: #9D9D9D;
+$yellow: #FFC000;
+$dark: #3D424E;
+$seller-link: #7a7a7a;
+$blue-table-header: #f2f6fb;
+
+
+// form
+$outline-gray: #CFCFCF;
+$footer-top: rgba(0,0,0,.125);
+$footer-body: rgba(0,0,0,.03);
+
+
+$bg-beige: #F1E6E4;
+$bg-light-gray: #F2F2F2;
+
+
+$disabled: #bcbfc2;
+
+
+$success: #7CD52B;
+$blue: #4E8DF8;
+$warning: #F1AE3B;
+$danger: #e55163;
+
+$facebook: #004F9D;
+$twitter: #00A0F4;
+$youtube: #FF0000;
+$instagram: #30606E;
+
+// Animations
+@keyframes nav-animate {
+  0% {
+    width: 0%;
+  }
+
+  30% {
+    width: 0%;
+  }
+
+  65% {
+    width: 115%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes left-center {
+  0% {
+    left: -640.25px;
+  }
+
+  100% {
+    left: 0;
+  }
+}
+
+@keyframes center-left {
+  0% {
+    left: 0;
+  }
+
+  100% {
+    left: -640.25px;
+  }
+}
+
+@keyframes right-center {
+  0% {
+    left: 640.25px;
+  }
+
+  100% {
+    left: 0;
+  }
+}
+
+@keyframes center-right {
+  0% {
+    left: 0;
+  }
+
+  100% {
+    left: 640.25px;
+  }
+}

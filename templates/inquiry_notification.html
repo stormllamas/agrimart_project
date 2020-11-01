@@ -1,0 +1,10 @@
+{% autoescape off %}
+  An inquiry has been made from the OPA website:
+  name: {{ name }}
+  email: {{ email }}
+  phone: {{ phone }}
+  at: {{ timestamp | date:'F d, Y' }}
+
+  Subject: {{ subject }}
+  Message: {{ message }}
+{% endautoescape %}

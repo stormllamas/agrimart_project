@@ -1,0 +1,47 @@
+body {
+  // background-repeat: repeat;
+  font-family: 'Bahnschrift', sans-serif !important;
+  color: $main-text;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: $main-text;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  &:focus {
+    box-shadow: 0 0 0 0.1rem rgba(143, 143, 143, 0.5);
+    outline: none;
+  }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+
+  &-track {
+    background: #f1f1f1; 
+  }
+
+  &-thumb {
+    background: #aaaaaa; 
+  }
+
+  &-thumb:hover {
+    background: #9c9c9c; 
+  }
+}
+
+.middle-wrapper {
+  min-height: calc(100vh - 64px);
+  .middle-content {
+    height: 100%;
+  }
+}

@@ -1,0 +1,223 @@
+@media (max-width: 1250px) {
+}
+
+@media (max-width: 1150px) {
+  .section-restaurants {
+
+    .restaurant-item {
+      width: calc(50% - 24px);
+      max-width: calc(50% - 24px);
+    }
+  }
+}
+
+@media (min-width: 993px) {
+  #topbar {
+    .brand-logo {
+      left: 10%;
+    }
+  }
+}
+
+@media (max-width: 993px) {
+  
+  .blocks-image {
+    height: 25vw;
+    max-height: 250px;
+  }
+
+  .section-icons {
+    .card-panel {
+      text-align: center;
+    }
+  }
+}
+
+@media (max-width: 899px) {
+  .section-icons {
+    .card-panel {
+      img {
+        max-height: 12vw;
+        min-height: 100px;
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .admin {
+    .table-row {
+      .card-panel {
+        padding: 0.75rem;
+      }
+    }
+  }
+  .list-slider {
+    .container {
+      width: 92%;
+      margin-right: 0;
+      margin-left: 8%;
+    }
+
+    .flex-row {
+  
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .flex-col {
+        margin-bottom: 0 !important;
+        min-width: 23%;
+
+        .list-img {
+          position: relative;
+          display: block;
+          height: 18vw;
+          width: 18vw;
+        }
+      }
+    }
+  }
+  
+  .mobile-btn {
+    margin: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    z-index: 1000;
+  }
+}
+
+@media (max-width: 700px) {
+  .addressmodal-input {
+    width: 92% !important;
+  }
+}
+
+// Small
+@media (min-width: 601px) {
+  // .section-restaurants {
+  //   .restaurant-item {
+  //     &:nth-child(odd) {
+  //       padding-left: 0;
+  //     }
+  
+  //     &:nth-child(even) {
+  //       padding-right: 0;
+  //     }
+  //   }
+  // }
+}
+
+// Small
+@media (max-width: 600px) {
+  
+  .site-message {
+    top: 56px;
+  }
+
+  .flow {
+    font-size: 24px;
+  }
+
+  .section-icons {
+    .container {
+      width: 95%;
+
+      .col {
+        padding: 0 0.5rem;
+
+        .card-panel {
+          padding: 0.25rem;
+          h5 {
+            font-size: 1.25rem;
+            margin: 0.5rem;
+          }
+          img {
+            min-height: 75px;
+          }
+        }
+      }
+    }
+  }
+
+  .section-signup, .section-login {
+    .btn-extended{
+      width: 100%;
+    }
+  }
+
+  .section-restaurants {
+
+    .restaurant-item {
+      width: calc(100% - 24px);
+      max-width: calc(100% - 24px);
+    }
+  }
+  
+  .middle-content {
+    min-height: calc(100vh - 56px);
+  }
+  
+  
+  .list-slider {
+    .container {
+      width: 95%;
+      margin-left: 5%;
+    }
+  }
+  
+  .container.widen {
+    padding: 0;
+  }
+  
+  #topbar {
+    .container {
+      width: 100%;
+    }
+
+    .brand-logo {
+      height: 56px;
+      
+      img {
+        max-height: 32px;
+      }
+      span {
+        font-size: 24px;
+      }
+    }
+  }
+  
+  .blocks-image {
+    height: 55vw;
+    max-height: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .addressmodal-input {
+    width: 90% !important;
+  }
+
+  .section-product-review {
+    .collection-item {
+      padding: 10px 0.25rem;
+    }
+  }
+}
+
+@media (max-width: 350px) {
+  .section-icons {
+    .container {
+      .col {
+        .card-panel {
+          img {
+            min-height: 60px;
+          }
+        }
+      }
+    }
+  }
+}
