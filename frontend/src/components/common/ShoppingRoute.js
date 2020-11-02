@@ -15,14 +15,6 @@ const ShoppingRoute = ({
   siteConfig: { appLoading, currentVersion, version, maintenanceMode, betaMode },
   ...rest
 }) => {
-  
-  // useEffect(() => {
-  //   if (!appLoading) {
-  //     if (currentVersion != version) {
-  //       window.location.href = window.location.href
-  //     }
-  //   }
-  // }, [appLoading]);
 
   return (
     <Route

@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
+import { HashLink as Link } from 'react-router-hash-link';
 import PropTypes from 'prop-types'
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -90,7 +91,6 @@ const Products = ({
     }
   }, [productsLoading]);
 
-
   const onSubmit = e => {
     e.preventDefault();
     setKeywords(search),
@@ -100,7 +100,7 @@ const Products = ({
   
   return (
     <Fragment>
-      <section className="section-products">
+      <section className="section section-products">
         <div className="container">
           <div className="row">
             <div className="col l3 hide-on-med-and-down">
@@ -166,14 +166,19 @@ const Products = ({
               </ul>
             </div>
             <div className="col s12 m12 l9">
-              <div className="row m-0">
-                <div className="col s12 m12 l6 p-0">
+              <div className="row m-0 valign-wrapper">
+                <div className="col s11 m11 l6 p-0">
                   <form noValidate onSubmit={onSubmit}>
-                    <div className="input-field grey-text">
+                    <div className="input-field grey-text m-0">
                       <i className="material-icons prefix">search</i>
                       <input type="text" name="keywords" rows="1" placeholder="Search" value={search} maxLength="150" id="id_keywords" onChange={e => setSearch(e.target.value)} required/>
                     </div>
                   </form>
+                </div>
+                <div className="col s1 m1 l6 p-0 flex-row right-middle full-height">
+                  <a href="#" data-target="product-filter-nav" className="sidenav-trigger show-on-medium-and-down grey-text m-3">
+                    <i className="material-icons">filter_alt</i>
+                  </a>
                 </div>
               </div>
               <div className="row">
@@ -196,6 +201,62 @@ const Products = ({
               </div>
             </div>
           </div>
+          <ul id="product-filter-nav" className="sidenav p-5">
+            <ul className="collapsible">
+              {!filterDetailsLoading && (
+                <Fragment>
+                  {categoryGroups.map(categoryGroup => (
+                    <li key={categoryGroup.id} className="active white">
+                      <div className="collapsible-header relative">
+                        <span className="main-title uppercase">{ categoryGroup.name }</span>
+                        <i className="material-icons">keyboard_arrow_down</i>
+                      </div>
+                      <div className="collapsible-body white">
+                        {categoryGroup.categories.map(category => (
+                          <p key={category.id} className="mb-1">
+                            <label>
+                              <input type="checkbox" id={ category.name } name={`${ category.name }`} className="filled-in" 
+                                onChange={e => {
+                                  setCategory(category.name, e.target.checked),
+                                  updateQuery(history)
+                                }}
+                                checked={categoryFilter.includes(category.name) && true}
+                              />
+                                <span>{ category.name }</span>
+                            </label>
+                          </p>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                
+                  <li className="active white">
+                    <div className="collapsible-header relative">
+                      <span className="main-title">Brands</span>
+                      <i className="material-icons">keyboard_arrow_down</i>
+                    </div>
+                    <div className="collapsible-body white">
+                      {sellers.map(seller => (
+                        <p key={seller.id} className="mb-1">
+                          <label>
+                            <input type="checkbox" id={ seller.name } name={`${ seller.name }`} className="filled-in" 
+                              onChange={e => {
+                                setSeller(seller.name, e.target.checked),
+                                setProductsPage(1),
+                                updateQuery(history)
+                              }}
+                              checked={sellerFilter.includes(seller.name) && true}
+                            />
+                            <span>{ seller.name }</span>
+                          </label>
+                        </p>
+                      ))}
+                    </div>
+                  </li>
+                </Fragment>
+              )}
+            </ul>
+          </ul>
         </div>
       </section>
     </Fragment>
