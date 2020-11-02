@@ -557,6 +557,20 @@ export default (state = initialState, action) => {
           }
         }
       }
+
+    case REVIEW_ORDER:
+      return {
+        ...state,
+        order: {
+          ...state.order,
+          is_reviewed: true,
+          review: {
+            id: action.payload.data.id,
+            rating: action.payload.data.rating,
+            comment: action.payload.data.comment
+          }
+        }
+      }
     
     default:
       return state

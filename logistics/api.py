@@ -407,7 +407,6 @@ class OrderAPI(RetrieveAPIView):
     return Response({
       'id': order.id,
       'ref_code': order.ref_code,
-      'order_type': order.order_type,
       
       'count': order.count,
 
@@ -415,7 +414,7 @@ class OrderAPI(RetrieveAPIView):
 
       'is_ordered': order.is_ordered,
       'date_ordered': order.date_ordered,
-      'ordered_price': order.ordered_subtotal,
+      'ordered_subtotal': sum([item.quantity*item.ordered_price if item.is_ordered and item.ordered_price else 0 for item in order.order_items.all()]),
 
       'is_reviewed': True if OrderReview.objects.filter(order=order).exists() else False,
       'review': {

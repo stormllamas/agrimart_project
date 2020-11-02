@@ -8,12 +8,12 @@ import Preloader from '../layout/Preloader';
 import AccountNav from '../layout/AccountNav';
 
 import { connect } from 'react-redux';
-import { setOrderItem, requestRefund } from '../../actions/logistics';
+import { requestRefund } from '../../actions/logistics';
 
 const RequestRefund = ({
   auth: { isAuthenticated, userLoading, user },
   logistics: { orderItem, orderItemLoading },
-  setOrderItem, requestRefund
+  requestRefund
 }) => {
   const history = useHistory()
 
@@ -22,7 +22,6 @@ const RequestRefund = ({
   useEffect(() => {
     const query = new URLSearchParams(history.location.search);
     const orderItemQuery = query.get('p')
-    setOrderItem(orderItemQuery);
   // eslint-disable-next-line
   }, [history.location.key]);
 
@@ -81,7 +80,6 @@ const RequestRefund = ({
 }
 
 RequestRefund.propTypes = {
-  setOrderItem: PropTypes.func.isRequired,
   requestRefund: PropTypes.func.isRequired,
 }
 
@@ -90,4 +88,4 @@ const mapStateToProps = state => ({
   logistics: state.logistics,
 });
 
-export default connect(mapStateToProps, { setOrderItem, requestRefund })(RequestRefund);
+export default connect(mapStateToProps, { requestRefund })(RequestRefund);
