@@ -176,7 +176,7 @@ const Products = ({
                   </form>
                 </div>
                 <div className="col s1 m1 l6 p-0 flex-row right-middle full-height">
-                  <a href="#" data-target="product-filter-nav" className="sidenav-trigger show-on-medium-and-down grey-text m-3">
+                  <a href="#" data-target="product-filter-nav" className="sidenav-trigger hide-on-large-only grey-text m-3">
                     <i className="material-icons">filter_alt</i>
                   </a>
                 </div>
