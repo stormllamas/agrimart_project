@@ -218,7 +218,7 @@ export const getProduct = ({ productQuery }) => async (dispatch, getState) => {
 
   try {
     dispatch({ type: PRODUCT_LOADING });
-    const res = await axios.get(`/api/product/${productQuery}`)
+    const res = await axios.get(`/api/product/${productQuery}/`)
     dispatch({
       type: GET_PRODUCT,
       payload: res.data,

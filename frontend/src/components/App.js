@@ -18,12 +18,12 @@ import Activate from './accounts/Activate';
 import ConfirmEmail from './accounts/ConfirmEmail';
 import Login from './accounts/Login';
 
+import Profile from './accounts/Profile';
+import Security from './accounts/Security';
+
 import PasswordReset from './accounts/passwordReset/PasswordReset';
 import PasswordResetPrompt from './accounts/passwordReset/PasswordResetPrompt';
 import PasswordResetForm from './accounts/passwordReset/PasswordResetForm';
-
-import Profile from './accounts/Profile';
-import ChangePassword from './accounts/ChangePassword';
 
 import Cart from './shopping/Cart';
 import Favorites from './shopping/favorites/Favorites';
@@ -81,6 +81,12 @@ const App = () => {
             <PublicRoute exact path="/confirm_email/:email" component={ConfirmEmail} />
             <Route exact path="/activate/:uidb64/:token" component={Activate} />
 
+            <PrivateRoute exact path="/profile" component={Profile} />
+            <PrivateRoute exact path="/security" component={Security} />
+            <PrivateRoute exact path="/cart" component={Cart} />
+            <PrivateRoute exact path="/orders" component={Orders} />
+            <PrivateRoute exact path="/favorites" component={Favorites} />
+
             <PublicRoute exact path="/" component={Home} />
             <PublicRoute exact path="/testimonies" component={Testimonies} />
             <PublicRoute exact path="/read" component={Article} />
@@ -88,10 +94,6 @@ const App = () => {
             <PublicRoute exact path="/services" component={Services} />
             <PrivateRoute exact path="/contact" component={Contact} />
             <PublicRoute exact path="/about" component={About} />
-
-            <PrivateRoute exact path="/profile" component={Profile} />
-            <PrivateRoute exact path="/change_password" component={ChangePassword} />
-
             <PublicRoute exact path="/password_reset" component={PasswordReset} />
             <PublicRoute exact path="/check_email/:email" component={PasswordResetPrompt} />
             <PublicRoute exact path="/password_reset_form/:uidb64/:token" component={PasswordResetForm} />
@@ -101,10 +103,7 @@ const App = () => {
             <PublicRoute exact path="/shop/product" component={Product} />
             <PublicRoute exact path="/seller" component={Seller} />
 
-            <PrivateRoute exact path="/cart" component={Cart} />
             <PrivateRoute exact path="/payments" component={Payments} />
-            <PrivateRoute exact path="/favorites" component={Favorites} />
-            <PrivateRoute exact path="/orders" component={Orders} />
 
             <PrivateRoute exact path="/product_review/:order_item_id" component={ProductReview} />
             <PrivateRoute exact path="/order_review/:order_id" component={OrderReview} />

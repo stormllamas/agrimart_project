@@ -261,14 +261,20 @@ export const updatePassword = (old_password, new_password) => async (dispatch, g
   try {
     const res = await axios.put('/api/auth/change_password', body, tokenConfig(getState))
     if (res.data.status === 'okay') {
-      dispatch(setAlert({type:'success', msg: res.data.message}));
-      dispatch({
-        type: PASSWORD_UPDATE,
-      })
+      dispatch({ type: PASSWORD_UPDATE })
+      M.toast({
+        html: res.data.message,
+        displayLength: 3500,
+        classes: 'green',
+      });
       return 'okay'
     } else if (res.data.status === 'error') {
-      dispatch(setAlert({type:'danger', msg: res.data.message}));
       dispatch({ type: UPDATE_ERROR })
+      M.toast({
+        html: res.data.message,
+        displayLength: 3500,
+        classes: 'red',
+      });
       return 'wrong password'
     }
   } catch (err) {

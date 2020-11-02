@@ -125,31 +125,6 @@ class SocialAuthSerializer(serializers.ModelSerializer):
       user.facebook_id = validated_data['facebook_id']
       return user
 
-
-class SocialLoginSerializer(serializers.Serializer):
-  email = serializers.CharField()
-  facebook_id = serializers.CharField()
-
-  def validate(self, data):
-    try:
-      user_exists = User.objects.get(email=data.get('email'), is_active=True)
-    except:
-      user_exists = False
-
-    if user_exists:
-      if user_exists.is_active:
-        user = authenticate(**data)
-        if user:
-          return user
-        else:
-          raise serializers.ValidationError("Facebook not synced with this account")
-        
-      else:
-        raise serializers.ValidationError(user_exists.email)
-
-    else:
-      raise serializers.ValidationError("Facebook not synced with this account")
-
 class ChangePasswordSerializer(serializers.Serializer):
   model = User
   old_password = serializers.CharField(required=True)
