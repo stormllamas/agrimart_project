@@ -31,7 +31,7 @@ class ArticlesViewSet(GenericAPIView):
   permission_classes = [SiteEnabled]
 
   def get(self, request):
-    queryset_full_length = Article.objects.all().count()
+    queryset_full_length = Article.objects.filter(is_published=True).count()
 
     page_query = int(self.request.query_params.get('page', 0))
     from_item = 4
@@ -40,7 +40,7 @@ class ArticlesViewSet(GenericAPIView):
       from_item = (page_query-1)*10
       to_item = page_query*10
 
-    if (page_query*10) > queryset_full_length:
+    if (page_query*10) >= queryset_full_length:
       next_path = None
     else:
       next_path = f'api/articles/?page={page_query+1}'
