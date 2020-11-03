@@ -107,7 +107,7 @@ class ProductsAPI(GenericAPIView):
     if 'category' in self.request.query_params:
       categoryQuery = self.request.query_params.getlist('category', None)
       for category in categories:
-        if str(category.name) in categoryQuery:
+        if str(category.name).replace('-', ' ') in categoryQuery:
           category_query.add(Q(categories__in=[category]), Q.OR)
     
     if 'brand' in self.request.query_params:

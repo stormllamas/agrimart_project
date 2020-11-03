@@ -113,7 +113,7 @@ const ShopHighlights = ({
                     {sellers.map(seller => (
                       <div key={seller.id} className="col s6 pt-1 pb-1">
                         <li>
-                          <Link to={`/shop/products?&brand=${seller.name}`}>{ seller.name }</Link>
+                          <Link to={`/shop/products?&brand=${seller.name.replaceAll(' ', '-')}`}>{ seller.name }</Link>
                         </li>
                       </div>
                     ))}
@@ -125,16 +125,10 @@ const ShopHighlights = ({
                     {categoryGroups.map(categoryGroup => (
                       categoryGroup.categories.map(category => (
                         <div key={category.id} className="col s6 m4 l4 pt-1 pb-1">
-                          <li><Link to={`/shop/products?&commodity=${category.name}`}>{ category.name }</Link></li>
+                          <li><Link to={`/shop/products?&category=${category.name.replaceAll(' ', '-')}`}>{ category.name }</Link></li>
                         </div>
                       ))
                     ))}
-                    {/* {commodities.map(commodity => (
-                      <li key={commodity.id}><Link to={`/shop/products?&commodity=${commodity.name}`}>{ commodity.name }</Link></li>
-                    ))}
-                    {categories.map(category => (
-                      <li key={category.id}><Link to={`/shop/products?&category=${category.name}`}>{ category.name }</Link></li>
-                    ))} */}
                   </ul>
                 </div>
               </div>

@@ -50,7 +50,7 @@ const Products = ({
     const setQuery = (query, filter, set) => {
       query.split('--').forEach(q => {
         if (!filter.includes(q)) {
-          set(q, true);
+          set(q.replaceAll('-', ' '), true);
         }
       })
     }
