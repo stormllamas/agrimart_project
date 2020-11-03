@@ -76,9 +76,36 @@ class SocialAuthAPI(GenericAPIView):
           user = None
 
         if user:
+    
+          addresses = [{
+            'id': address.id,
+            'user': address.user.id,
+            'latitude': address.latitude,
+            'longitude': address.longitude,
+            'address': address.address,
+          } for address in user.addresses.all()]
+
+          groups = [{
+            'id': group.id,
+            'name': group.name,
+          } for group in user.groups.all()]
+
           _, token = AuthToken.objects.create(user)
           response = Response({
-            'user': UserSerializer(user, context=self.get_serializer_context()).data,
+            'user': {
+              'id': user.id,
+              'username': user.username,
+              'email': user.email,
+              'first_name': user.first_name,
+              'last_name': user.last_name,
+              'contact': user.contact,
+              'gender': user.gender,
+              'picture': user.picture,
+              'is_staff': user.is_staff,
+              'is_superuser': user.is_superuser,
+              'addresses': addresses,
+              'groups': groups,
+            },
             'token': token
           })
 
@@ -112,10 +139,36 @@ class SocialAuthAPI(GenericAPIView):
         #   [user.email],
         #   fail_silently=False
         # )
+    
+        addresses = [{
+          'id': address.id,
+          'user': address.user.id,
+          'latitude': address.latitude,
+          'longitude': address.longitude,
+          'address': address.address,
+        } for address in user.addresses.all()]
+
+        groups = [{
+          'id': group.id,
+          'name': group.name,
+        } for group in user.groups.all()]
 
         _, token = AuthToken.objects.create(user)
         response = Response({
-          'user': UserSerializer(user, context=self.get_serializer_context()).data,
+          'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'contact': user.contact,
+            'gender': user.gender,
+            'picture': user.picture,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+            'addresses': addresses,
+            'groups': groups,
+          },
           'token': token
         })
 

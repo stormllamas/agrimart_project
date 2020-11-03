@@ -237,15 +237,6 @@ const Profile = ({
       <section className="section section-profile">
         <div className="container">
           <div className="row card transparent no-shadow">
-            {!userLoading ? (
-              user && user.picture ? (
-                <div className="col s4 bg-contain-left circle ml-2 mr-2" style={{ backgroundImage: `url(/static/frontend/img/storm-front-casual2.jpg)`, height: '150px', width: '150px'}}></div>
-              ) : (
-                <div className="col s4 bg-contain-left circle ml-2 mr-2" style={{ backgroundImage: `url(/static/frontend/img/user.jpg)`, height: '150px', width: '150px'}}></div>
-              ) 
-            ) : (
-              <i className="sidenav-close material-icons">account_circle</i>
-            )}
             <div className="card-content col s12 m8 pl-2">
               <div className="card-title profile-title flex-row middle">
                 {user.first_name} {user.last_name}
