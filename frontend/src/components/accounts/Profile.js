@@ -279,7 +279,6 @@ const Profile = ({
             <ul className="collection">
               {user.addresses.map(address => (
                 <li key={address.id} className="collection-item pr-5 relative">
-                  {/* <div>Address 1</div> */}
                   <div>{address.address}</div>
                   <Link to="" className="secondary-content top-right" onClick={e => {e.preventDefault(), deleteAddress(address.id)}}>
                     <i className="material-icons red-text">delete_forever</i>

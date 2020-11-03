@@ -48,7 +48,7 @@ const Pagination = ({ data, setPage, pageSize, currentPage, updateQuery }) => {
         )}
       </li>
 
-      <li className={`${parseInt(currentPage) > pageTotal && 'active'} ${parseInt(currentPage) === pageTotal && 'disabled'} ${parseInt(currentPage) > pageTotal || parseInt(currentPage) === pageTotal && 'waves-effect'}`}>
+      <li className={`${parseInt(currentPage) !== pageTotal && 'active'} ${parseInt(currentPage) === pageTotal && 'disabled'} ${parseInt(currentPage) > pageTotal || parseInt(currentPage) === pageTotal && 'waves-effect'}`}>
         {parseInt(currentPage) == pageTotal ? (
           <a>Last</a>
         ) : (
