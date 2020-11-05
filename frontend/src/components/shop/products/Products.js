@@ -86,6 +86,7 @@ const Products = ({
   useEffect(() => {
     if (!productsLoading) {
       $('.loader').fadeOut();
+      $('.sidenav').sidenav();
     } else {
       $('.loader').fadeIn();
     }
