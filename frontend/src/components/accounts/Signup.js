@@ -83,83 +83,79 @@ const Signup = ({
     }
   }, [userLoading])
   
-  if (0 === 1) {
-    return <Fragment></Fragment>
-  } else {
-    return (
-      <Fragment>
-        <section className="section section-signup">
-          <div className="container">
-            <div className="row mb-0">
-              <div className="col s12 m8 offset-m2">
-                <div className="card-panel signup">
-                  <h4 className="center">Signup</h4>
-                  <form method="post" noValidate onSubmit={onSubmit}>
-                    <div className="input-field">
-                      <input type="text" id="firstName" onChange={e => setFirstName(e.target.value)} className="validate" maxLength="30" required/>
-                      <label htmlFor="firstName">First Name</label>
-                      <span className="helper-text" data-error="This field is required"></span>
-                    </div>
-                    <div className="input-field">
-                      <input type="text" id="lastName" onChange={e => setLastName(e.target.value)} className="validate" maxLength="30" required/>
-                      <label htmlFor="lastName">Last Name</label>
-                      <span className="helper-text" data-error="This field is required"></span>
-                    </div>
-                    <div className="input-field">
-                      <input type="email" id="email" onChange={e => setEmail(e.target.value)} className="validate" required/>
-                      <label htmlFor="email">Email</label>
-                      <span className="helper-text" data-error="Please enter a valid email"></span>
-                    </div>
-                    <div className="input-field">
-                      <input type="password" id="password1" onChange={e => setPassword1(e.target.value)} className="validate" required/>
-                      <label htmlFor="password1">Password</label>
-                      <span className="helper-text" data-error="Please enter a valid email">Your password must contain at least 8 characters</span>
-                    </div>
-                    <div className="input-field">
-                      <input type="password" id="password2" onChange={e => setPassword2(e.target.value)} className="validate" required/>
-                      <label htmlFor="password2">Re-enter Password</label>
-                    </div>
-                    <button type="submit" className="btn btn-large btn-extended green">Create account</button>
-                  </form>
-                  <div className="row valign-wrapper mt-2">
-                    <div className="col s5 p-3">
-                      <div className="divider"></div>
-                    </div>
-                    <div className="col s2 center">
-                      <p>OR</p>
-                    </div>
-                    <div className="col s5 p-3">
-                      <div className="divider"></div>
-                    </div>
+  return (
+    <Fragment>
+      <section className="section section-signup">
+        <div className="container">
+          <div className="row mb-0">
+            <div className="col s12 m8 offset-m2">
+              <div className="card-panel signup">
+                <h4 className="center">Signup</h4>
+                <form method="post" noValidate onSubmit={onSubmit}>
+                  <div className="input-field">
+                    <input type="text" id="firstName" onChange={e => setFirstName(e.target.value)} className="validate" maxLength="30" required/>
+                    <label htmlFor="firstName">First Name</label>
+                    <span className="helper-text" data-error="This field is required"></span>
                   </div>
-                  <div className="row">
-                    <div className="col s12">
-                      <FacebookLogin
-                        appId="1664782137013953"
-                        autoLoad={false}
-                        fields="name,email,picture"
-                        callback={responseFacebook}
-                        isMobile={false}
+                  <div className="input-field">
+                    <input type="text" id="lastName" onChange={e => setLastName(e.target.value)} className="validate" maxLength="30" required/>
+                    <label htmlFor="lastName">Last Name</label>
+                    <span className="helper-text" data-error="This field is required"></span>
+                  </div>
+                  <div className="input-field">
+                    <input type="email" id="email" onChange={e => setEmail(e.target.value)} className="validate" required/>
+                    <label htmlFor="email">Email</label>
+                    <span className="helper-text" data-error="Please enter a valid email"></span>
+                  </div>
+                  <div className="input-field">
+                    <input type="password" id="password1" onChange={e => setPassword1(e.target.value)} className="validate" required/>
+                    <label htmlFor="password1">Password</label>
+                    <span className="helper-text" data-error="Please enter a valid email">Your password must contain at least 8 characters</span>
+                  </div>
+                  <div className="input-field">
+                    <input type="password" id="password2" onChange={e => setPassword2(e.target.value)} className="validate" required/>
+                    <label htmlFor="password2">Re-enter Password</label>
+                  </div>
+                  <button type="submit" className="btn btn-large btn-extended green">Create account</button>
+                </form>
+                <div className="row valign-wrapper mt-2">
+                  <div className="col s5 p-3">
+                    <div className="divider"></div>
+                  </div>
+                  <div className="col s2 center">
+                    <p>OR</p>
+                  </div>
+                  <div className="col s5 p-3">
+                    <div className="divider"></div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col s12">
+                    <FacebookLogin
+                      appId="1664782137013953"
+                      autoLoad={false}
+                      fields="name,email,picture"
+                      callback={responseFacebook}
+                      isMobile={false}
 
-                        textButton="Facebook Signup"
-                        icon="fab fa-facebook mr-2"
-                        cssClass="btn btn-large btn-extended blue darken-2 mt-0 pr-1 pl-1"
-                      />
-                    </div>
+                      textButton="Facebook Signup"
+                      icon="fab fa-facebook mr-2"
+                      cssClass="btn btn-large btn-extended blue darken-2 mt-0 pr-1 pl-1"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="row mt-0">
-              <div className="col s12 center">
-                <p className="grey-text lighten-1">Already have an account? <Link to="/login" className="blue-text">Login</Link></p>
-              </div>
+          </div>
+          <div className="row mt-0">
+            <div className="col s12 center">
+              <p className="grey-text lighten-1">Already have an account? <Link to="/login" className="blue-text">Login</Link></p>
             </div>
           </div>
-        </section>
-      </Fragment>
-    )
-  }
+        </div>
+      </section>
+    </Fragment>
+  )
 }
 
 Signup.propTypes = {

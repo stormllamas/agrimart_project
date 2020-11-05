@@ -5,6 +5,9 @@ from rest_framework.generics import GenericAPIView, RetrieveAPIView, UpdateAPIVi
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ChangePasswordSerializer, ResetPasswordSerializer, SocialAuthSerializer, AddressSerializer
 
+# Exceptions
+from django.core.exceptions import ValidationError
+
 #Auth
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -23,7 +26,6 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
-from django.core.exceptions import ValidationError
 
 # Tools
 from django.shortcuts import get_object_or_404
@@ -76,7 +78,6 @@ class SocialAuthAPI(GenericAPIView):
           user = None
 
         if user:
-    
           addresses = [{
             'id': address.id,
             'user': address.user.id,

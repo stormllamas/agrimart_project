@@ -42,7 +42,6 @@ class HighlightsAPI(GenericAPIView):
     return Response({
       'best_sellers': best_sellers,
     })
-
 class FilterDetailsAPI(GenericAPIView):
 
   def get(self, request):
@@ -65,7 +64,6 @@ class FilterDetailsAPI(GenericAPIView):
       'sellers': sellers,
     })
 
-
 class SellerAPI(GenericAPIView):
   permission_classes = [SiteEnabled]
 
@@ -84,7 +82,6 @@ class SellerAPI(GenericAPIView):
       'thumbnail': seller.thumbnail.url,
       'name_to_url': seller.name_to_url,
     })
-
 
 class ProductsAPI(GenericAPIView):
   pagination_class = ProductsPagination
@@ -167,7 +164,6 @@ class ProductsAPI(GenericAPIView):
       'previous': previous_path,
       'results': products,
     })
-
 class ProductAPI(GenericAPIView):
   # queryset = Product.objects.all().order_by('-orders', '-views', 'id')
   serializer_class = ProductSerializer
@@ -200,7 +196,6 @@ class ProductAPI(GenericAPIView):
       'photo_3': product.photo_3.url if product.photo_3 else None,
       'variants': variants
     })
-
 # Need to develop OR include in other API
 class SimilarProductsAPI(ListModelMixin, viewsets.GenericViewSet):
   queryset = Product.objects.all()
@@ -210,7 +205,6 @@ class SimilarProductsAPI(ListModelMixin, viewsets.GenericViewSet):
     product = self.kwargs['product']
     commodity = self.kwargs['commodity']
     return Product.objects.filter(commodity__id=commodity).exclude(id=product).order_by('-orders', '-views', 'id')
-
 
 class CurrentOrderAPI(RetrieveAPIView, UpdateAPIView):
   serializer_class = OrderSerializer
@@ -291,15 +285,12 @@ class CurrentOrderAPI(RetrieveAPIView, UpdateAPIView):
 
       'shipping': order.shipping,
 
-      # 'count': order.count,
       'count': order.count,
       'subtotal': order.subtotal,
       'total': order.total,
-      'count': order.count,
 
       'order_items': order_items,
     })
-
 
 class OrdersAPI(GenericAPIView):
   permission_classes = [IsAuthenticated, SiteEnabled]
@@ -380,7 +371,6 @@ class OrdersAPI(GenericAPIView):
       'previous': previous_path,
       'results': orders,
     })
-
 class OrderAPI(RetrieveAPIView):
   serializer_class = OrderSerializer
   permission_classes = [IsAuthenticated, SiteEnabled]
@@ -426,7 +416,6 @@ class OrderAPI(RetrieveAPIView):
         'id': order.user.id
       },
     })
-
 
 class OrderItemAPI(DestroyAPIView, CreateAPIView):
   serializer_class = OrderItemSerializer
@@ -554,7 +543,6 @@ class OrderItemAPI(DestroyAPIView, CreateAPIView):
         'class': 'red',
         'data': None
       })
-
 class ChangeQuantityAPI(UpdateAPIView):
   serializer_class = OrderItemSerializer
   permission_classes = [IsAuthenticated, SiteEnabled]
@@ -667,7 +655,6 @@ class ChangeQuantityAPI(UpdateAPIView):
           'msg': 'Quantity too low'
         })
 
-
 class CheckoutAPI(UpdateAPIView):
   serializer_class = OrderSerializer
   permission_classes = [IsAuthenticated, IsOrderOwner, SiteEnabled]
@@ -731,7 +718,6 @@ class CheckoutAPI(UpdateAPIView):
         'status': 'error',
         'msg': 'Invalid Items. Stocks may have changed'
       })
-
 class CompleteOrderAPI(UpdateAPIView):
   serializer_class = OrderItemSerializer
   permission_classes = [IsAuthenticated, IsOrderOwner, SiteEnabled]
@@ -796,7 +782,6 @@ class CompleteOrderAPI(UpdateAPIView):
         'msg': 'No items'
       })
 
-
 class ProductReviewAPI(CreateAPIView):
   serializer_class = ProductReviewSerializer
   permission_classes = [IsAuthenticated, SiteEnabled]
@@ -836,7 +821,6 @@ class ProductReviewAPI(CreateAPIView):
         'status': 'error',
         'message': 'Product already reviewed'
       })
-
 class OrderReviewAPI(CreateAPIView):
   serializer_class = OrderReviewSerializer
   permission_classes = [IsAuthenticated, SiteEnabled]
@@ -904,14 +888,12 @@ class RequestRefundAPI(CreateAPIView):
         'message': 'Refund already requested'
       })
 
-
 class FavoritesAPI(CreateAPIView, ListAPIView):
   serializer_class = FavoriteSerializer
   permission_classes = [IsAuthenticated]
 
   def get_queryset(self):
     return Favorite.objects.filter(user=self.request.user).order_by('-date_created')
-
 # Fetched based on product id in kwargs
 class FavoriteAPI(DestroyAPIView):
   serializer_class = FavoriteSerializer

@@ -14,7 +14,7 @@ const Pagination = ({ data, setPage, pageSize, currentPage, updateQuery }) => {
 
   return (
     <ul className="pagination">
-      <li className={`${parseInt(currentPage) > 1 ? 'active' : ''} ${parseInt(currentPage) === 1 ? 'disabled' : ''} ${parseInt(currentPage) > 1 || parseInt(currentPage) === 1 && 'waves-effect'}`}>
+      <li className={`${parseInt(currentPage) === 1 ? 'active' : ''} ${parseInt(currentPage) > 1 || parseInt(currentPage) === 1 && 'waves-effect'}`}>
         <Link to={'?page=1'} onClick={() => {setPage(1), history.push({ search: `?page=1`})}} >First</Link>
       </li>
 
@@ -28,12 +28,9 @@ const Pagination = ({ data, setPage, pageSize, currentPage, updateQuery }) => {
 
       {pageRange.map(page => {
         const pageNum = page+1
-        let active=false;
-        if (pageNum === parseInt(currentPage)) active = true
-
-        if (pageNum > (parseInt(currentPage)-6) && pageNum < (parseInt(currentPage)+6)) {
+        if (pageNum > (parseInt(currentPage)-6) === true && pageNum < (parseInt(currentPage)+6) === true) {
           return (
-            <li key={`page-${pageNum}`} className={`waves-effect ${active ? 'active' : ''}`}>
+            <li key={`page-${pageNum}`} className={`waves-effect ${pageNum === parseInt(currentPage) && 'active'}`}>
               <Link to={`?page=${pageNum}`} onClick={() => {setPage(pageNum), updateQuery(history)}} >{pageNum}</Link>
             </li>
           )
@@ -48,7 +45,7 @@ const Pagination = ({ data, setPage, pageSize, currentPage, updateQuery }) => {
         )}
       </li>
 
-      <li className={`${parseInt(currentPage) !== pageTotal && 'active'} ${parseInt(currentPage) === pageTotal && 'disabled'} ${parseInt(currentPage) > pageTotal || parseInt(currentPage) === pageTotal && 'waves-effect'}`}>
+      <li className={`${parseInt(currentPage) === pageTotal && 'active'} ${parseInt(currentPage) > pageTotal || parseInt(currentPage) === pageTotal && 'waves-effect'}`}>
         {parseInt(currentPage) == pageTotal ? (
           <a>Last</a>
         ) : (

@@ -118,7 +118,7 @@ export const renderSalesPieChart = data => (dispatch, getState) => {
 export const getDashboardData = ({ fromDate, toDate }) => async (dispatch, getState) => {
   // dispatch({ type: DASHBOARD_LOADING })
   try {
-    const res = await axios.get(`/api/admin/dashboard_data?from_date=${fromDate}&to_date=${toDate}`, tokenConfig(getState))
+    const res = await axios.get(`/api/manager/dashboard_data?from_date=${fromDate}&to_date=${toDate}`, tokenConfig(getState))
     dispatch({
       type: GET_DASHBOARD_DATA,
       payload: res.data
@@ -133,9 +133,9 @@ export const getOrders = ({ page, claimed, pickedup, delivered, keywords, range 
   try {
     let res;
     if (range) {
-      res = await axios.get(`/api/admin/orders?range=${range}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/orders?range=${range}`, tokenConfig(getState))
     } else {
-      res = await axios.get(`/api/admin/orders?page=${page ? page : '0'}${claimed !== undefined ? `&claimed=${claimed}` : ''}${pickedup !== undefined ? `&pickedup=${pickedup}` : ''}${delivered !== undefined ? `&delivered=${delivered}` : ''}${keywords !== undefined ? `&keywords=${keywords}` : ''}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/orders?page=${page ? page : '0'}${claimed !== undefined ? `&claimed=${claimed}` : ''}${pickedup !== undefined ? `&pickedup=${pickedup}` : ''}${delivered !== undefined ? `&delivered=${delivered}` : ''}${keywords !== undefined ? `&keywords=${keywords}` : ''}`, tokenConfig(getState))
     }
     dispatch({
       type: GET_MANAGER_ORDERS,
@@ -153,7 +153,7 @@ export const getOrders = ({ page, claimed, pickedup, delivered, keywords, range 
 export const getOrder = ({ id }) => async (dispatch, getState) => {
   dispatch({type: MANAGER_ORDER_LOADING});
   try {
-    const res = await axios.get(`/api/admin/order/${id}/`, tokenConfig(getState))
+    const res = await axios.get(`/api/manager/order/${id}/`, tokenConfig(getState))
     dispatch({
       type: GET_MANAGER_ORDER,
       payload: res.data
@@ -167,7 +167,7 @@ export const getOrder = ({ id }) => async (dispatch, getState) => {
 export const claimOrder = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
   try {
-    const res = await axios.put(`/api/admin/claim_order/${id}/`, null, tokenConfig(getState))
+    const res = await axios.put(`/api/manager/claim_order/${id}/`, null, tokenConfig(getState))
     if (res.data.status) {
       if (res.data.status === 'error' && res.data.msg === 'Order already claimed') {
         await dispatch(getOrders({
@@ -209,7 +209,7 @@ export const deliverOrderItem = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
-    const res = await axios.put(`/api/admin/deliver_order_item/${id}/`, null, tokenConfig(getState))
+    const res = await axios.put(`/api/manager/deliver_order_item/${id}/`, null, tokenConfig(getState))
     await dispatch(getOrder({
       id: getState().manager.order.id
     }))
@@ -259,7 +259,7 @@ export const pickupOrderItem = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
-    const res = await axios.put(`/api/admin/pickup_order_item/${id}/`, null, tokenConfig(getState))
+    const res = await axios.put(`/api/manager/pickup_order_item/${id}/`, null, tokenConfig(getState))
     await dispatch(getOrder({
       id: getState().manager.order.id
     }))
@@ -309,7 +309,7 @@ export const deliverOrder = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
-    const res = await axios.put(`/api/admin/deliver_order/${id}/`, null, tokenConfig(getState))
+    const res = await axios.put(`/api/manager/deliver_order/${id}/`, null, tokenConfig(getState))
     if (res.data.status) {
       if (res.data.status === 'error' && res.data.msg === 'Order already delivered') {
         await dispatch(getOrders({
@@ -345,7 +345,7 @@ export const pickupOrder = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
-    const res = await axios.put(`/api/admin/pickup_order/${id}/`, null, tokenConfig(getState))
+    const res = await axios.put(`/api/manager/pickup_order/${id}/`, null, tokenConfig(getState))
     if (res.data.status) {
       if (res.data.status === 'error' && res.data.msg === 'Order already picked up') {
         await dispatch(getOrders({
@@ -382,9 +382,9 @@ export const getOrderItems = ({ page, delivered, keywords, range }) => async (di
   try {
     let res;
     if (range) {
-      res = await axios.get(`/api/admin/order_items?range=${range}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/order_items?range=${range}`, tokenConfig(getState))
     } else {
-      res = await axios.get(`/api/admin/order_items?page=${page ? page : '0'}&delivered=${delivered ? delivered : 'false'}&keywords=${keywords}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/order_items?page=${page ? page : '0'}&delivered=${delivered ? delivered : 'false'}&keywords=${keywords}`, tokenConfig(getState))
     }
     dispatch({
       type: GET_MANAGER_ORDER_ITEMS,
@@ -403,9 +403,9 @@ export const getRefunds = ({ page, delivered, keywords, range }) => async (dispa
   try {
     let res;
     if (range) {
-      res = await axios.get(`/api/admin/order_items?range=${range}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/order_items?range=${range}`, tokenConfig(getState))
     } else {
-      res = await axios.get(`/api/admin/order_items?page=${page ? page : '0'}&delivered=${delivered ? delivered : 'false'}&keywords=${keywords}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/order_items?page=${page ? page : '0'}&delivered=${delivered ? delivered : 'false'}&keywords=${keywords}`, tokenConfig(getState))
     }
     dispatch({
       type: GET_MANAGER_ORDER_ITEMS,

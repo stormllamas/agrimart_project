@@ -58,9 +58,8 @@ export const signup = ({first_name, last_name, username, email, password}, histo
 
   try {
     const res = await axios.post('/api/auth/signup', body)
-    console.log(res.data)
-    dispatch({ type: SIGNUP_SUCCESS })
     if (res.data.status === "okay") {
+      dispatch({ type: SIGNUP_SUCCESS })
       history.push(`/confirm_email/${email}`)
       M.toast({
         html: 'Please activate your account',
@@ -69,21 +68,20 @@ export const signup = ({first_name, last_name, username, email, password}, histo
       });
     }
   } catch (err) {
-    console.log(err)
+    dispatch({ type: SIGNUP_FAIL });
     M.toast({
-      html: 'That username is taken',
+      html: 'That email is taken',
       displayLength: 3500,
       classes: 'orange'
     });
-    dispatch({ type: SIGNUP_FAIL });
   }
 }
+
 
 export const getFacebookAuthID = async () => {
   const res = await axios.get('/api/auth/facebook_keys')
   return res.data
 }
-
 export const socialSignin = ({first_name, last_name, email, picture, facebook_id}, history) => async dispatch => {
   dispatch({
     type: USER_LOADING,
@@ -93,7 +91,6 @@ export const socialSignin = ({first_name, last_name, email, picture, facebook_id
   const body = {
     first_name,
     last_name,
-    // username,
     email,
     picture,
     facebook_id,
@@ -108,27 +105,11 @@ export const socialSignin = ({first_name, last_name, email, picture, facebook_id
     })
     history.push('/')
   } catch (err) {
-    console.log(err.response.data)
-    if (err.response.data[Object.keys(err.response.data)][0] === "A user with that username already exists.") {
-      M.toast({
-        html: 'That username is taken',
-        displayLength: 3500,
-        classes: 'orange'
-      });
-    } else if (err.response.data[Object.keys(err.response.data)] == "Email with you account already used. Try Logging in") {
-      M.toast({
-        html: err.response.data,
-        displayLength: 3500,
-        classes: 'orange'
-      });
-      history.push('/login')
-    } else {
-      M.toast({
-        html: err.response.data,
-        displayLength: 3500,
-        classes: 'orange'
-      });
-    }
+    M.toast({
+      html: 'Authentication error',
+      displayLength: 3500,
+      classes: 'orange'
+    });
     dispatch({ type: SIGNUP_FAIL });
   }
 }
@@ -140,7 +121,6 @@ export const activate = (uidb64, token, history) => async dispatch => {
     token,
   };
   const res = await axios.post('/api/auth/activate', body)
-  console.log(res.data)
   if (res.data.status === 'okay') {
     dispatch({
       type: USER_ACTIVATED,
@@ -160,10 +140,6 @@ export const activate = (uidb64, token, history) => async dispatch => {
     });
     dispatch({ type: ACTIVATION_FAILED });
   }
-  // try {
-  // } catch (err) {
-  //   setAlert({ type: 'danger', msg: err.response.data });
-  // }
 }
 
 export const getServerToken = async () => {
@@ -268,7 +244,7 @@ export const updatePassword = (old_password, new_password) => async (dispatch, g
         classes: 'green',
       });
       return 'okay'
-    } else if (res.data.status === 'error') {
+    } else {
       dispatch({ type: UPDATE_ERROR })
       M.toast({
         html: res.data.message,
@@ -279,12 +255,11 @@ export const updatePassword = (old_password, new_password) => async (dispatch, g
     }
   } catch (err) {
     dispatch({ type: UPDATE_ERROR })
-    if (err.response.data[Object.keys(err.response.data)] === 'Invalid token.') {
-      dispatch({type: AUTH_ERROR});
-      dispatch(setAlert({ type:'danger', msg:'Session timed out. Please login again.' }));
-    } else {
-      dispatch(setAlert({type:'danger', msg:err.response.data[Object.keys(err.response.data)][0]}));
-    }
+    M.toast({
+      html: 'Session timed out. Please login again.',
+      displayLength: 3500,
+      classes: 'red',
+    });
     return 'error'
   }
 }

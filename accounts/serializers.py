@@ -93,7 +93,6 @@ class SocialAuthSerializer(serializers.ModelSerializer):
       'id',
       'first_name',
       'last_name',
-      # 'username',
       'email',
       'picture',
       'facebook_id',

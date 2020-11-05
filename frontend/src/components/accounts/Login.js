@@ -29,7 +29,10 @@ const Login = ({
   const responseFacebook = (response) => {
     if (response.status !== 'unknown') {
       const body = {
+        first_name: response.name,
+        last_name: '',
         email: response.email,
+        picture: response.picture.data.url,
         facebook_id: response.userID,
       }
       socialSignin(body, history)

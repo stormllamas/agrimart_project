@@ -196,7 +196,6 @@ class OrderAPI(RetrieveAPIView):
 
       'is_ordered': order.is_ordered,
       'date_ordered': order.date_ordered,
-      # 'ordered_price': order.ordered_price,
 
       'order_items': order_items,
 
