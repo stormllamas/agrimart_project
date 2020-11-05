@@ -67,11 +67,11 @@ const FoodPayment = ({
               description: "Purchase from OPA website at "+ getDateNow(),
               amount: {
                 currency_code: "PHP",
-                value: currentOrder.total,
+                value: currentOrder.checkout_total,
                 breakdown: {
                   item_total: {
                     currency_code: "PHP",
-                    value: currentOrder.subtotal,
+                    value: currentOrder.checkout_subtotal,
                   },
                   shipping: {
                     currency_code: "PHP",
@@ -172,7 +172,7 @@ const FoodPayment = ({
                     </div>
                     <div className="col s6 mb-1">
                       <small>Subtotal</small>
-                      <p className="grey lighten-3 p-1 rad-2">₱ {currentOrder.subtotal.toFixed(2)}</p>
+                      <p className="grey lighten-3 p-1 rad-2">₱ {currentOrder.checkout_subtotal.toFixed(2)}</p>
                     </div>
                     <div className="col s6 mb-1">
                       <small>Shipping</small>
@@ -180,7 +180,7 @@ const FoodPayment = ({
                     </div>
                     <div className="col s12 mb-1">
                       <small>Order Total</small>
-                      <h5 className="grey lighten-3 p-1 rad-2 m-0">₱ {currentOrder.total.toFixed(2)}</h5>
+                      <h5 className="grey lighten-3 p-1 rad-2 m-0">₱ {currentOrder.checkout_total.toFixed(2)}</h5>
                     </div>
                   </div>
                   <div className="row">
@@ -206,7 +206,7 @@ const FoodPayment = ({
                                 )
                               ))}
                               <li className="collection-item p-0">
-                                <h5 className="secondary-content grey-text text-darken-2 mb-0">₱ {currentOrder.subtotal.toFixed(2)}</h5>
+                                <h5 className="secondary-content grey-text text-darken-2 mb-0">₱ {currentOrder.checkout_subtotal.toFixed(2)}</h5>
                               </li>
                             </ul>
                           </div>

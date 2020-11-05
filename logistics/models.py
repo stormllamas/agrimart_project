@@ -188,7 +188,7 @@ class ProductVariant(models.Model):
 
   @property
   def final_stock(self):
-    return self.stock if self.stock < 1 else self.stock - sum([item.quantity if item.checkout_valid else 0 for item in self.order_items.filter(is_ordered=False)])
+    return self.stock - sum([item.quantity if item.checkout_valid else 0 for item in self.order_items.filter(is_ordered=False)])
 
 class Order(models.Model):
   # Basic Details
@@ -272,8 +272,16 @@ class Order(models.Model):
     return sum([item.quantity*item.product_variant.final_price if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
 
   @property
+  def checkout_subtotal(self):
+    return sum([item.quantity*item.product_variant.final_price for item in self.order_items.filter(checkout_validity__gte=timezone.now())])
+
+  @property
   def total(self):
     return float(self.subtotal)+float(self.shipping)
+
+  @property
+  def checkout_total(self):
+    return float(self.checkout_subtotal)+float(self.shipping)
 
 
 class OrderItem(models.Model):

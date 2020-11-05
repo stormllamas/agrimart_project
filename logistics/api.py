@@ -287,7 +287,9 @@ class CurrentOrderAPI(RetrieveAPIView, UpdateAPIView):
 
       'count': order.count,
       'subtotal': order.subtotal,
+      'checkout_subtotal': order.checkout_subtotal,
       'total': order.total,
+      'checkout_total': order.checkout_total,
 
       'order_items': order_items,
     })
