@@ -189,7 +189,8 @@ class OrderAPI(RetrieveAPIView):
       'loc1_address': order.loc1_address, 'loc1_latitude': order.loc1_latitude, 'loc1_longitude': order.loc1_longitude,
       'loc2_address': order.loc2_address, 'loc2_latitude': order.loc2_latitude, 'loc2_longitude': order.loc2_longitude,
       
-      'subtotal': order.subtotal,'shipping': order.shipping, 'total': order.total,
+      'subtotal': sum([item.quantity*item.ordered_price if item.is_ordered and item.ordered_price else 0 for item in order.order_items.all()]),
+      'shipping': order.shipping, 'total': order.total,
       'count': order.count,
 
       'is_delivered': order.is_delivered,
