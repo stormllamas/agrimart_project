@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 
 const ConfirmEmail = ({ match }) => {
   return (
-    <section id="confirm-email" className="auth row center middle">
-      <div className="card col center">
-        <div className="card-body col center">
-          <h1 className="card-title">Confirm Your Email</h1>
-          <p id="confirm-email-prompt" className="text-center">We've sent you a confirmation email. Please confirm your email by checking your inbox and clicking the link at <span className="email">{ match.params.email }</span></p>
-          <Link to="/login" className="btn-blue">Return to log in</Link>
+    <section className="section section-confirm-email">
+      <div className="row">
+        <div className="col s12 m6 offset-m3">
+          <div className="card-panel center">
+            <h4 className="card-title">Confirm Your Email</h4>
+            <p>We've sent you a confirmation email. Please check your email by checking your inbox and clicking the link at</p>
+            <p className="fs-18 fw-8 mt-3 mb-4">{ match.params.email }</p>
+            <Link to="/login" className="btn btn-large blue">Return to log in</Link>
+          </div>
         </div>
       </div>
     </section>

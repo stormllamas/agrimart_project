@@ -205,18 +205,66 @@ class SingupAPI(GenericAPIView):
         'token':account_activation_token.make_token(user),
       }
     )
-    print(message)
     
-    # email = user.email
-    # send_mail(
-    #   mail_subject,
-    #   message,
-    #   'Quezon Agrimart',
-    #   [email],
-    #   fail_silently=False
-    # )
+    email = user.email
+    send_mail(
+      mail_subject,
+      message,
+      'Quezon Agrimart',
+      [email],
+      fail_silently=False
+    )
 
     return Response({'status': 'okay'})
+
+class ActivateAPI(GenericAPIView):
+
+  def post(self, request, *args, **kwargs):
+    try:
+      uid = force_text(urlsafe_base64_decode(request.data['uidb64']))
+      user = User.objects.get(id=uid)
+      print(user)
+      print(request.data['token'])
+      print(account_activation_token.check_token(user, request.data['token']))
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+      user = None
+    if user is not None and account_activation_token.check_token(user, request.data['token']):
+      user.is_active = True
+      user.save()
+
+      current_site = get_current_site(self.request)
+      mail_subject = 'Welcome to Quezon Agrimart'
+      message = render_to_string(
+        'welcome_email.html',
+        {
+          'user': user,
+          'domain': current_site.domain,
+        }
+      )
+      send_mail(
+        mail_subject,
+        message,
+        'Quezon Agrimart',
+        [user.email],
+        fail_silently=False
+      )
+
+      _, token = AuthToken.objects.create(user)
+      response = Response({
+        'status': 'okay',
+        'user': UserSerializer(user, context=self.get_serializer_context()).data,
+        'token': token
+      })
+
+      request.session['auth_token'] = token
+      request.session.set_expiry(60*60)
+      # response.set_cookie('token', value=token, max_age=60*60, httponly=True, samesite='strict')
+
+      return response
+    else:
+      return Response({
+        'status': 'error',
+      })
 
 class LogoutAPI(GenericAPIView):
   permission_classes = [IsAuthenticated]
@@ -302,55 +350,6 @@ class AddressAPI(CreateModelMixin, DestroyModelMixin, RetrieveModelMixin, viewse
 
   def get_object(self):
     return get_object_or_404(Address, id=self.kwargs['pk'])
-
-class ActivateAPI(GenericAPIView):
-
-  def post(self, request, *args, **kwargs):
-    try:
-      uid = force_text(urlsafe_base64_decode(request.data['uidb64']))
-      user = User.objects.get(id=uid)
-      print(user)
-      print(request.data['token'])
-      print(account_activation_token.check_token(user, request.data['token']))
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-      user = None
-    if user is not None and account_activation_token.check_token(user, request.data['token']):
-      user.is_active = True
-      user.save()
-
-      current_site = get_current_site(self.request)
-      mail_subject = 'Welcome to Quezon Agrimart'
-      message = render_to_string(
-        'welcome_email.html',
-        {
-          'user': user,
-          'domain': current_site.domain,
-        }
-      )
-      # send_mail(
-      #   mail_subject,
-      #   message,
-      #   'Quezon Agrimart',
-      #   [user.email],
-      #   fail_silently=False
-      # )
-
-      _, token = AuthToken.objects.create(user)
-      response = Response({
-        'status': 'okay',
-        'user': UserSerializer(user, context=self.get_serializer_context()).data,
-        'token': token
-      })
-
-      request.session['auth_token'] = token
-      request.session.set_expiry(60*60)
-      # response.set_cookie('token', value=token, max_age=60*60, httponly=True, samesite='strict')
-
-      return response
-    else:
-      return Response({
-        'status': 'error',
-      })
 
 class ChangePasswordAPI(RetrieveAPIView, UpdateAPIView):
   model = User
