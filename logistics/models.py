@@ -268,6 +268,10 @@ class Order(models.Model):
     return sum([item.quantity if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
 
   @property
+  def ordered_count(self):
+    return sum([item.quantity for item in self.order_items.all()])
+
+  @property
   def subtotal(self):
     return sum([item.quantity*item.product_variant.final_price if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
 

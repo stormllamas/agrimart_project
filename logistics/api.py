@@ -401,6 +401,7 @@ class OrderAPI(RetrieveAPIView):
       'ref_code': order.ref_code,
       
       'count': order.count,
+      'ordered_count': order.ordered_count,
 
       'is_delivered': order.is_delivered,
 
