@@ -310,11 +310,11 @@ const Cart = ({
                       </div>
                     </div>
                     <button className="modal-close btn btn-extended btn-large green mt-5 mobile-btn relative"
-                      disabled={address === '' || typeof(delivery) === NaN || currentOrder.count < 1 ? true : false}
+                      disabled={currentOrder.count < 1 || address === '' || typeof(delivery) === NaN || !lastName || !firstName || !contact || !email || !gender ? true : false}
                       onClick={proceedToPayments}
                     >
                       <span className="btn-float-text">{!currentOrderLoading && address ? `₱${(parseInt(currentOrder.subtotal)+parseInt(delivery)).toFixed(2)}` : ''}</span>
-                      {currentOrder.count < 1 ? 'No items to checkout' : (address === '' || typeof(delivery) === NaN ? 'Provide details above' : 'Checkout')}
+                      {currentOrder.count < 1 ? 'No items to checkout' : (address === '' || typeof(delivery) === NaN || !lastName || !firstName || !contact || !email || !gender ? 'Provide details above' : 'Checkout')}
                     </button>
                   </form>
                 </div>
