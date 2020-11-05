@@ -303,7 +303,7 @@ const AdminDashboard = ({
                     <ul className="collection transparent no-shadow">
                       {order.order_items.map(orderItem => (
                         <li key={orderItem.id} className="collection-item avatar transparent">
-                          <div className="grey lighten-2 circle bg-cover" style={{ backgroundImage: `url(${orderItem.product.thumbnail})` }}>contacts</div>
+                          <div className="grey lighten-2 circle bg-cover" style={{ backgroundImage: `url(${orderItem.product_variant.thumbnail})` }}></div>
                           <p className="title">{orderItem.product.name} - {orderItem.product_variant.name}</p>
                           <p className="grey-text">{orderItem.quantity} x ₱ {orderItem.ordered_price.toFixed(2)}</p>
                           <p className="title">₱ {(orderItem.quantity*orderItem.ordered_price).toFixed(2)}</p>
