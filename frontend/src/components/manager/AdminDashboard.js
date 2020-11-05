@@ -279,7 +279,7 @@ const AdminDashboard = ({
                             <td className="mw-medium">{moment(order.date_ordered).format('lll')}</td>
                             <td><a href="" data-target="ordermodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-2" onClick={() => getOrder({ id:order.id })}>{order.ref_code}</a></td>
                             <td className={`fw-6 ${order.payment_type === 1 ? 'orange-text' : 'green-text'}`}>{order.payment_type === 1 ? 'COD' : 'Card'}</td>
-                            <td className="mw-medium">{order.count} items</td>
+                            <td className="mw-medium">{order.ordered_count} items</td>
                             <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
                             <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
                             <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
