@@ -89,8 +89,8 @@ const Signup = ({
         <div className="container">
           <div className="row mb-0">
             <div className="col s12 m8 offset-m2">
-              <div className="card-panel signup">
-                <h4 className="center">Signup</h4>
+              <div className="card-panel mt-5">
+                <h4 className="center mb-5">Signup</h4>
                 <form method="post" noValidate onSubmit={onSubmit}>
                   <div className="input-field">
                     <input type="text" id="firstName" onChange={e => setFirstName(e.target.value)} className="validate" maxLength="30" required/>

@@ -44,8 +44,8 @@ const Login = ({
       <div className="container">
         <div className="row mb-0">
           <div className="col s12 m8 offset-m2 l6 offset-l3">
-            <div className="card-panel">
-              <h4 className="center">Login</h4>
+            <div className="card-panel mt-5">
+              <h4 className="center mb-5">Login</h4>
               <form method="post" onSubmit={onSubmit} noValidate>
                 <div className="input-field">
                   <i className="material-icons prefix">person</i>
@@ -93,7 +93,7 @@ const Login = ({
             <p className="grey-text lighten-1">Don't have an account? <Link to="/signup" className="blue-text">Signup</Link></p>
           </div>
           <div className="col s12 center">
-            <p className="grey-text lighten-1"><Link to="/password_reset" className="blue-text">Forgot your Password?</Link></p>
+            <p className="grey-text lighten-1 mt-0"><Link to="/password_reset" className="blue-text">Forgot your Password?</Link></p>
           </div>
         </div>
       </div>
