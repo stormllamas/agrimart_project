@@ -7,6 +7,7 @@ from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, Ch
 
 # Exceptions
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 #Auth
 from rest_framework.response import Response
@@ -380,19 +381,26 @@ class ChangePasswordAPI(RetrieveAPIView, UpdateAPIView):
       })
 
     return Response(serializer.errors)
-      
+
 # Request reset - Password Reset
 class PasswordResetAPI(GenericAPIView):
 
   def post(self, request, *args, **kwargs):
     try:
       email = request.data['email']
+      try:
+        validate_email(email)
+      except:
+        return Response({
+          'status': 'error',
+          'msg': 'Invalid email',
+        })
       user = User.objects.get(email=email)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
       user = None
     if user is not None:
       current_site = get_current_site(self.request)
-      mail_subject = 'Reset your Agrimart account\'s Password'
+      mail_subject = 'Reset your Camel Cart account\'s Password'
       message = render_to_string(
         'password_reset_email.html',
         {
@@ -402,22 +410,23 @@ class PasswordResetAPI(GenericAPIView):
           'token':account_activation_token.make_token(user),
         }
       )
-      send_mail(
-        mail_subject,
-        message,
-        'Quezon Agrimart',
-        [email],
-        fail_silently=False
-      )
+      print(message)
+      # send_mail(
+      #   mail_subject,
+      #   message,
+      #   'Camel Cart',
+      #   [email],
+      #   fail_silently=False
+      # )
       
       return Response({
         'status': 'okay',
-        'message': 'Email has been sent. Please check your email',
+        'msg': 'Email has been sent. Please check your email',
       })
     else:
       return Response({
         'status': 'error',
-        'message': 'User with entered email does not exist',
+        'msg': 'Entered email does not exist',
       })
 
 # Verify secret and token - Password Reset
@@ -430,16 +439,68 @@ class VerifyPasswordResetAPI(GenericAPIView):
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
       user = None
     if user is not None and account_activation_token.check_token(user, request.data['token']):
+      addresses = [{
+        'id': address.id,
+        'user': address.user.id,
+        'latitude': address.latitude,
+        'longitude': address.longitude,
+        'address': address.address,
+      } for address in user.addresses.all()]
+
+      groups = [{
+        'id': group.id,
+        'name': group.name,
+      } for group in user.groups.all()]
+
       return Response({
         'status': 'okay',
-        'user': UserSerializer(user, context=self.get_serializer_context()).data,
+        'user': {
+          'id': user.id,
+          'username': user.username,
+          'email': user.email,
+          'first_name': user.first_name,
+          'last_name': user.last_name,
+          'contact': user.contact,
+          'gender': user.gender,
+          'picture': user.picture,
+          'is_staff': user.is_staff,
+          'is_superuser': user.is_superuser,
+          'addresses': addresses,
+          'groups': groups,
+        }
       })
     else:
       return Response({
         'status': 'error',
       })
+      
 # Process reset - Password Reset
 class ResetPasswordAPI(RetrieveAPIView, UpdateAPIView):
+  model = User
+  serializer_class = ResetPasswordSerializer
+
+  def get_object(self):
+    try:
+      uid = force_text(urlsafe_base64_decode(self.request.data['uidb64']))
+      user = User.objects.get(id=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+      user = None
+    return user
+
+  def update(self, request, *args, **kwargs):
+    self.object = self.get_object()
+    serializer = self.get_serializer(data=request.data)
+    if serializer.is_valid():
+      if self.object is not None and account_activation_token.check_token(self.object, serializer.data.get("token")):
+        self.object.set_password(serializer.data.get("new_password"))
+        self.object.save()
+        return Response({
+          'status': 'okay',
+        })
+      else:
+        return Response({
+          'status': 'error',
+        })
   model = User
   serializer_class = ResetPasswordSerializer
 

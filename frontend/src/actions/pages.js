@@ -115,11 +115,13 @@ export const addInquiry = inquiry => async (dispatch, getState) => {
   try {
     await axios.post('/api/contact/', inquiry, tokenConfig(getState));
     dispatch({type: CONTACTED})
+    M.toast({
+      html: 'Message sent!',
+      displayLength: 3500,
+      classes: 'green',
+    });
   } catch (err) {
     dispatch({type: CONTACTED})
-    if (err.response.data[Object.keys(err.response.data)] === 'Invalid token.') {
-      dispatch({type: AUTH_ERROR});
-    } else {
-    }
+    dispatch({type: AUTH_ERROR});
   }
 }

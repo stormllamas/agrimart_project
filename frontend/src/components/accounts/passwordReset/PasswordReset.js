@@ -1,60 +1,71 @@
 import React, { Fragment, useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { HashLink as Link } from 'react-router-hash-link';
 import PropTypes from 'prop-types'
-
-import Preloader from '../../layout/Preloader';
-
 import { connect } from 'react-redux';
+
 import { requestPasswordReset } from '../../../actions/auth';
 
 const PasswordReset = ({
-  auth: { requestLoading, userLoading, isAuthenticated },
-  requestPasswordReset, validateField, validateForm
+  auth: { requestLoading, userLoading },
+  requestPasswordReset, match
 }) => {
-  const history = useHistory()
 
   const [email, setEmail] = useState('');
+  const [requestEmail, setRequestEmail] = useState('');
 
   const onSubmit = async e => {
     e.preventDefault();
-    const formValidation = {}
-    formValidation[validateField(document.getElementById('id_email'), ['required', 'email'])] = true
-
-    const validForm = validateForm(formValidation)
-    validForm && await requestPasswordReset(email, history)
-  }
-
-  if (!userLoading&&isAuthenticated) {
-    return ( <Redirect to='/' /> )
+    if (email) {
+      const request = await requestPasswordReset(email)
+      if (request === 'okay') {
+        setRequestEmail(email)
+      }
+    } else {
+      M.toast({
+        html: 'Please enter an email',
+        displayLength: 3500,
+        classes: 'red',
+      });
+    }
   }
 
   return (
-    <Fragment>
-      {userLoading||requestLoading ? <Preloader /> : undefined}
-      {!userLoading && (
-        <div className="auth row center middle">
-          <div className="card">
-            <div className="card-body">
-              <h1 className="card-title text-center">Reset your password</h1>
-              <p className="text-center prompt">Enter your email address and we will send a link to your email to reset your password.</p>
-              <form method="post" className="col center reset" onSubmit={onSubmit} noValidate>
-                <div className="form-group">
-                  <input type="email" name="email" value={email} autoFocus maxLength="254" className="form-control" required id="id_email" onChange={e => setEmail(e.target.value)} required />
+    !userLoading && (
+      <div className="section section-password-reset">
+        <div className="container">
+          <div className="row mb-0">
+            <div className="col s12 m8 offset-m2 l6 offset-l3">
+              {requestEmail === '' ? (
+                <div className="card-panel mt-5">
+                  <h4 className="card-title">Reset your password</h4>
+                  <p>Enter your email address below and we'll send you a link to reset your password.</p>
+                  <form method="post" className="block" onSubmit={onSubmit} noValidate>
+                    <div className="input-field">
+                      <label htmlFor="email">Email</label>
+                      <input type="email" name="email" value={email} autoFocus maxLength="254" className="form-control" required id="id_email" onChange={e => setEmail(e.target.value)} required/>
+                    </div>
+                    <button type="submit" className="btn btn-extended green">Send password reset email</button>
+                  </form>
                 </div>
-                <button type="submit" className="btn-blue">Send password reset email</button>
-              </form>
+              ) : (
+                <div className="card-panel mt-5 center">
+                  <h4 className="card-title">Reset your password</h4>
+                  <p className="">Please check your email at</p>
+                  <p className="text-grey fw-6 fs-18">{email}</p>
+                  <p className="">for a link to reset your password. If it doesn't appear within a few minutes, please check your spam folder.</p>
+                  <Link to="/login" className="btn btn-large btn-extended blue">Return to log in</Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      )}
-    </Fragment>
+      </div>
+    )
   )
 }
 
 PasswordReset.propTypes = {
   requestPasswordReset: PropTypes.func.isRequired,
-  validateForm: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({

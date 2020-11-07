@@ -13,7 +13,7 @@ const SiteMessage = ({
     <div className={`site-message card p-1 m-0 ${showSiteMessage ? '' : 'read'}`} role="alert">
       <div className="alert-body center middle">
         <button type="button" className="close" onClick={() => hideSiteMessage()} >&times;</button>
-        <p className="center">{siteInfo && siteInfo.site_message}</p>
+        <p className="center m-0">{siteInfo && siteInfo.site_message}</p>
       </div>
     </div>
   )

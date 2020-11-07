@@ -24,7 +24,7 @@ urlpatterns = [
   path('read', views.IndexView.as_view(), name='read'),
   path('events', views.IndexView.as_view(), name='events'),
   path('services', views.IndexView.as_view(), name='services'),
-  # path('contact', views.IndexView.as_view(), name='contact'),
+  path('contact', views.IndexView.as_view(), name='contact'),
   # path('about', views.IndexView.as_view(), name='about'),
 
   path('shop', views.IndexView.as_view(), name='shophighlights'),

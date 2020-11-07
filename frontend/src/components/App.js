@@ -13,17 +13,15 @@ import AdminRoute from './common/AdminRoute';
 import Preloader from './common/Preloader';
 import SiteMessage from './layout/SiteMessage';
 
-import Signup from './accounts/Signup';
-import Activate from './accounts/Activate';
-import ConfirmEmail from './accounts/ConfirmEmail';
 import Login from './accounts/Login';
+import Signup from './accounts/Signup';
+import ConfirmEmail from './accounts/ConfirmEmail';
+import Activate from './accounts/Activate';
+import PasswordReset from './accounts/passwordReset/PasswordReset';
+import PasswordResetForm from './accounts/passwordReset/PasswordResetForm';
 
 import Profile from './accounts/Profile';
 import Security from './accounts/Security';
-
-import PasswordReset from './accounts/passwordReset/PasswordReset';
-import PasswordResetPrompt from './accounts/passwordReset/PasswordResetPrompt';
-import PasswordResetForm from './accounts/passwordReset/PasswordResetForm';
 
 import Cart from './shopping/Cart';
 import Favorites from './shopping/favorites/Favorites';
@@ -34,16 +32,14 @@ import ProductReview from './review/ProductReview'
 import OrderReview from './review/OrderReview'
 import RequestRefund from './shopping/RequestRefund';
 
-// import OrderManager from './manager/OrderManager';
-// import RecentlyDelivered from './manager/RecentlyDelivered';
-// import RefundRequests from './manager/RefundRequests';
-// import ApprovedRefunds from './manager/ApprovedRefunds';
-// import ResolvedRefunds from './manager/ResolvedRefunds';
 import AdminDashboard from './manager/AdminDashboard'
 import Unclaimed from './manager/Unclaimed'
 import Claimed from './manager/Claimed'
 import Undelivered from './manager/Undelivered'
 import Delivered from './manager/Delivered'
+// import RefundRequests from './manager/RefundRequests';
+// import ApprovedRefunds from './manager/ApprovedRefunds';
+// import ResolvedRefunds from './manager/ResolvedRefunds';
 
 import Home from './pages/Home';
 import Testimonies from './pages/testimonies/Testimonies';
@@ -80,6 +76,8 @@ const App = () => {
             <AccountsRoute exact path="/signup" component={Signup} />
             <PublicRoute exact path="/confirm_email/:email" component={ConfirmEmail} />
             <Route exact path="/activate/:uidb64/:token" component={Activate} />
+            <PublicRoute exact path="/password_reset" component={PasswordReset} />
+            <PublicRoute exact path="/password_reset_form/:uidb64/:token" component={PasswordResetForm} />
 
             <PrivateRoute exact path="/profile" component={Profile} />
             <PrivateRoute exact path="/security" component={Security} />
@@ -94,9 +92,6 @@ const App = () => {
             <PublicRoute exact path="/services" component={Services} />
             <PrivateRoute exact path="/contact" component={Contact} />
             <PublicRoute exact path="/about" component={About} />
-            <PublicRoute exact path="/password_reset" component={PasswordReset} />
-            <PublicRoute exact path="/check_email/:email" component={PasswordResetPrompt} />
-            <PublicRoute exact path="/password_reset_form/:uidb64/:token" component={PasswordResetForm} />
 
             <PublicRoute exact path="/shop" component={ShopHighlights} />
             <PublicRoute exact path="/shop/products" component={Products} />

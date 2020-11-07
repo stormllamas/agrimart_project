@@ -274,15 +274,29 @@ export const requestPasswordReset = (email, history) => async (dispatch, getStat
   try {
     const res = await axios.post('/api/auth/request_password_reset', body)
     if (res.data.status === 'okay') {
-      history.push(`/check_email/${email}`)
-    } else if (res.data.status === 'error') {
-      history.push(`/check_email/${email}`)
+      M.toast({
+        html: res.data.msg,
+        displayLength: 3500,
+        classes: 'green',
+      });
+      dispatch({ type: REQUEST_PROCESSED })
+      return 'okay'
+    } else {
+      M.toast({
+        html: res.data.msg,
+        displayLength: 3500,
+        classes: 'red',
+      });
+      dispatch({ type: REQUEST_PROCESSED })
+      return 'error'
     }
-    dispatch({ type: REQUEST_PROCESSED })
   } catch (err) {
-    console.log(err.response.data)
+    M.toast({
+      html: res.data.msg,
+      displayLength: 3500,
+      classes: 'red',
+    });
     dispatch({ type: REQUEST_PROCESSED })
-    dispatch(setAlert({type:'danger', msg:err.response.data[Object.keys(err.response.data)][0]}));
     return 'error'
   }
 }
@@ -313,9 +327,12 @@ export const resetPassword = (uidb64, token, newPassword, history) => async disp
   };
   const res = await axios.put('/api/auth/reset_password', body)
   if (res.data.status === 'okay') {
-    dispatch({ 
-      type: PASSWORD_RESET_DONE,
-    })
+    M.toast({
+      html: 'Password reset successful',
+      displayLength: 3500,
+      classes: 'green',
+    });
+    dispatch({ type: PASSWORD_RESET_DONE })
     history.push('/login')
   } else {
     dispatch({ type: PASSWORD_RESET_VERIFICATION_ERROR })

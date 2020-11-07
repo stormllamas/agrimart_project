@@ -39,19 +39,12 @@ const Login = ({
     }
   }
 
-  useEffect(() => {
-    if (!userLoading && !isAuthenticated) {
-      $('.loader').fadeOut();
-      $('#middle-content').fadeIn();
-    }
-  }, [userLoading])
-
   return (
     <section className="section section-login">
       <div className="container">
-        <div className="row">
+        <div className="row mb-0">
           <div className="col s12 m8 offset-m2 l6 offset-l3">
-            <div className="card-panel login">
+            <div className="card-panel">
               <h4 className="center">Login</h4>
               <form method="post" onSubmit={onSubmit} noValidate>
                 <div className="input-field">
@@ -95,6 +88,14 @@ const Login = ({
             </div>
           </div>
         </div>
+        <div className="row mt-0">
+          <div className="col s12 center">
+            <p className="grey-text lighten-1">Don't have an account? <Link to="/signup" className="blue-text">Signup</Link></p>
+          </div>
+          <div className="col s12 center">
+            <p className="grey-text lighten-1"><Link to="/password_reset" className="blue-text">Forgot your Password?</Link></p>
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -110,4 +111,3 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, { login, socialSignin })(Login);
-
