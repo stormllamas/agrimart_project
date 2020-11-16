@@ -55,11 +55,11 @@ const Contact = ({
         subject,
         message,
       });
-      setName('');document.getElementById('id_name').classList.remove('is-valid')
-      setEmail('');document.getElementById('id_email').classList.remove('is-valid')
-      setPhone('');document.getElementById('id_phone').classList.remove('is-valid')
-      setSubject('');document.getElementById('id_subject').classList.remove('is-valid')
-      setMessage('');document.getElementById('id_message').classList.remove('is-valid')
+      setName('')
+      setEmail('')
+      setPhone('')
+      setSubject('')
+      setMessage('')
     }
   }
 

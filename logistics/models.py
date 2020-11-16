@@ -38,7 +38,7 @@ def normal_round(n):
   return math.ceil(n)
     
 class CategoryGroup(models.Model):
-  name = models.CharField(max_length=50, blank=True, null=True)
+  name = models.CharField(max_length=50)
 
   def __str__(self):
     return self.name
@@ -74,7 +74,7 @@ class Seller(models.Model):
 class Product(models.Model):
   # Basic Details
   name = models.CharField(max_length=50, unique=True)
-  seller = models.ForeignKey(Seller, related_name='products', on_delete=models.SET_NULL, null=True)
+  seller = models.ForeignKey(Seller, related_name='products', on_delete=models.CASCADE)
   categories = models.ManyToManyField(Category)
   feature = models.BooleanField(default=False)
   description = models.TextField(max_length=4000, default='')

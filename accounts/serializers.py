@@ -112,7 +112,7 @@ class SocialAuthSerializer(serializers.ModelSerializer):
       user = User.objects.create_user(
         username=name,
         email=validated_data['email'],
-        picture=validated_data['picture'],
+        # picture=validated_data['picture'],
         first_name=validated_data['first_name'],
         last_name=validated_data['last_name'],
         facebook_id=validated_data['facebook_id'],

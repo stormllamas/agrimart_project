@@ -129,9 +129,9 @@ const Delivered = ({
                             <td className="mw-large pr-2">{order.loc1_address}</td>
                             <td className="mw-large pr-2">{order.loc2_address}</td>
                             <td className="mw-medium">{order.count} items</td>
-                            <td className="mw-medium">₱ {order.total}</td>
-                            <td className="mw-medium">₱ {order.ordered_price}</td>
-                            <td className="mw-medium">₱ {order.shipping}</td>
+                            <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
+                            <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
+                            <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>

@@ -13,6 +13,7 @@ class MyUserAdmin(UserAdmin):
         # ('Address Details', {'fields': ['address_street', 'address_line_2', 'address_city', 'address_region', 'address_country', 'address_zipcode']}),
         ('Info', {'fields': ['gender']}),
         ('Contact Info', {'fields': ['contact']}),
+        ('Social Authentication', {'fields': ['facebook_id']}),
     )
 
     list_display = ('username', 'first_name', 'last_name', 'email', 'contact')

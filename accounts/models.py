@@ -20,11 +20,6 @@ class User(AbstractUser):
 
   def __str__(self):
     return self.email
-
-  # @property
-  # def favoritesPID(self):
-  #   return [favorite.product.id for favorite in self.favorites.all()]
-
    
 class Address(models.Model):
   # Basic Details

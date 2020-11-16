@@ -82,7 +82,7 @@ export const getFacebookAuthID = async () => {
   const res = await axios.get('/api/auth/facebook_keys')
   return res.data
 }
-export const socialSignin = ({first_name, last_name, email, picture, facebook_id}, history) => async dispatch => {
+export const socialSignin = ({first_name, last_name, email, facebook_id}, history) => async dispatch => {
   dispatch({
     type: USER_LOADING,
   })
@@ -92,7 +92,6 @@ export const socialSignin = ({first_name, last_name, email, picture, facebook_id
     first_name,
     last_name,
     email,
-    picture,
     facebook_id,
     fbid: fbid.FACEBOOK_AUTH_ID
   }

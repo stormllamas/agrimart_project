@@ -93,7 +93,7 @@ class OrdersAPI(GenericAPIView):
     pickedup = self.request.query_params.get('pickedup', None)
     if pickedup == 'true':
       if request.user.is_superuser:
-        pickedup_query.add(Q(is_pickedup=True, rider=request.user), Q.AND)
+        pickedup_query.add(Q(is_pickedup=True), Q.AND)
       else:
         pickedup_query.add(Q(is_pickedup=True, rider=request.user), Q.AND)
     elif pickedup == 'false':
@@ -142,7 +142,7 @@ class OrdersAPI(GenericAPIView):
       'total': order.total,
       'count': order.count,
       'ordered_count': order.ordered_count,
-      'subtotal': sum([item.quantity*item.ordered_price if item.is_ordered and item.ordered_price else 0 for item in order.order_items.all()]),
+      'subtotal': sum([item.quantity*item.ordered_price if item.ordered_price else 0 for item in order.order_items.all()]),
       'date_ordered': order.date_ordered,
     } for order in Order.objects.filter(Q(is_ordered=True) & delivered_query & claimed_query & pickedup_query & keywords_query).order_by('-date_delivered','-date_claimed','-date_ordered')[from_item:to_item]]
 

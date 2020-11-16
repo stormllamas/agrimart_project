@@ -94,7 +94,7 @@ const AdminDashboard = ({
   useEffect(() => {
     getDashboardData({
       fromDate: moment(fromDate, "YYYY-MM-DD").format("YYYY-MM-DD"),
-      toDate: moment(toDate, "YYYY-MM-DD").format("YYYY-MM-DD")
+      toDate: moment(toDate, "YYYY-MM-DD").add(1, 'days').format("YYYY-MM-DD")
     })
   }, [fromDate, toDate]);
 
