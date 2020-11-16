@@ -98,12 +98,20 @@ class SocialAuthAPI(GenericAPIView):
       regex = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
       if re.search(regex, request.data['email']):
         try:
-          user = User.objects.get(email=request.data['email'], is_active=True, facebook_id=request.data['facebook_id'])
+          try:
+            user = User.objects.get(email=request.data['email'], is_active=True, facebook_id=request.data['facebook_id'])
+          except:
+            user = User.objects.get(email=request.data['email'], is_active=True)
+
         except:
           user = None
 
         if user:
           _, token = AuthToken.objects.create(user)
+          if not user.facebook_id:
+            user.facebook_id = request.data['facebook_id']
+            user.save()
+            
           response = Response({
             'user': get_user_data(user),
             'token': token

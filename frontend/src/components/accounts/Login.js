@@ -27,7 +27,6 @@ const Login = ({
   }
 
   const responseFacebook = (response) => {
-    console.log(response)
     if (response.status !== 'unknown') {
       const body = {
         first_name: response.name,
