@@ -67,7 +67,7 @@ class FilterDetailsAPI(GenericAPIView):
 class SellerAPI(GenericAPIView):
 
   def get(self, request, seller_name=None):
-    sn = seller_name.replace('-',' ')
+    sn = seller_name.replace('-',' ').replace('and', '&')
     seller = Seller.objects.get(name=sn)
 
     return Response({
