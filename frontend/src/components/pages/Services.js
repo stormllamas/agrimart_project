@@ -11,7 +11,8 @@ import { getService } from '../../actions/pages';
 
 const Services = ({
   services: { data, serviceLoading },
-  getService
+  getService,
+  setCurLocation
 }) => {
   const history = useHistory()
 
@@ -20,6 +21,10 @@ const Services = ({
     const serviceQuery = query.get('s')
     getService({ serviceQuery, history });
   }, []);
+  
+  useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
   
   useEffect(() => {
     if (!serviceLoading) {

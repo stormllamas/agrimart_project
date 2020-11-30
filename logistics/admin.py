@@ -26,7 +26,7 @@ admin.site.register(Product, ProductAdmin)
 
 class SellerAdmin(admin.ModelAdmin):
   fieldsets = [
-    (None, {'fields': ['name', 'contact', 'categories']}),
+    (None, {'fields': ['name', 'contact', 'categories', 'user']}),
     ('Location', {'fields': ['latitude', 'longitude', 'address']}),
     ('Display', {'fields': ['thumbnail']}),
   ]
@@ -60,13 +60,12 @@ class OrderAdmin(admin.ModelAdmin):
   fieldsets = [
     (None, {'fields': ['ref_code', 'user']}),
     ('Personal Details', {'fields': ['first_name', 'last_name', 'contact', 'email', 'gender']}),
-    # ('Delivery Details', {'fields': ['unit', 'weight', 'height', 'width', 'length', 'description']}),
     ('Delivery Points', {'fields': ['loc1_latitude', 'loc1_longitude', 'loc1_address', 'loc2_latitude', 'loc2_longitude', 'loc2_address', 'distance_value', 'distance_text', 'duration_value', 'duration_text']}),
-    ('Payments', {'fields': ['payment_type', 'auth_id', 'capture_id']}),
-    ('Status', {'fields': ['is_ordered', 'date_ordered', 'is_paid', 'date_paid', 'rider', 'date_claimed', 'is_pickedup', 'date_pickedup', 'is_delivered', 'date_delivered']}),
+    ('Payments', {'fields': ['payment_type']}),
+    ('Status', {'fields': ['is_ordered', 'date_ordered', 'ordered_shipping', 'is_paid', 'date_paid', 'is_processed', 'date_processed', 'is_prepared', 'date_prepared', 'is_delivered', 'date_delivered']}),
   ]
   inlines = [OrderItemInLine]
-  list_display = ('ref_code', 'user', 'is_ordered', 'rider', 'is_delivered', 'payment_type', 'is_paid')
+  list_display = ('ref_code', 'user', 'is_ordered', 'is_processed', 'is_delivered', 'payment_type', 'is_paid')
   list_display_links = ('ref_code',)
   list_filter = ('payment_type', 'is_ordered', 'is_delivered', 'is_paid')
   list_per_page = 50

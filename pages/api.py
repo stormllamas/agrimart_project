@@ -9,7 +9,7 @@ from .models import Article, Event, Service
 
 # Permissions and pagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from agrimart.permissions import IsOrderOwner, SiteEnabled, IsOrderItemOwner
+from agrimart.permissions import SiteEnabled
 from agrimart.pagination import StandardResultsSetPagination
 
 # Serializers
@@ -100,6 +100,7 @@ class ArticleViewSet(RetrieveAPIView):
   queryset = Article.objects.filter(is_published=True).order_by('-highlight', '-date_published')
   serializer_class = ArticleSerializer
   pagination_class = StandardResultsSetPagination
+  permission_classes = [SiteEnabled]
 
   def retrieve(self, request, pk=None):
     article = get_object_or_404(Article, pk=pk)
@@ -119,6 +120,8 @@ class ArticleViewSet(RetrieveAPIView):
     return response
 
 class EventViewSet(GenericAPIView):
+  permission_classes = [SiteEnabled]
+
   def get_object(self):
     return get_object_or_404(Event, id=self.kwargs['pk'])
 
@@ -151,6 +154,8 @@ class EventViewSet(GenericAPIView):
     })
 
 class ServiceViewSet(GenericAPIView):
+  permission_classes = [SiteEnabled]
+
   def get_object(self):
     return get_object_or_404(Service, id=self.kwargs['pk'])
 
@@ -186,6 +191,8 @@ class ServiceViewSet(GenericAPIView):
     })
 
 class ContactViewSet(CreateModelMixin, viewsets.GenericViewSet):
+  permission_classes = [SiteEnabled]
+  
   serializer_class = ContactSerializer
       
   def create(self, request, *args, **kwargs):

@@ -37,28 +37,6 @@ const Topbar = ({
       }
     }
   }, [userLoading])
-
-  const authLinks = (
-    <ul className="right topbar-links relative">
-      <Link to="/cart" className="white-text disabled">
-        <i className="material-icons">shopping_cart</i>
-        {!currentOrderLoading && (
-          currentOrder && (
-            currentOrder.count > 0 && (
-              <i className="material-icons red-text form-notification-btl fs-16">stop_circle</i>
-            )
-          )
-        )}
-      </Link>
-    </ul>
-  )
-
-  const guestLinks = (
-    <ul className="right topbar-links">
-      <li className={history.location.pathname.includes('login') ? "active" : ''}><Link to="/login" className="white-text text-darken-2">Login</Link></li>
-      <li className={history.location.pathname.includes('signup') ? "active" : ''}><Link to="/signup" className="white-text text-darken-2 hide-on-med-and-down">Signup</Link></li>
-    </ul>
-  )
   
   return (
     <Fragment>
@@ -68,10 +46,37 @@ const Topbar = ({
             <div className="nav-wrapper">
               {/* <Link to="/" className="brand-logo"><img src={ !siteInfoLoading ? siteInfo.site_logo : ''} alt="came cart logo" className="responsive-img mr-1"/> <span className="">AGRIMART</span></Link> */}
               <Link to="/" className="brand-logo"><i className="material-icons fs-32">eco</i> <span className="f-style-breeserif">AGRIMART</span></Link>
-              <a href="#" data-target="mobile-nav" className="sidenav-trigger show-on-large white-text show-on-small-and-up">
+              <a href="#" data-target="mobile-nav" className="sidenav-trigger show-on-large white-text show-on-small-and-up menu-wrapper relative">
                 <i className="material-icons">menu</i>
+                {!userLoading && (
+                  user && (
+                    user.menu_notification && (
+                      <div className="menu-notification red rad-5"></div>
+                    )
+                  )
+                )}
               </a>
-              {!userLoading && isAuthenticated ? authLinks : guestLinks}
+              {!userLoading && isAuthenticated ? (
+                !user.is_staff || user.is_superuser ? (
+                  <ul className="right topbar-links relative">
+                    <Link to="/cart" className="white-text disabled">
+                      <i className="material-icons">shopping_cart</i>
+                      {!currentOrderLoading && (
+                        currentOrder && (
+                          currentOrder.count > 0 && (
+                            <i className="material-icons red-text form-notification-btl fs-16">stop_circle</i>
+                          )
+                        )
+                      )}
+                    </Link>
+                  </ul>
+                ): undefined
+              ) : (
+                <ul className="right topbar-links">
+                  <li className={history.location.pathname.includes('login') ? "active" : ''}><Link to="/login" className="white-text text-darken-2">Login</Link></li>
+                  <li className={history.location.pathname.includes('signup') ? "active" : ''}><Link to="/signup" className="white-text text-darken-2 hide-on-med-and-down">Signup</Link></li>
+                </ul>
+              )}
             </div>
           </div>
         </nav>
@@ -85,12 +90,42 @@ const Topbar = ({
         </li>
         {!userLoading && isAuthenticated ? (
           <Fragment>
-            <li>
-              <Link to="/cart" className="sidenav-close waves-effect" ><i className="material-icons">shopping_cart</i>My Cart</Link>
-            </li>
-            <li>
-              <Link to="/orders" className="sidenav-close waves-effect" ><i className="material-icons">assignment</i>My Orders</Link>
-            </li>
+            {!user.is_staff || user.is_superuser ? (
+              <Fragment>
+                <li className={history.location.pathname === '/cart' ? "active" : ''}>
+                  <Link to="/cart" className="sidenav-close waves-effect" ><i className="material-icons">shopping_cart</i>My Cart</Link>
+                </li>
+                <li className={history.location.pathname === '/orders' ? "active" : ''}>
+                  <Link to="/orders" className="sidenav-close waves-effect" ><i className="material-icons">assignment</i>My Orders</Link>
+                </li>
+              </Fragment>
+            ) : undefined}
+            {user.is_staff && (
+              <li>
+                <Link to="/order_manager/unprocessed" className="sidenav-close waves-effect" >
+                  <i className="material-icons menu-wrapper relative">
+                    fact_check
+                    {user.menu_notification && (
+                      <div className="menu-notification red rad-5"></div>
+                    )}
+                  </i>
+                  Order Manager
+                </Link>
+              </li>
+            )}
+            {user.groups.includes('seller') && (
+              <li>
+                <Link to="/seller_dashboard" className="sidenav-close waves-effect" >
+                  <i className="material-icons menu-wrapper relative">
+                    fact_check
+                    {user.menu_notification && (
+                      <div className="menu-notification red rad-5"></div>
+                    )}
+                  </i>
+                  Seller Manager
+                </Link>
+              </li>
+            )}
           </Fragment>
         ) : undefined}
         <li>
@@ -99,10 +134,10 @@ const Topbar = ({
         <li>
           <a className="subheader">Information</a>
         </li>
-        <li>
+        <li className={history.location.pathname === '/services' ? "active" : ''}>
           <Link to="/services" className="sidenav-close waves-effect" ><i className="material-icons">supervised_user_circle</i>Our Other Services</Link>
         </li>
-        <li>
+        <li className={history.location.pathname === '/events' ? "active" : ''}>
           <Link to="/events" className="sidenav-close waves-effect" ><i className="material-icons">calendar_today</i>Quezon Events</Link>
         </li>
         {!userLoading && isAuthenticated ? (
@@ -113,10 +148,10 @@ const Topbar = ({
             <li>
               <a className="subheader">Account Controls</a>
             </li>
-            <li>
+            <li className={history.location.pathname === '/profile' ? "active" : ''}>
               <Link to="/profile" className="sidenav-close waves-effect" ><i className="material-icons">account_circle</i>My Profile</Link>
             </li>
-            <li>
+            <li className={history.location.pathname === '/security' ? "active" : ''}>
               <Link to="/security" className="sidenav-close waves-effect" ><i className="material-icons">security</i>Security</Link>
             </li>
             <li>

@@ -76,7 +76,7 @@ class OrderSerializer(serializers.ModelSerializer):
       'distance_text', 'distance_value', 'duration_text', 'duration_value',
 
       'payment_type',
-      'auth_id', 'capture_id',
+      # 'auth_id', 'capture_id',
       'is_ordered', 'date_ordered', 'is_paid', 'date_paid',
 
       'shipping',

@@ -53,9 +53,6 @@ const Products = ({
         inDuration: 300,
         outDuration: 200,
       });
-      // product.variants.length > 0 && (
-      //   setSelectedVariant(product.variants[0].id)
-      // )
     } else {
       $('.loader').show();
     }
@@ -96,7 +93,11 @@ const Products = ({
                   <div className="col s12 m12 l5">
                     <div className="pt-2">
                       <h5>{product.name}</h5>
-                      <p><Link to={`/seller?brand=${product.seller.name_to_url}`} className="grey-text text-darken-1">by {product.seller.name}</Link></p>
+                      <p className="mt-1"><Link to={`/seller?brand=${product.seller.name_to_url}`} className="grey-text text-darken-1">by {product.seller.name}</Link></p>
+                      <div>
+                        {product.review_count > 0 ? [...Array(product.total_rating).keys()].map(star => <i key={star} className="fas fa-star amber-text fs-22 mr-1"></i>) : <span className="m-0 grey lighten-2 rad-2 p-2">No Rating</span>}
+                        {product.review_count > 0 && [...Array(Math.max(5-product.total_rating, 0)).keys()].map(star => <i key={star} className="fas fa-star grey-text text-lighten-3 fs-24 mr-1"></i>)}
+                      </div>
                       {isAuthenticated ? (
                         product.variants.length > 0 && !currentOrderLoading && (
                           <form method="POST" className="mt-2">

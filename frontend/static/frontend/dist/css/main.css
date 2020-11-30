@@ -922,9 +922,7 @@
   border-radius: 10px !important; }
 
 .rad-5 {
-  border-radius: 50% !important;
-  min-height: 40px;
-  min-width: 40px; }
+  border-radius: 50% !important; }
 
 .fs-11 {
   font-size: 11px !important; }
@@ -1133,6 +1131,16 @@
     position: absolute;
     bottom: -10px !important;
     left: 7px !important; }
+
+.menu-wrapper {
+  overflow: visible; }
+  .menu-wrapper .menu-notification {
+    opacity: 1;
+    position: absolute;
+    bottom: 20% !important;
+    right: -7px !important;
+    height: 14px !important;
+    width: 14px !important; }
 
 .bg-contain {
   background-size: contain;
@@ -1636,6 +1644,14 @@ input[disabled] {
 
 .f-style-breeserif {
   font-family: 'Bree Serif'; }
+
+.sidenav li.active {
+  background-color: #689F38 !important;
+  color: #fff !important; }
+  .sidenav li.active > a {
+    color: #fff !important; }
+    .sidenav li.active > a i {
+      color: #fff; }
 
 #topbar .brand-logo {
   height: 64px;

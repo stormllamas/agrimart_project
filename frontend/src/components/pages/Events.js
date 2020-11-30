@@ -8,7 +8,8 @@ import { getEvent } from '../../actions/pages';
 
 const Services = ({
   events: { data, eventLoading },
-  getEvent
+  getEvent,
+  setCurLocation
 }) => {
   const history = useHistory()
 
@@ -17,6 +18,10 @@ const Services = ({
     const eventQuery = query.get('e')
     getEvent({ eventQuery, history });
   }, []);
+  
+  useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
   
   useEffect(() => {
     if (!eventLoading) {
@@ -71,15 +76,15 @@ const Services = ({
                   <li key={e.id} className={`event-list-item flex-row waves-effect ${data.event ? e.id === data.event.id && 'active' : ''}`} onClick={() => getEvent({ eventQuery: e.id, history })}>
                     <div className="event-list-icon text-center">
                       <div className="event-list-icon-month text-center">
-                        <p className="center"><Moment format='MMM'>{ e.date }</Moment></p>
+                        <p className="center m-0"><Moment format='MMM'>{ e.date }</Moment></p>
                       </div>
                       <div className="event-list-icon-day text-center">
-                        <p className="center p-1"><Moment format='D'>{ e.date }</Moment></p>
+                        <p className="center m-0 p-1"><Moment format='D'>{ e.date }</Moment></p>
                       </div>
                     </div>
                     <div className="event-list-text">
-                      <p className="fs-18 fw-6">{ e.title }</p>
-                      <p className="lh-4">{ e.summary.slice(0, 85) }</p>
+                      <p className="fs-18 fw-6 m-0">{ e.title }</p>
+                      <p className="lh-4 m-0">{ e.summary.slice(0, 85) }</p>
                     </div>
                   </li>
                 ))}

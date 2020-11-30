@@ -140,7 +140,6 @@ export const getProducts = ({ getMore }) => async (dispatch, getState) => {
     if (!getMore) {
       dispatch({ type: PRODUCTS_LOADING })
       const { categoryQuery, brandQuery, keywordsQuery } = setQueries(getState)
-      
       const res = await axios.get(`/api/products?${categoryQuery}${brandQuery}${keywordsQuery}`)
       dispatch({
         type: GET_PRODUCTS,
@@ -548,7 +547,7 @@ export const reviewProduct = ({ order_item, product_variant, userID, rating, com
         displayLength: 5000,
         classes: 'red'
       });
-      history.push('/bookings')
+      history.push('/orders')
     }
   } catch (err) {
     console.error(err)
@@ -557,7 +556,7 @@ export const reviewProduct = ({ order_item, product_variant, userID, rating, com
       displayLength: 5000,
       classes: 'red'
     });
-    history.push('/bookings')
+    history.push('/orders')
   }
   $('.loader').fadeOut();
 }
@@ -582,21 +581,22 @@ export const reviewProductOrder = ({ order, userID, rating, comment, history }) 
         payload: res.data
       })
     } else if (res.data.status === "error") {
+      console.error('data', res.data)
       M.toast({
         html: 'You already reviewed that',
         displayLength: 5000,
         classes: 'red'
       });
-      history.push('/bookings')
+      history.push('/orders')
     }
   } catch (err) {
-    console.error(err)
+    console.error('err', err)
     M.toast({
       html: 'You already reviewed that',
       displayLength: 5000,
       classes: 'red'
     });
-    history.push('/bookings')
+    history.push('/orders')
   }
   $('.loader').fadeOut();
 }
@@ -626,7 +626,7 @@ export const reviewOrder = ({ order, userID, rating, comment, history }) => asyn
         displayLength: 5000,
         classes: 'red'
       });
-      history.push('/bookings')
+      history.push('/orders')
     }
   } catch (err) {
     console.error(err)
@@ -635,7 +635,7 @@ export const reviewOrder = ({ order, userID, rating, comment, history }) => asyn
       displayLength: 5000,
       classes: 'red'
     });
-    history.push('/bookings')
+    history.push('/orders')
   }
   $('.loader').fadeOut();
 }

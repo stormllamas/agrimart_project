@@ -4,15 +4,13 @@ import { Redirect, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux';
 
-// import AuthPrompt from '../layout/AuthPrompt'
-
 import { addAddress, deleteAddress, updateUser } from '../../actions/auth'
 
 const Profile = ({
   auth: { userLoading, user, isAuthenticated },
-  // logistics: { currentOrder, currentOrderLoading },
   addAddress, deleteAddress,
-  updateUser
+  updateUser,
+  setCurLocation
 }) => {
   const history = useHistory()
 
@@ -213,6 +211,10 @@ const Profile = ({
   }, [currentMap]);
   
   useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
+  
+  useEffect(() => {
     searchBox && addSearchListener();
   }, [searchBox]);
 
@@ -240,7 +242,7 @@ const Profile = ({
             <div className="card-content col s12 m8 pl-2">
               <div className="card-title profile-title flex-row middle">
                 {user.first_name} {user.last_name}
-                <div className="ml-2 btn blue rad-5 p-0 flex-col middle center modal-trigger mb-0" data-target="profilemodal">
+                <div className="ml-2 btn blue rad-5 p-0 flex-col middle center modal-trigger mb-0" data-target="profilemodal" style={{ height: "40px", width: "40px"}}>
                   <i className="material-icons">mode_edit</i>
                 </div>
               </div>

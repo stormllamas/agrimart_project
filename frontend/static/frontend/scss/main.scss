@@ -27,6 +27,20 @@
   }
 }
 
+.sidenav {
+  li.active {
+    background-color: $green !important;
+    color: #fff !important;
+
+    &>a {
+      color: #fff !important;
+      i {
+        color: #fff;
+      }
+    }
+  }
+}
+
 #topbar {
 
   .brand-logo {

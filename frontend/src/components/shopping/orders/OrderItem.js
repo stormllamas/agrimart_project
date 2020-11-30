@@ -29,19 +29,18 @@ const BookingItem = ({ ordersLoading, order, orders, index, getOrders, setOrder 
             </div>
             <div className="col s3 flex-col end p-0">
               {!order.is_delivered ? (
-                <button data-target="ordermodal" className="modal-trigger btn fw-6 light-green pulse" onClick={() => setOrder(order)}>Status</button>
+                // <button data-target="ordermodal" className="modal-trigger btn fw-6 light-green pulse" onClick={() => setOrder(order)}>Status</button>
+                !order.is_processed ? (
+                  <p className="m-0 p-2 fs-16 rad-2 grey lighten-2 grey-text text-darken-1">Processing Order</p>
                 ) : (
-                  !order.is_reviewed ? (
-                    <Fragment>
-                      <Link to={`/order_review/${order.id}`} className="chip amber white-text right waves-effect waves-orange">REVIEW</Link>
-                      <small>delivered by {order.rider.name}</small>
-                    </Fragment>
-                  ) : (
-                    <Fragment>
-                      <div className="chip grey lighten-2 white-text right"><i>Reviewed</i></div>
-                      <small>delivered by {order.rider.name}</small>
-                    </Fragment>
-                  )
+                  <p className="m-0 p-2 fs-16 rad-2 grey lighten-2 grey-text text-darken-1">Preparing Order</p>
+                )
+              ) : (
+                !order.is_reviewed ? (
+                  <Link to={`/order_review/${order.id}`} className="chip amber white-text right waves-effect waves-orange">REVIEW</Link>
+                ) : (
+                  <div className="chip grey lighten-2 white-text right"><i>Reviewed</i></div>
+                )
               )}
             </div>
           </li>
@@ -95,7 +94,7 @@ const BookingItem = ({ ordersLoading, order, orders, index, getOrders, setOrder 
                 <p className="fw-6 fs-17 m-0">Total</p>
               </div>
               <div className="col s6 flex-col end p-0">
-                <p className="fw-6 fs-17 m-0">₱ {(order.ordered_subtotal+order.shipping).toFixed(2)}</p>
+                <p className="fw-6 fs-17 m-0">₱ {(order.total).toFixed(2)}</p>
               </div>
             </div>
           </li>

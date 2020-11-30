@@ -14,7 +14,7 @@ except:
 
 # Permissions and pagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from agrimart.permissions import IsSuperUser, IsOrderOwner, SiteEnabled, IsOrderItemOwner
+from agrimart.permissions import SiteEnabled
 from agrimart.pagination import StandardResultsSetPagination, ProductsPagination, ManagerPagination
 
 # Serializers
@@ -65,7 +65,6 @@ class FilterDetailsAPI(GenericAPIView):
     })
 
 class SellerAPI(GenericAPIView):
-  permission_classes = [SiteEnabled]
 
   def get(self, request, seller_name=None):
     sn = seller_name.replace('-',' ')
@@ -84,12 +83,12 @@ class SellerAPI(GenericAPIView):
     })
 
 class ProductsAPI(GenericAPIView):
-  pagination_class = ProductsPagination
 
   def get(self, request):
     categories = Category.objects.all()
     sellers = Seller.objects.all()
     keywords_query = Q()
+    commodity_query = Q()
     category_query = Q()
     brands_query = Q()
 
@@ -104,8 +103,11 @@ class ProductsAPI(GenericAPIView):
     if 'category' in self.request.query_params:
       categoryQuery = self.request.query_params.getlist('category', None)
       for category in categories:
-        if str(category.name).replace('-', ' ') in categoryQuery:
-          category_query.add(Q(categories__in=[category]), Q.OR)
+        if str(category.name) in categoryQuery:
+          if category.category_group.name == 'Commodities':
+            commodity_query.add(Q(categories__in=[category]), Q.OR)
+          elif category.category_group.name == 'Categories':
+            category_query.add(Q(categories__in=[category]), Q.OR)
     
     if 'brand' in self.request.query_params:
       sellerQuery = self.request.query_params.getlist('brand', None)
@@ -114,8 +116,8 @@ class ProductsAPI(GenericAPIView):
         # print('seller name', str(seller.name))
         if str(seller.name) in sellerQuery:
           brands_query.add(Q(seller=seller.id), Q.OR)
-
-    queryset = sorted(Product.objects.filter(Q(is_published=True) & keywords_query & category_query & brands_query), key=lambda a: (a.total_orders, -a.id), reverse=True)
+          
+    queryset = sorted(Product.objects.filter(Q(is_published=True) & keywords_query & brands_query & commodity_query).filter(category_query).distinct(), key=lambda a: (a.total_orders, -a.id), reverse=True)
     
     queryset_full_length = len(queryset)
 
@@ -191,6 +193,8 @@ class ProductAPI(GenericAPIView):
       },
       'categories': categories,
       'thumbnail': product.thumbnail.url,
+      'review_count': sum([product_variant.reviews.all().count() for product_variant in product.variants.all()]),
+      'total_rating': product.total_rating,
       'photo_1': product.photo_1.url if product.photo_1 else None,
       'photo_2': product.photo_2.url if product.photo_2 else None,
       'photo_3': product.photo_3.url if product.photo_3 else None,
@@ -208,7 +212,7 @@ class SimilarProductsAPI(ListModelMixin, viewsets.GenericViewSet):
 
 class CurrentOrderAPI(RetrieveAPIView, UpdateAPIView):
   serializer_class = OrderSerializer
-  permission_classes = [IsAuthenticated, IsOrderOwner, SiteEnabled]
+  permission_classes = [IsAuthenticated, SiteEnabled]
 
   def get_object(self):
     Orders = Order.objects.filter(user=self.request.user, is_ordered=False).order_by('id')
@@ -268,8 +272,6 @@ class CurrentOrderAPI(RetrieveAPIView, UpdateAPIView):
       'contact': order.contact, 'email': order.email, 'gender': order.gender,
 
       'payment_type': order.payment_type,
-      'auth_id': order.auth_id,
-      'capture_id': order.capture_id,
       
       'is_ordered': order.is_ordered, 'date_ordered': order.date_ordered,
       'is_paid': order.is_paid, 'date_paid': order.date_paid,
@@ -332,17 +334,13 @@ class OrdersAPI(GenericAPIView):
       'loc2_address': order.loc2_address,
 
       'payment_type': order.payment_type,
-      'count': order.count, 'shipping': order.shipping, 'total': order.total,
+      'count': order.ordered_count, 'shipping': order.ordered_shipping, 'total': order.ordered_total,
       
       'ordered_subtotal': sum([item.quantity*item.ordered_price if item.is_ordered and item.ordered_price else 0 for item in order.order_items.all()]),
       'date_ordered': order.date_ordered,
 
-      'rider': {
-        'id': order.rider.id if order.rider != None else None,
-        'name': f'{order.rider.first_name} {order.rider.last_name}' if order.rider != None else None,
-      },
-      'is_claimed': True if order.rider != None else False, 'date_claimed': order.date_claimed,
-      'is_pickedup': order.is_pickedup, 'date_pickedup': order.date_pickedup,
+      'is_processed': order.is_processed, 'date_processed': order.date_processed,
+      'is_prepared': order.is_prepared, 'date_prepared': order.date_prepared,
       'is_delivered': order.is_delivered, 'date_delivered': order.date_delivered,
       
       'is_reviewed': True if OrderReview.objects.filter(order=order).exists() else False,
@@ -378,16 +376,10 @@ class OrderAPI(RetrieveAPIView):
   permission_classes = [IsAuthenticated, SiteEnabled]
 
   def check_object_permissions(self, request, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        if obj.user == request.user and obj.is_ordered == True:
-          return True
-        else:
-          raise PermissionDenied
+    if obj.is_ordered == True and obj.user == request.user:
+      return True
     else:
-      return False
+      raise PermissionDenied
 
   def get_object(self):
     self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['pk']))
@@ -418,22 +410,50 @@ class OrderAPI(RetrieveAPIView):
         'id': order.user.id
       },
     })
+class CancelOrderAPI(UpdateAPIView):
+  serializer_class = OrderSerializer
+  permission_classes = [IsAuthenticated, SiteEnabled]
+
+  def check_object_permissions(self, request, obj):
+    if obj.is_ordered == True and obj.user == request.user:
+      return True
+    else:
+      raise PermissionDenied
+
+  def get_object(self):
+    self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['order_id']))
+    return get_object_or_404(Order, id=self.kwargs['order_id'])
+
+  def update(self, request, order_id=None):
+    order = self.get_object()
+    if order.is_canceled:
+      return Response({
+        'status': 'error',
+        'msg': 'Order already canceled'
+      })
+    
+    if order.rider != None:
+      return Response({
+        'status': 'error',
+        'msg': 'Order can no longer be canceled'
+      })
+
+    else:
+      order.is_canceled = True
+      order.date_canceled = timezone.now()
+      order.save()
+
+      return Response(OrderSerializer(order, context=self.get_serializer_context()).data)
 
 class OrderItemAPI(DestroyAPIView, CreateAPIView):
   serializer_class = OrderItemSerializer
   permission_classes = [IsAuthenticated, SiteEnabled]
 
   def check_object_permissions(self, request, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        if obj.order.user == request.user and obj.order.is_ordered == False:
-          return True
-        else:
-          raise PermissionDenied
+    if obj.order.user == request.user:
+      return True
     else:
-      return False
+      raise PermissionDenied
 
   def get_object(self):
     self.check_object_permissions(self.request, get_object_or_404(OrderItem, id=self.kwargs['pk']))
@@ -447,7 +467,7 @@ class OrderItemAPI(DestroyAPIView, CreateAPIView):
       'quantity': order_item.quantity,
       'total_price': float(order_item.product_variant.final_price)*order_item.quantity,
       'is_ordered': order_item.is_ordered,
-      'picked_up': order_item.is_pickedup,
+      'is_prepared': order_item.is_prepared,
       'is_delivered': order_item.is_delivered,
       'is_reviewed': True if ProductReview.objects.filter(order_item=order_item).exists() else False,
       'review': {
@@ -659,7 +679,7 @@ class ChangeQuantityAPI(UpdateAPIView):
 
 class CheckoutAPI(UpdateAPIView):
   serializer_class = OrderSerializer
-  permission_classes = [IsAuthenticated, IsOrderOwner, SiteEnabled]
+  permission_classes = [IsAuthenticated, SiteEnabled]
 
   def get_object(self):
     Orders = Order.objects.filter(user=self.request.user, is_ordered=False).order_by('id')
@@ -722,7 +742,7 @@ class CheckoutAPI(UpdateAPIView):
       })
 class CompleteOrderAPI(UpdateAPIView):
   serializer_class = OrderItemSerializer
-  permission_classes = [IsAuthenticated, IsOrderOwner, SiteEnabled]
+  permission_classes = [IsAuthenticated, SiteEnabled]
 
   def get_object(self):
     Orders = Order.objects.filter(user=self.request.user, is_ordered=False).order_by('id')
@@ -760,6 +780,7 @@ class CompleteOrderAPI(UpdateAPIView):
     if order_valid:
       order.is_ordered = True
       order.date_ordered = timezone.now()
+      order.ordered_shipping = order.shipping
       order.is_paid = True if paid == 2 else False
       order.date_paid = timezone.now() if paid == 2 else None
       order.payment_type = paid
@@ -829,9 +850,7 @@ class OrderReviewAPI(CreateAPIView):
 
   def create(self, request, *args, **kwargs):
     serializer = self.get_serializer(data=request.data)
-    print(request.data)
     if serializer.is_valid(raise_exception=True):
-      print('valid')
       user = serializer.validated_data.get("user")
       order = serializer.validated_data.get("order")
       
@@ -864,42 +883,42 @@ class OrderReviewAPI(CreateAPIView):
         'message': 'Order already reviewed'
       })
 
-class RequestRefundAPI(CreateAPIView):
-  serializer_class = RefundRequestSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled]
+# class RequestRefundAPI(CreateAPIView):
+#   serializer_class = RefundRequestSerializer
+#   permission_classes = [IsAuthenticated, SiteEnabled]
 
-  def create(self, request, *args, **kwargs):
-    serializer = self.get_serializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-      order_item = serializer.validated_data.get("order_item")
-      if order_item.order.user != request.user:
-        return Response({
-          'status': 'error',
-          'message': 'Refund already requested'
-        })
-      else:
-        serializer.save()
-        return Response({
-          'status': 'okay',
-          'data': serializer.data
-        })
+#   def create(self, request, *args, **kwargs):
+#     serializer = self.get_serializer(data=request.data)
+#     if serializer.is_valid(raise_exception=True):
+#       order_item = serializer.validated_data.get("order_item")
+#       if order_item.order.user != request.user:
+#         return Response({
+#           'status': 'error',
+#           'message': 'Refund already requested'
+#         })
+#       else:
+#         serializer.save()
+#         return Response({
+#           'status': 'okay',
+#           'data': serializer.data
+#         })
 
-    else:
-      return Response({
-        'status': 'error',
-        'message': 'Refund already requested'
-      })
+#     else:
+#       return Response({
+#         'status': 'error',
+#         'message': 'Refund already requested'
+#       })
 
-class FavoritesAPI(CreateAPIView, ListAPIView):
-  serializer_class = FavoriteSerializer
-  permission_classes = [IsAuthenticated]
+# class FavoritesAPI(CreateAPIView, ListAPIView):
+#   serializer_class = FavoriteSerializer
+#   permission_classes = [IsAuthenticated]
 
-  def get_queryset(self):
-    return Favorite.objects.filter(user=self.request.user).order_by('-date_created')
-# Fetched based on product id in kwargs
-class FavoriteAPI(DestroyAPIView):
-  serializer_class = FavoriteSerializer
-  permission_classes = [IsAuthenticated]
+#   def get_queryset(self):
+#     return Favorite.objects.filter(user=self.request.user).order_by('-date_created')
+# # Fetched based on product id in kwargs
+# class FavoriteAPI(DestroyAPIView):
+  # serializer_class = FavoriteSerializer
+  # permission_classes = [IsAuthenticated]
 
-  def get_object(self):
-    return get_object_or_404(Favorite, user=self.request.user, product=self.kwargs['product'])
+  # def get_object(self):
+  #   return get_object_or_404(Favorite, user=self.request.user, product=self.kwargs['product'])

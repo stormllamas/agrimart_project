@@ -55,6 +55,7 @@ class Category(models.Model):
     return len(Seller.objects.filter(categories=self.id))
 
 class Seller(models.Model):
+  user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='seller', on_delete=models.CASCADE, null=True)
   name = models.CharField(max_length=50, unique=True)
   contact = models.CharField(max_length=50)
   description = models.TextField(max_length=4000, default='')
@@ -111,6 +112,7 @@ class Product(models.Model):
       rating = normal_round(sum([int(review.rating) for review in ProductReview.objects.filter(product_variant__product=self)])/ProductReview.objects.filter(product_variant__product=self).count())
     except:
       rating = 0
+    # rating = normal_round(sum([int(review.rating) for review in ProductReview.objects.filter(product_variant__product=self)])/ProductReview.objects.filter(product_variant__product=self).count())
     return rating
 
   @property
@@ -219,22 +221,30 @@ class Order(models.Model):
   # Status
   is_ordered = models.BooleanField(default=False)
   date_ordered = models.DateTimeField(null=True, blank=True)
-
-  rider = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='accepted_orders', on_delete=models.SET_NULL, blank=True, null=True)
-  date_claimed = models.DateTimeField(null=True, blank=True)
+  ordered_shipping = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
   is_paid = models.BooleanField(default=False)
   date_paid = models.DateTimeField(null=True, blank=True)
   payment_type = models.PositiveIntegerField(default=1) # (1) for COD (2) for Card or Detail
 
-  is_pickedup = models.BooleanField(default=False)
-  date_pickedup = models.DateTimeField(null=True, blank=True)
+  # rider = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='accepted_orders', on_delete=models.SET_NULL, blank=True, null=True)
+  is_processed = models.BooleanField(default=False)
+  date_processed = models.DateTimeField(null=True, blank=True)
+
+  # is_canceled = models.BooleanField(default=False)
+  # date_canceled = models.DateTimeField(null=True, blank=True)
+
+  is_prepared = models.BooleanField(default=False)
+  date_prepared = models.DateTimeField(null=True, blank=True)
 
   is_delivered = models.BooleanField(default=False)
   date_delivered = models.DateTimeField(null=True, blank=True)
   # Payment information for Paypal
-  auth_id = models.CharField(max_length=125, blank=True, null=True)
-  capture_id = models.CharField(max_length=125, blank=True, null=True)
+  # auth_id = models.CharField(max_length=125, blank=True, null=True)
+  # capture_id = models.CharField(max_length=125, blank=True, null=True)
+
+  class Meta:
+    verbose_name_plural="Orders"
 
   def save(self, *args, **kwargs):
     if self.ref_code == None or self.ref_code == '':
@@ -244,14 +254,38 @@ class Order(models.Model):
   def __str__(self):
     return self.ref_code
 
-  class Meta:
-    verbose_name_plural="Orders"
+  @property
+  def count(self):
+    return sum([item.quantity if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
+  @property
+  def ordered_count(self):
+    return sum([item.quantity for item in self.order_items.all()])
+
+  @property
+  def subtotal(self):
+    return sum([item.quantity*item.product_variant.final_price if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
+  @property
+  def checkout_subtotal(self):
+    return sum([item.quantity*item.product_variant.final_price for item in self.order_items.filter(checkout_validity__gte=timezone.now())])
+  @property
+  def ordered_subtotal(self):
+    return sum([item.quantity*item.ordered_price if item.ordered_price else 0 for item in self.order_items.all()])
+
+  @property
+  def total(self):
+    return float(self.subtotal)+float(self.shipping)
+  @property
+  def checkout_total(self):
+    return float(self.checkout_subtotal)+float(self.shipping)
+  @property
+  def ordered_total(self):
+    return float(self.ordered_subtotal)+float(self.ordered_shipping)
 
   @property
   def shipping(self):
-    total = round((self.distance_value/1000), 0)*site_config.per_km_price if type(self.distance_value) == int else 35
-    if total < 35:
-      total = 35
+    total = round((self.distance_value/1000), 0)*site_config.per_km_price if type(self.distance_value) == int else 50
+    if total < 50:
+      total = 50
     return total
 
   @property
@@ -262,31 +296,6 @@ class Order(models.Model):
         has_valid_item = True
 
     return has_valid_item
-
-  @property
-  def count(self):
-    return sum([item.quantity if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
-
-  @property
-  def ordered_count(self):
-    return sum([item.quantity for item in self.order_items.all()])
-
-  @property
-  def subtotal(self):
-    return sum([item.quantity*item.product_variant.final_price if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
-
-  @property
-  def checkout_subtotal(self):
-    return sum([item.quantity*item.product_variant.final_price for item in self.order_items.filter(checkout_validity__gte=timezone.now())])
-
-  @property
-  def total(self):
-    return float(self.subtotal)+float(self.shipping)
-
-  @property
-  def checkout_total(self):
-    return float(self.checkout_subtotal)+float(self.shipping)
-
 
 class OrderItem(models.Model):
   order = models.ForeignKey(Order, related_name='order_items', on_delete=models.CASCADE)
@@ -299,8 +308,8 @@ class OrderItem(models.Model):
 
   checkout_validity = models.DateTimeField(null=True, blank=True)
 
-  is_pickedup = models.BooleanField(default=False)
-  date_pickedup = models.DateTimeField(null=True, blank=True)
+  is_prepared = models.BooleanField(default=False)
+  date_prepared = models.DateTimeField(null=True, blank=True)
   
   is_delivered = models.BooleanField(default=False)
   date_delivered = models.DateTimeField(null=True, blank=True)

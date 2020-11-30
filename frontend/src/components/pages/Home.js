@@ -8,8 +8,7 @@ import Header from '../layout/Header';
 import { connect } from 'react-redux';
 import { getArticles, updateQuery, setPage } from '../../actions/pages';
 
-const Home = ({
-}) => {
+const Home = ({setCurLocation}) => {
   const history = useHistory()
 
   useEffect(() => {
@@ -32,6 +31,11 @@ const Home = ({
   }, [])
 
   
+  useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
+
+  
   return (
     <Fragment>
       <Header />
@@ -48,7 +52,7 @@ const Home = ({
             <div className="col m6">
               <div className="card">
                 <div className="card-image">
-                  <img src="/static/frontend/img/stories.jpg" alt=""/>
+                  <img src="/static/frontend/img/SS_truck.jpg" alt=""/>
                   <a className="btn-floating halfway-fab waves-effect blue activator hide-on-med-and-up">
                     <i className="material-icons">expand_less</i>
                   </a>

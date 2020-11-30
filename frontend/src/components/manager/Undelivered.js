@@ -7,6 +7,7 @@ import moment from 'moment'
 
 import Preloader from '../common/Preloader'
 import Pagination from '../common/Pagination'
+import ManagerBreadcrumbs from './ManagerBreadcrumbs'
 
 import { deliverOrderItem, deliverOrder, getOrders, getOrder } from '../../actions/manager'
 
@@ -19,7 +20,8 @@ const Undelivered = ({
   },
   getOrders,
   getOrder,
-  deliverOrderItem, deliverOrder
+  deliverOrderItem, deliverOrder,
+  setCurLocation
 }) => {
   const history = useHistory()
   const query = new URLSearchParams(history.location.search);
@@ -147,6 +149,10 @@ const Undelivered = ({
   }
   
   useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
+  
+  useEffect(() => {
     if (!ordersLoading) {
       $('.loader').fadeOut();
       $('.middle-content').fadeIn();
@@ -171,7 +177,8 @@ const Undelivered = ({
       } else {
         getOrders({
           page: page,
-          claimed: true,
+          processed: true,
+          prepared: true,
           delivered: false,
           keywords: keywords
         })
@@ -180,7 +187,8 @@ const Undelivered = ({
       setPage(1)
       getOrders({
         page: 1,
-        claimed: true,
+        processed: true,
+        prepared: true,
         delivered: false,
         keywords: keywords
       })
@@ -217,6 +225,7 @@ const Undelivered = ({
             </div>
           </nav>
         </div>
+        <ManagerBreadcrumbs/>
         <section className="section section-undelivered admin">
           <div className="container widen">
             <div className="row mt-3">
@@ -251,19 +260,25 @@ const Undelivered = ({
                         </tr>
                       </thead>
                       <tbody>
-                        {orders.results.map(order => (
-                          <tr key={order.id}>
-                            <td className="mw-medium">{moment(order.date_ordered).format('lll')}</td>
-                            <td><a href="" data-target="ordermodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-2" onClick={() => getOrder({ id:order.id })}>{order.ref_code}</a></td>
-                            <td className={`fw-6 ${order.payment_type === 1 ? 'orange-text' : 'green-text'}`}>{order.payment_type === 1 ? 'COD' : 'Card'}</td>
-                            <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 green-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('pickup')}}>{order.loc1_address}</a></td>
-                            <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('delivery')}}>{order.loc2_address}</a></td>
-                            <td className="mw-medium">{order.count} items</td>
-                            <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
-                            <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
-                            <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                        {orders.results.length > 0 ? (
+                          orders.results.map(order => (
+                            <tr key={order.id}>
+                              <td className="mw-medium">{moment(order.date_ordered).format('lll')}</td>
+                              <td><a href="" data-target="ordermodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-2" onClick={() => getOrder({ id:order.id })}>{order.ref_code}</a></td>
+                              <td className={`fw-6 ${order.payment_type === 1 ? 'orange-text' : 'green-text'}`}>{order.payment_type === 1 ? 'COD' : 'Card'}</td>
+                              <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 green-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('pickup')}}>{order.loc1_address}</a></td>
+                              <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('delivery')}}>{order.loc2_address}</a></td>
+                              <td className="mw-medium">{order.count} items</td>
+                              <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
+                              <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
+                              <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="12" className="grey-text center fs-20 pt-5 pb-5 full-height uppercase">No more orders</td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>

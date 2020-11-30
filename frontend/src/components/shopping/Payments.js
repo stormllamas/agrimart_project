@@ -160,7 +160,7 @@ const FoodPayment = ({
             <div className="container">
               <div className="card">
                 <div className="card-content">
-                  <div className="card-title mb-1">Payment Summary</div><p className="mb-2">(Please review the details below)</p>
+                  <div className="card-title mb-1 fw-6">Payment Summary</div><p className="mb-2">(Please review the details below)</p>
                   <div className="row">
                     <div className="col s12 mb-1">
                       <small>Pickup Address</small>

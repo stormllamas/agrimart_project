@@ -9,6 +9,7 @@ import AccountsRoute from './common/AccountsRoute';
 import PrivateRoute from './common/PrivateRoute';
 import PublicRoute from './common/PublicRoute';
 import AdminRoute from './common/AdminRoute';
+import ScrollToTop from './common/ScrollToTop';
 
 import Preloader from './common/Preloader';
 import SiteMessage from './layout/SiteMessage';
@@ -33,8 +34,9 @@ import OrderReview from './review/OrderReview'
 import RequestRefund from './shopping/RequestRefund';
 
 import AdminDashboard from './manager/AdminDashboard'
-import Unclaimed from './manager/Unclaimed'
-import Claimed from './manager/Claimed'
+import SellerDashboard from './manager/SellerDashboard'
+import Unprocessed from './manager/Unprocessed'
+import Processed from './manager/Processed'
 import Undelivered from './manager/Undelivered'
 import Delivered from './manager/Delivered'
 // import RefundRequests from './manager/RefundRequests';
@@ -70,6 +72,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router>
+        <ScrollToTop/>
         <Fragment>
           <Switch>
             <AccountsRoute exact path="/login" component={Login} />
@@ -110,9 +113,10 @@ const App = () => {
             <PrivateRoute exact path="/manager/refund_requests" component={RefundRequests} />
             <PrivateRoute exact path="/manager/approved_refunds" component={ApprovedRefunds} />
             <PrivateRoute exact path="/manager/resolved_refunds" component={ResolvedRefunds} /> */}
+            <PrivateRoute exact path="/seller_dashboard" component={SellerDashboard} />
             <AdminRoute exact path="/order_manager/dashboard" component={AdminDashboard} />
-            <AdminRoute exact path="/order_manager/unclaimed" component={Unclaimed} />
-            <AdminRoute exact path="/order_manager/claimed" component={Claimed} />
+            <AdminRoute exact path="/order_manager/unprocessed" component={Unprocessed} />
+            <AdminRoute exact path="/order_manager/processed" component={Processed} />
             <AdminRoute exact path="/order_manager/undelivered" component={Undelivered} />
             <AdminRoute exact path="/order_manager/delivered" component={Delivered} />
             <Route component={Page404} />

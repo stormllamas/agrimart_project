@@ -56,10 +56,10 @@ const SellerDetails = ({
                   <div className="col s12">
                     <ul className="tabs">
                       <li className="tab col s6">
-                        <a href="#tab-products">Seller Products</a>
+                        <a href="#tab-products" className="green-text text-darken-3">Seller Products</a>
                       </li>
                       <li className="tab col s6">
-                        <a href="#tab-details">Seller Details</a>
+                        <a href="#tab-details" className="green-text text-darken-3">Seller Details</a>
                       </li>
                     </ul>
                   </div>

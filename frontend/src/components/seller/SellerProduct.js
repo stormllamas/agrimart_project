@@ -29,17 +29,17 @@ const SellerProduct = ({ moreSellerProductsLoading, next, product, sellerProduct
           </div>
           <div className="card-action">
             <div className="col s12 m6 l6 p-0 mb-2">
-              {product.review_count > 0 ? [...Array(product.total_rating).keys()].map(star => <i key={star} className="fas fa-star"></i>) : <p>No Rating</p>}
-              {product.review_count > 0 && [...Array(Math.max(5-product.total_rating, 0)).keys()].map(star => <i key={star} className="fas fa-star gray"></i>)}
+              {product.review_count > 0 ? [...Array(product.total_rating).keys()].map(star => <i key={star} className="fas fa-star amber-text"></i>) : <p className="m-0">No Rating</p>}
+              {product.review_count > 0 && [...Array(Math.max(5-product.total_rating, 0)).keys()].map(star => <i key={star} className="fas fa-star grey-text text-lighten-2"></i>)}
             </div>
             <div  className="col s12 m6 l6 p-0 flex-col end">
               {product.cheapest_variant.sale_price_active && (
                 <div className="flex-row middle grey-text">
-                  <p className="sale mr-1 fs-13 lh-2">₱ { product.cheapest_variant.price } </p>
-                  <p className="lh-2">-{ product.cheapest_variant.percent_off }%</p>
+                  <p className="sale mr-1 fs-13 lh-2 m-0">₱ { product.cheapest_variant.price } </p>
+                  <p className="lh-2 m-0">-{ product.cheapest_variant.percent_off }%</p>
                 </div>
               )}
-              <p>
+              <p className="m-0">
                 ₱ { product.cheapest_variant.final_price.toFixed(2) }
               </p>
             </div>

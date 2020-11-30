@@ -124,7 +124,7 @@ const ProductReview = ({
             <section className="section section-product-review">
                 <div className="container">
                   <div className="flex-row middle mb-3 mt-2">
-                    <Link to="/bookings" className="flex-row middle"><i className="material-icons blue-text mr-2 fs-30">arrow_back</i></Link>
+                    <Link to="/orders" className="flex-row middle"><i className="material-icons blue-text mr-2 fs-30">arrow_back</i></Link>
                     <h5 className="m-0">Review a product</h5>
                   </div>
                   {!orderItem.is_reviewed ? (

@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react'
+import React, { useEffect, Fragment, useState } from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 
@@ -13,6 +13,8 @@ const PrivateRoute = ({
   location,
   ...rest
 }) => {
+
+  const [curLocation, setCurLocation] = useState('')
 
   useEffect(() => {
     if (!userLoading && !siteInfoLoading) {
@@ -29,7 +31,7 @@ const PrivateRoute = ({
       {...rest}
       render={ props => {
         if (userLoading || siteInfoLoading) {
-          return <Topbar/>
+          return <Topbar curLocation={curLocation}/>
         } else {
           if (!isAuthenticated) {
             return <Redirect to='/' />
@@ -39,10 +41,10 @@ const PrivateRoute = ({
             return (
               <Fragment>
                 <SiteMessage/>
-                <Topbar/>
+                <Topbar curLocation={curLocation}/>
                 <div className="middle-wrapper">
                   <div className="middle-content">
-                    <Component {...props} />
+                    <Component {...props} setCurLocation={setCurLocation}/>
                   </div>
                 </div>
                 <Footer/>

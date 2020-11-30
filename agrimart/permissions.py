@@ -15,6 +15,14 @@ def is_in_group(user, group_name):
   except Group.DoesNotExist:
       return None
 
+class ReadOnly(BasePermission):
+  def has_permission(self, request, view):
+    return request.method in SAFE_METHODS
+
+class PostOnly(BasePermission):
+  def has_permission(self, request, view):
+    return request.method == 'GET'
+
 class HasGroupPermission(BasePermission):
   """
   Ensure user is in required groups.
@@ -27,7 +35,6 @@ class HasGroupPermission(BasePermission):
     required_groups = required_groups_mapping.get(request.method, [])
 
     # Return True if the user has all the required groups or is staff.
-    # print(all([is_in_group(request.user, group_name) if group_name != "__all__" else True for group_name in required_groups]) or (request.user and request.user.is_staff))
     return all([is_in_group(request.user, group_name) if group_name != "__all__" else True for group_name in required_groups]) or (request.user and request.user.is_staff)
 
 class SiteEnabled(BasePermission):
@@ -39,66 +46,8 @@ class SiteEnabled(BasePermission):
 
 class IsSuperUser(BasePermission):
   def has_permission(self, request, view):
-    return request.user and request.user.is_superuser
+    return request.user.is_superuser
 
-# Allow access if superuser or is owner
-class IsOwner(BasePermission):
-  def has_object_permission(self, request, view, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        return obj.user == request.user
-    else:
-      return False
-
-class IsOrderOwner(BasePermission):
-  def has_object_permission(self, request, view, obj):
-    if request.user:
-      if request.user.is_superuser or request.user.is_staff:
-        return True
-      else:
-        return obj.user == request.user
-    else:
-      return False
-
-class IsOrderRider(BasePermission):
-  def has_object_permission(self, request, view, obj):
-    if request.user:
-      if request.user.is_superuser or request.user.is_staff:
-        return True
-      else:
-        return obj.rider == request.user
-    else:
-      return False
-
-# Allow access if superuser or is owner of the order item
-# And order_items.order must be unordered or request is only GET
-class IsOrderItemOwner(BasePermission):
-  def has_object_permission(self, request, view, obj):
-    if request.user:
-      if request.user.is_superuser and obj.order.is_ordered == False:
-        return True
-      else:
-        print(obj.order.user == request.user and obj.order.is_ordered == False)
-        return obj.order.user == request.user and obj.order.is_ordered == False
-    else:
-      return False
-
-class IsOrderItemRider(BasePermission):
-  def has_object_permission(self, request, view, obj):
-    if request.user:
-      if request.user.is_superuser and obj.order.is_ordered == False:
-        return True
-      else:
-        return obj.order.rider == request.user and obj.order.is_ordered == False or request.method == 'GET'
-    else:
-      return False
-
-class ReadOnly(BasePermission):
+class UserNotAdmin(BasePermission):
   def has_permission(self, request, view):
-    return request.method in SAFE_METHODS
-
-class PostOnly(BasePermission):
-  def has_permission(self, request, view):
-    return request.method == 'GET'
+    return False if request.user.is_staff else True

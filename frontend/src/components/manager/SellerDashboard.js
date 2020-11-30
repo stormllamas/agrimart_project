@@ -8,22 +8,16 @@ import moment from 'moment'
 import DatePicker from "react-datepicker"
 import Preloader from '../../components/common/Preloader'
 
-import { renderRevenueGraph, renderSalesPieChart, getDashboardData, getOrders, getOrder } from '../../actions/manager'
+import { renderRevenueGraph, renderSalesPieChart, getSellerDashboardData } from '../../actions/manager'
 
-const AdminDashboard = ({
+const SellerDashboard = ({
   manager: {
     dashboardLoading,
     dashboardData,
-    ordersLoading,
-    orders,
-    orderLoading,
-    order
   },
   renderRevenueGraph,
   renderSalesPieChart,
-  getDashboardData,
-  getOrders,
-  getOrder,
+  getSellerDashboardData,
   setCurLocation
 }) => {
   const history = useHistory()
@@ -36,23 +30,6 @@ const AdminDashboard = ({
     if (value == 7) return 'last 7 days'
     if (value == 30) return 'this month'
     if (value == 367) return 'this year'
-  }
-
-  const createChartData = (orders, range) => {
-    const rangedList = []
-    for (let i = 0; i < range; i++) {
-      rangedList.unshift (
-        { x: new Date(moment(toDate).subtract(i ,'days').format("YYYY-MM-DD")), y: 0},
-      )
-    }
-    rangedList.forEach((info, infoIndex) => {
-      orders.forEach((order, index) => {
-        if (moment(info.x, "YYYY-MM-DD").format("YYYY-MM-DD") === moment(order.date_paid, "YYYY-MM-DD").format("YYYY-MM-DD")) {
-          info.y += order.shipping
-        }
-      })
-    })
-    return rangedList
   }
 
   const fromDateSelected = (date) => {
@@ -71,9 +48,7 @@ const AdminDashboard = ({
 
   const toDateSelected = (date) => {
     setShortcutDate('')
-    if(fromDate > date) {
-      setFromDate(date)
-    }
+    if(fromDate > date) setFromDate(date)
     setToDate(date)
   }
 
@@ -82,48 +57,53 @@ const AdminDashboard = ({
     setFromDate(new Date(moment().subtract(days, 'days').format("YYYY-MM-DD")))
     setToDate(new Date(moment().format("YYYY-MM-DD")))
   }
+
+  const createChartData = (orders, range) => {
+    const rangedList = []
+    for (let i = 0; i < range; i++) {
+      rangedList.unshift (
+        { x: new Date(moment(toDate).subtract(i ,'days').format("YYYY-MM-DD")), y: 0},
+      )
+    }
+    rangedList.forEach((info, infoIndex) => {
+      orders.forEach((order, index) => {
+        if (moment(info.x, "YYYY-MM-DD").format("YYYY-MM-DD") === moment(order.date_paid, "YYYY-MM-DD").format("YYYY-MM-DD")) {
+          info.y += (order.ordered_price*order.quantity)
+        }
+      })
+    })
+    return rangedList
+  }
   
   useEffect(() => {
     setCurLocation(history.location)
   }, [history]);
   
   useEffect(() => {
-    getOrders({
-      range: '1-7',
-      claimed: false,
-      delivered: false,
-      keywords: '',
-    })
-  }, []);
-  
-  useEffect(() => {
-    getDashboardData({
+    getSellerDashboardData({
       fromDate: moment(fromDate, "YYYY-MM-DD").format("YYYY-MM-DD"),
       toDate: moment(toDate, "YYYY-MM-DD").add(1, 'days').format("YYYY-MM-DD")
     })
   }, [fromDate, toDate]);
 
   useEffect(() => {
-    if (!dashboardLoading && !ordersLoading) {
+    if (!dashboardLoading) {
       const dashboardOrders = createChartData(dashboardData.orders, ((toDate-fromDate)/1000/60/60/24))
       renderRevenueGraph({orders:dashboardOrders})
-      renderSalesPieChart({
-        orders_count: dashboardData.orders_count,
-      })
 
       $('.count').each(function () {
         $(this).prop('Counter', 0).animate({
           Counter: $(this).text()
         }, {
-            duration: 1000,
-            easing: 'swing',
-            step: function (now) {
-              $(this).text(Math.ceil(now));
-            }
-          });
+          duration: 1000,
+          easing: 'swing',
+          step: function (now) {
+            $(this).text(Math.ceil(now));
+          }
+        });
       });
     }
-  }, [dashboardData, ordersLoading])
+  }, [dashboardData])
   
   useEffect(() => {
     if (!dashboardLoading) {
@@ -134,6 +114,8 @@ const AdminDashboard = ({
         coverTrigger: false,
         closeOnClick: false
       });
+
+      $('.tabs').tabs();
   
       $('.modal').modal({
         dismissible: true,
@@ -144,11 +126,11 @@ const AdminDashboard = ({
       $('.loader').show();
       $('.middle-content').hide();
     }
-  }, [dashboardLoading, ordersLoading]);
+  }, [dashboardLoading]);
   
   return (
-    !dashboardLoading && !ordersLoading && (
-      <Fragment>
+    !dashboardLoading && (
+      dashboardData !== null ? (
         <section className="section section-admin-dashboard">
           <div className="container widen">
             <div className="row">
@@ -185,17 +167,7 @@ const AdminDashboard = ({
               </div>
             </div>
             <div className="row">
-              <div className="col l3 m6 s12">
-                <div className="card-panel grey lighten-4 rad-4 no-shadow relative">
-                  <h5 className="m-0 mb-1 fw-6">Revenue</h5>
-                  <p className="m-0 fs-22">₱ <span className="count">{dashboardData.shipping_total}</span></p>
-                  <div className="side-icon flex-col center">
-                    <i className="material-icons green-text text-lighten-2 fs-50">bar_chart</i>
-                    <p className="green-text text-lighten-2 fs-15">16%</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col l3 m6 s12">
+              <div className="col s12 m6 l6">
                 <div className="card-panel grey lighten-4 rad-4 no-shadow relative">
                   <h5 className="m-0 mb-1 fw-6">Sales</h5>
                   <p className="m-0 fs-22">₱ <span className="count">{dashboardData.sales_total}</span></p>
@@ -205,7 +177,7 @@ const AdminDashboard = ({
                   </div>
                 </div>
               </div>
-              <div className="col l3 m6 s12">
+              <div className="col s12 m6 l6">
                 <div className="card-panel grey lighten-4 rad-4 no-shadow relative">
                   <h5 className="m-0 mb-1 fw-6">Sold</h5>
                   <p className="m-0 fs-22"><span className="count">{dashboardData.sold}</span></p>
@@ -215,19 +187,9 @@ const AdminDashboard = ({
                   </div>
                 </div>
               </div>
-              <div className="col l3 m6 s12">
-                <div className="card-panel grey lighten-4 rad-4 no-shadow relative">
-                  <h5 className="m-0 mb-1 fw-6">Checkouts</h5>
-                  <p className="m-0 fs-22"><span className="count">{dashboardData.checkouts}</span></p>
-                  <div className="side-icon flex-col center">
-                    <i className="material-icons green-text text-lighten-2 fs-50">bar_chart</i>
-                    <p className="green-text text-lighten-2 fs-15">16%</p>
-                  </div>
-                </div>
-              </div>
             </div>
             <div className="row">
-              <div className="col l7 s12">
+              <div className="col s12">
                 <div className="card-panel white rad-4 no-shadow admin-dashboard">
                   <div className="row m-0 mb-2">
                     <h5 className="m-0 fw-6">Daily Revenue</h5>
@@ -235,58 +197,41 @@ const AdminDashboard = ({
                   <div id="revenue_chart_container" style={{ height: "370px", width:"100%"}}></div>
                 </div>
               </div>
-              <div className="col l5 s12">
-                <div className="card-panel white rad-4 no-shadow">
-                  <div className="row">
-                    <div className="flex-row middle separate col s12">
-                      <h5 className="mb-0 mt-0 mr-3 fw-6">Sales by Category</h5>
-                    </div>
-                  </div>
-                  <div id="sales_chart_container" style={{ height: "370px", width:"100%"}}></div>
-                </div>
+            </div>
+                
+            <div className="row">
+              <div className="col s12">
+                <ul className="tabs">
+                  <li className="tab col s6">
+                    <a href="#seller-products" className="green-text text-darken-3">My Products</a>
+                  </li>
+                  <li className="tab col s6">
+                    <a href="#recent-orders" className="green-text text-darken-3">Recent Orders</a>
+                  </li>
+                </ul>
               </div>
-              {/* <div className="col l5 s12">
-                <div className="card-panel white rad-4 no-shadow">
-                  <h5 className="m-0 mb-3">Top Brands</h5>
-                  <ul className="collection with-header top-brands no-shadow">
-                    {dashboardData.top_brands.map(brand => (
-                      <li key={brand.id} className="collection-item avatar no-shadow">
-                        <img src={brand.thumbnail} alt={brand.name} className="circle"/>
-                        <span className="title">{brand.name}</span>
-                        <p className="truncate"><small>sales:</small> ₱ {brand.sales}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div> */}
-              <div className="col l7 s12">
-                <div id="dashboard-recent-orders" className="card-panel white rad-4 no-shadow height-530">
-                  <div className="row m-0">
-                    <h5 className="m-0 mb-3">Recent Orders</h5>
-                  </div>
+
+              <div id="seller-products" className="col s12">
+                <div className="card-panel white no-shadow height-530">
+                  <h5 className="m-0 mb-3">{ dashboardData.seller.name }</h5>
                   <div className="row m-0 overflow-scroll height-438">
                     <table className="bordered highlight">
                       <thead>
                         <tr className="grey lighten-3">
-                          <th>Date Ordered</th>
-                          <th>Ref Code</th>
-                          <th>Payment</th>
-                          <th>Items</th>
-                          <th>Order Total</th>
-                          <th>Subtotal</th>
-                          <th>Shipping</th>
+                          <th>Name</th>
+                          <th>Stocks</th>
+                          <th>Price</th>
+                          <th>Sale</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {orders.results.map(order => (
-                          <tr key={order.id}>
-                            <td className="mw-medium">{moment(order.date_ordered).format('lll')}</td>
-                            <td><a href="" data-target="ordermodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-2" onClick={() => getOrder({ id:order.id })}>{order.ref_code}</a></td>
-                            <td className={`fw-6 ${order.payment_type === 1 ? 'orange-text' : 'green-text'}`}>{order.payment_type === 1 ? 'COD' : 'Card'}</td>
-                            <td className="mw-medium">{order.count} items</td>
-                            <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
-                            <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
-                            <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                        {dashboardData.products.map(variant => (
+                          <tr key={variant.id} className="collection-item avatar pr-5 relative mt-3">
+                            {/* <td className="grey lighten-2 circle bg-cover" style={{ backgroundImage: `url(${variant.thumbnail})`, height: "50px", width: "50px"}}></td> */}
+                            <td className="title mw-large">{variant.name}</td>
+                            <td className="title">{(variant.stock)}</td>
+                            <td className="title">₱ {(variant.final_price).toFixed(2)}</td>
+                            <td className="title">{(variant.percent_off)}%</td>
                           </tr>
                         ))}
                       </tbody>
@@ -294,8 +239,24 @@ const AdminDashboard = ({
                   </div>
                 </div>
               </div>
+
+              <div id="recent-orders" className="col s12">
+                <div className="card-panel white no-shadow height-530">
+                  <h5 className="m-0 mb-3">Recent Orders</h5>
+                  <ul className="collection with-header top-brands no-shadow">
+                    {dashboardData.recent_orders.map(orderItem => (
+                      <li key={orderItem.id} className="collection-item avatar no-shadow">
+                        <div className="grey lighten-2 circle bg-cover" style={{ backgroundImage: `url(${orderItem.thumbnail})` }}></div>
+                        <span className="title">{orderItem.name}</span>
+                        <p className="fw-4">{orderItem.quantity} x ₱ {orderItem.ordered_price.toFixed(2)}</p>
+                        <p className="title">₱ {(orderItem.quantity*orderItem.ordered_price).toFixed(2)}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div id="ordermodal" className="modal modal-fixed-footer supermodal">
+            {/* <div id="ordermodal" className="modal modal-fixed-footer supermodal">
               {orderLoading ? (
                 <div className="flex-col full-height middle center relative preloader-wrapper pb-5">
                   <Preloader color="green" size="big" adds="visible"/>
@@ -323,24 +284,25 @@ const AdminDashboard = ({
               <div className="modal-footer">
                 <a className="modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
-      </Fragment>
+      ) : (
+        <Redirect to="/"/>
+      )
+        
     )
   )
 }
 
-AdminDashboard.propTypes = {
+SellerDashboard.propTypes = {
   renderRevenueGraph: PropTypes.func.isRequired,
   renderSalesPieChart: PropTypes.func.isRequired,
-  getDashboardData: PropTypes.func.isRequired,
-  getOrders: PropTypes.func.isRequired,
-  getOrder: PropTypes.func.isRequired,
+  getSellerDashboardData: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   manager: state.manager,
 });
 
-export default connect(mapStateToProps, { renderRevenueGraph, renderSalesPieChart, getDashboardData, getOrders, getOrder })(AdminDashboard);
+export default connect(mapStateToProps, { renderRevenueGraph, renderSalesPieChart, getSellerDashboardData })(SellerDashboard);

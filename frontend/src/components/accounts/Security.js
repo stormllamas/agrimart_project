@@ -8,7 +8,8 @@ import { updatePassword } from '../../actions/auth'
 
 const Security = ({
   auth: { isAuthenticated },
-  updatePassword
+  updatePassword,
+  setCurLocation
 }) => {
   const history = useHistory()
 
@@ -35,10 +36,14 @@ const Security = ({
       });
     }
   }
+  
+  useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
 
   return (
     isAuthenticated ? (
-      <section className="section section-profile">
+      <section className="section section-security">
         <div className="container">
           <h4>Security</h4>
           <div className="row mt-3">

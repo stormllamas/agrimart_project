@@ -20,7 +20,8 @@ const Bookings = ({
     currentOnly
   },
   getOrders,
-  setCurrentOnly
+  setCurrentOnly,
+  setCurLocation
 }) => {
   const history = useHistory()
 
@@ -32,6 +33,10 @@ const Bookings = ({
       bool: showCurrentOnly
     })
   }, [showCurrentOnly]);
+  
+  useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
   
   useEffect(() => {
     getOrders({
@@ -80,125 +85,6 @@ const Bookings = ({
                 </div>
               )}
             </ul>
-            <div id="ordermodal" className="modal modal-fixed-footer supermodal">
-              {order === '' ? (
-                <div className="full-height flex-col middle center relative preloader-wrapper pb-5">
-                  <Preloader color="green" size="big" adds="visible"/>
-                </div>
-              ) : (
-                <Fragment>
-                  <div className="modal-content">
-                    <h5 className="mt-0 mb-2">ORDER TRACKER <small>({order.ref_code})</small></h5>
-                    <div className="row center">
-                      {order.is_claimed ? (
-                        <Fragment>
-                          <div className="col s12">
-                            <i className="material-icons green-text text-lighten-2">more_vert</i>
-                          </div>
-                          <div className="col s12 mb-1 flex-col center">
-                            <h6 className="valign-wrapper green-text text-lighten-2"><i className="material-icons mr-1">search</i> RIDER FOUND</h6>
-                          </div>
-                        </Fragment>
-                      ) : (
-                        <Fragment>
-                          <div className="col s12">
-                            <i className="material-icons blue-text">more_vert</i>
-                          </div>
-                          <div className="col s12 mb-1 flex-col center">
-                            <h6 className="valign-wrapper blue-text"><i className="material-icons mr-1">search</i> Searching for a rider</h6>
-                          </div>
-                        </Fragment>
-                      )}
-                      {order.order_type === 'food' ? (
-                        order.is_claimed && order.is_pickedup ? (
-                          <Fragment>
-                            <div className="col s12">
-                              <i className="material-icons green-text text-lighten-2">more_vert</i>
-                            </div>
-                            <div className="col s12 mb-1 flex-col center">
-                              <h6 className="valign-wrapper green-text text-lighten-2"><i className="material-icons mr-1">room_service</i>ORDER HAS BEEN PICKED UP</h6>
-                            </div>
-                          </Fragment>
-                        ) : (
-                          order.is_claimed ? (
-                            <Fragment>
-                              <div className="col s12">
-                                <i className="material-icons blue-text">more_vert</i>
-                              </div>
-                              <div className="col s12 mb-1 flex-col center">
-                                <h6 className="valign-wrapper blue-text"><i className="material-icons mr-1">room_service</i>Your food is being prepared</h6>
-                              </div>
-                            </Fragment>
-                          ) : (
-                            <Fragment>
-                              <div className="col s12">
-                                <i className="material-icons">more_vert</i>
-                              </div>
-                              <div className="col s12 mb-1 flex-col center">
-                                <h6 className="valign-wrapper"><i className="material-icons mr-1">room_service</i>Your food is being prepared</h6>
-                              </div>
-                            </Fragment>
-                          )
-                        )
-                      ) : (
-                        order.is_claimed && order.is_pickedup ? (
-                          <Fragment>
-                            <div className="col s12">
-                              <i className="material-icons green-text text-lighten-2">more_vert</i>
-                            </div>
-                            <div className="col s12 mb-1 flex-col center">
-                              <h6 className="valign-wrapper green-text text-lighten-2"><i className="material-icons mr-1">two_wheeler</i>PICKED UP PARCEL</h6>
-                            </div>
-                          </Fragment>
-                        ) : (
-                          order.is_claimed ? (
-                            <Fragment>
-                              <div className="col s12">
-                                <i className="material-icons blue-text">more_vert</i>
-                              </div>
-                              <div className="col s12 mb-1 flex-col center">
-                                <h6 className="valign-wrapper blue-text"><i className="material-icons mr-1">two_wheeler</i> Rider is heading to pickup location</h6>
-                              </div>
-                            </Fragment>
-                          ) : (
-                            <Fragment>
-                              <div className="col s12">
-                                <i className="material-icons">more_vert</i>
-                              </div>
-                              <div className="col s12 mb-1 flex-col center">
-                                <h6 className="valign-wrapper"><i className="material-icons mr-1">two_wheeler</i> Rider is heading to pickup location</h6>
-                              </div>
-                            </Fragment>
-                          )
-                        )
-                      )}
-                      {order.is_pickedup ? (
-                        <Fragment>
-                          <div className="col s12">
-                            <i className="material-icons blue-text">more_vert</i>
-                          </div>
-                          <div className="col s12 mb-1 flex-col center">
-                            <h6 className="valign-wrapper blue-text"><i className="material-icons mr-1">local_shipping</i>Your order is being delivered</h6>
-                          </div>
-                        </Fragment>
-                      ) : (
-                        <Fragment>
-                          <div className="col s12">
-                            <i className="material-icons">more_vert</i>
-                          </div>
-                          <div className="col s12 mb-1 flex-col center">
-                            <h6 className="valign-wrapper"><i className="material-icons mr-1">local_shipping</i>Your order is being delivered</h6>
-                          </div>
-                        </Fragment>
-                      )}
-                    </div>
-                  </div>
-                </Fragment>
-              )}
-              <div className="modal-footer">
-                <a className="modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
-              </div>
-            </div>
           </div>
         </section>
       </Fragment>

@@ -7,10 +7,11 @@ import moment from 'moment'
 
 import Preloader from '../common/Preloader'
 import Pagination from '../common/Pagination'
+import ManagerBreadcrumbs from './ManagerBreadcrumbs'
 
-import { pickupOrderItem, pickupOrder, getOrders, getOrder } from '../../actions/manager'
+import { prepareOrderItem, prepareOrder, getOrders, getOrder } from '../../actions/manager'
 
-const Claimed = ({
+const Processed = ({
   manager: {
     ordersLoading,
     orders,
@@ -19,7 +20,8 @@ const Claimed = ({
   },
   getOrders,
   getOrder,
-  pickupOrderItem, pickupOrder
+  prepareOrderItem, prepareOrder,
+  setCurLocation
 }) => {
   const history = useHistory()
   const query = new URLSearchParams(history.location.search);
@@ -36,7 +38,7 @@ const Claimed = ({
   const onSubmit = async () => {
     const checkedBoxes = $('.check:checked:not([disabled])')
     await checkedBoxes.each(async (index, checkedBox) => {
-      pickupOrderItem({
+      prepareOrderItem({
         id: checkedBox.value
       })
     })
@@ -147,6 +149,10 @@ const Claimed = ({
   }
   
   useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
+  
+  useEffect(() => {
     if (!ordersLoading) {
       $('.loader').fadeOut();
       $('.middle-content').fadeIn();
@@ -171,8 +177,8 @@ const Claimed = ({
       } else {
         getOrders({
           page: page,
-          claimed: true,
-          pickedup: false,
+          processed: true,
+          prepared: false,
           delivered: false,
           keywords: keywords
         })
@@ -181,8 +187,8 @@ const Claimed = ({
       setPage(1)
       getOrders({
         page: 1,
-        claimed: true,
-        pickedup: false,
+        processed: true,
+        prepared: false,
         delivered: false,
         keywords: keywords
       })
@@ -219,6 +225,7 @@ const Claimed = ({
             </div>
           </nav>
         </div>
+        <ManagerBreadcrumbs/>
         <section className="section section-undelivered admin">
           <div className="container widen">
             <div className="row mt-3">
@@ -226,7 +233,7 @@ const Claimed = ({
                 <a href="#" data-target="mobile-nav" className="sidenav-trigger grey-text text-darken-1 show-on-small-and-up mr-4 ml-2 pt-1">
                   <i className="material-icons">menu</i>
                 </a>
-                <h4 className="m-0 flex-row middle flow"><i className="material-icons fs-38 mr-2">pending_actions</i>Claimed Orders</h4>
+                <h4 className="m-0 flex-row middle flow"><i className="material-icons fs-38 mr-2">pending_actions</i>Processed Orders</h4>
               </div>
             </div>
             <div className="row table-row">
@@ -253,19 +260,25 @@ const Claimed = ({
                         </tr>
                       </thead>
                       <tbody>
-                        {orders.results.map(order => (
-                          <tr key={order.id}>
-                            <td className="mw-medium">{moment(order.date_ordered).format('lll')}</td>
-                            <td><a href="" data-target="ordermodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-2" onClick={() => getOrder({ id:order.id })}>{order.ref_code}</a></td>
-                            <td className={`fw-6 ${order.payment_type === 1 ? 'orange-text' : 'green-text'}`}>{order.payment_type === 1 ? 'COD' : 'Card'}</td>
-                            <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 green-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('pickup')}}>{order.loc1_address}</a></td>
-                            <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('delivery')}}>{order.loc2_address}</a></td>
-                            <td className="mw-medium">{order.count} items</td>
-                            <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
-                            <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
-                            <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                        {orders.results.length > 0 ? (
+                          orders.results.map(order => (
+                            <tr key={order.id}>
+                              <td className="mw-medium">{moment(order.date_ordered).format('lll')}</td>
+                              <td><a href="" data-target="ordermodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-2" onClick={() => getOrder({ id:order.id })}>{order.ref_code}</a></td>
+                              <td className={`fw-6 ${order.payment_type === 1 ? 'orange-text' : 'green-text'}`}>{order.payment_type === 1 ? 'COD' : 'Card'}</td>
+                              <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 green-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('pickup')}}>{order.loc1_address}</a></td>
+                              <td className="mw-large"><a href="" data-target="addressmodal" className="mw-small modal-trigger fw-6 blue-text text-lighten-1" onClick={() => {getOrder({ id:order.id }), setAddressFocus('delivery')}}>{order.loc2_address}</a></td>
+                              <td className="mw-medium">{order.count} items</td>
+                              <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
+                              <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
+                              <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="12" className="grey-text center fs-20 pt-5 pb-5 full-height uppercase">No more orders</td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -293,7 +306,7 @@ const Claimed = ({
                         <li key={orderItem.id} className="collection-item flex-row middle">
                           <div className="mw-small manager-checklist flex-col middle center pr-2">
                             <div className="checklist-item flex-col middle center">
-                              <input id={`${order.ref_code}-${orderItem.id}`} type="checkbox" className="check" name={`${order.ref_code}-${orderItem.id}`} value={orderItem.id} defaultChecked={orderItem.is_pickedup === true ? true : false} disabled={orderItem.is_pickedup === true ? true : false}/>
+                              <input id={`${order.ref_code}-${orderItem.id}`} type="checkbox" className="check" name={`${order.ref_code}-${orderItem.id}`} value={orderItem.id} defaultChecked={orderItem.is_prepared === true ? true : false} disabled={orderItem.is_prepared === true ? true : false}/>
                               <label className="btn-check text-center" htmlFor={`${order.ref_code}-${orderItem.id}`}><i className="fas fa-check"></i></label>
                             </div>
                           </div>
@@ -329,15 +342,15 @@ const Claimed = ({
   )
 }
 
-Claimed.propTypes = {
+Processed.propTypes = {
   getOrders: PropTypes.func.isRequired,
   getOrder: PropTypes.func.isRequired,
-  pickupOrderItem: PropTypes.func.isRequired,
-  pickupOrder: PropTypes.func.isRequired,
+  prepareOrderItem: PropTypes.func.isRequired,
+  prepareOrder: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   manager: state.manager,
 });
 
-export default connect(mapStateToProps, { getOrders, getOrder, pickupOrderItem, pickupOrder })(Claimed);
+export default connect(mapStateToProps, { getOrders, getOrder, prepareOrderItem, prepareOrder })(Processed);

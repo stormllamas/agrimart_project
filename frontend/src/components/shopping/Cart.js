@@ -26,7 +26,8 @@ const Cart = ({
   getAddress,
   deleteOrderItem,
   changeQuantity,
-  checkout
+  checkout,
+  setCurLocation
 }) => {
   const history = useHistory()
 
@@ -119,6 +120,10 @@ const Cart = ({
       })
     }
   }
+  
+  useEffect(() => {
+    setCurLocation(history.location)
+  }, [history]);
 
   useEffect(() => {
     getCurrentOrder({})

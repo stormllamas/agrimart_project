@@ -5,15 +5,14 @@ from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListMode
 from rest_framework.response import Response
 
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from agrimart.permissions import SiteEnabled, HasGroupPermission, IsOrderItemRider, IsOrderRider
-
+from agrimart.permissions import SiteEnabled, HasGroupPermission
 # Serializers
 from .serializers import OrderItemSerializer as AdminOrderItemSerializer
 from .serializers import OrderSerializer as AdminOrderSerializer
 from logistics.serializers import OrderSerializer
 
 # Models
-from logistics.models import Order, OrderItem, Seller
+from logistics.models import Order, OrderItem, Seller, Product, ProductVariant
 from django.conf import settings
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -27,11 +26,11 @@ from datetime import timedelta
 import datetime
 
 # Exceptions
-from django.core.exceptions import FieldError
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
     
 
 class DashboardAPI(GenericAPIView):
-  permission_classes = [IsAuthenticated, IsAdminUser]
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
 
   def get(self, request):
     from_date = self.request.query_params.get('from_date', None).split('-')
@@ -45,10 +44,10 @@ class DashboardAPI(GenericAPIView):
     orders = [{
       'id': order.id,
       'ref_code': order.ref_code,
-      'shipping': order.shipping,
-      'total': order.total,
+      'shipping': order.ordered_shipping,
+      'total': order.ordered_total,
       'date_paid': order.date_paid,
-    } for order in Order.objects.filter(is_paid=True, date_paid__gte=timezone.make_aware(datetime.datetime(int(from_date[0]), int(from_date[1]), int(from_date[2]))), date_paid__lte=timezone.make_aware(datetime.datetime(int(to_date[0]), int(to_date[1]), int(to_date[2])))).order_by('date_paid')]
+    } for order in Order.objects.filter(is_paid=True, date_paid__gte=timezone.make_aware(datetime.datetime(int(from_date[0]), int(from_date[1]), int(from_date[2]))), date_paid__lte=timezone.make_aware(datetime.datetime(int(to_date[0]), int(to_date[1]), int(to_date[2])))).order_by('date_paid')[:7]]
 
     return Response({
       'shipping_total': shipping_total,
@@ -59,52 +58,98 @@ class DashboardAPI(GenericAPIView):
       'orders_count': len(orders),
     })
 
-class OrdersAPI(GenericAPIView):
-  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser, HasGroupPermission]
+class SellerDashboardDataAPI(RetrieveAPIView):
+  permission_classes = [IsAuthenticated, SiteEnabled, HasGroupPermission]
   required_groups = {
-    'GET': ['rider'],
-    'POST': ['rider'],
-    'PUT': ['rider'],
+    'GET': ['seller'],
+    'POST': ['seller'],
+    'PUT': ['seller'],
   }
+
+  def get(self, request, pk=None):
+    try:
+      user_seller = request.user.seller
+    except:
+      raise PermissionDenied
+
+    from_date = self.request.query_params.get('from_date', None).split('-')
+    to_date = self.request.query_params.get('to_date', None).split('-')
+    
+    sales_total = sum([order_item.ordered_price*order_item.quantity for order_item in OrderItem.objects.filter(product_variant__product__seller=request.user.seller, order__is_paid=True, order__date_paid__gte=timezone.make_aware(datetime.datetime(int(from_date[0]), int(from_date[1]), int(from_date[2]))), order__date_paid__lte=timezone.make_aware(datetime.datetime(int(to_date[0]), int(to_date[1]), int(to_date[2]))))])
+    sold = sum([order_item.ordered_price*order_item.quantity for order_item in OrderItem.objects.filter(product_variant__product__seller=request.user.seller, order__is_paid=True, order__date_paid__gte=timezone.make_aware(datetime.datetime(int(from_date[0]), int(from_date[1]), int(from_date[2]))), order__date_paid__lte=timezone.make_aware(datetime.datetime(int(to_date[0]), int(to_date[1]), int(to_date[2]))))])
+
+    orders = [{
+      'id': order_item.id,
+      'ref_code': order_item.order.ref_code,
+      'ordered_price': order_item.ordered_price,
+      'quantity': order_item.quantity,
+      'date_paid': order_item.order.date_paid,
+    } for order_item in sorted(OrderItem.objects.filter(product_variant__product__seller=request.user.seller, order__is_paid=True, order__date_paid__gte=timezone.make_aware(datetime.datetime(int(from_date[0]), int(from_date[1]), int(from_date[2]))), order__date_paid__lte=timezone.make_aware(datetime.datetime(int(to_date[0]), int(to_date[1]), int(to_date[2])))), key=lambda a: (a.order.date_paid), reverse=True)]
+
+    recent_orders = [{
+      'id': order_item.id,
+      'ref_code': order_item.order.ref_code,
+      'name': f'{order_item.product_variant.product.name} - {order_item.product_variant.name}',
+      'thumbnail': order_item.product_variant.thumbnail.url,
+      'ordered_price': order_item.ordered_price,
+      'quantity': order_item.quantity,
+    } for order_item in sorted(OrderItem.objects.filter(product_variant__product__seller=request.user.seller, order__is_paid=True), key=lambda a: (a.order.date_paid), reverse=True)]
+
+    products = [{
+      'id': variant.id,
+      'name': f'{variant.product.name} - {variant.name}',
+      'thumbnail': variant.thumbnail.url,
+      'final_price': variant.final_price,
+      'percent_off': variant.percent_off,
+      'stock': variant.stock,
+      'orders': variant.orders,
+    } for variant in ProductVariant.objects.filter(product__seller=request.user.seller)]
+
+    return Response({
+      'seller' : {
+        'name': user_seller.name
+      },
+      'sales_total': sales_total,
+      'sold': sold,
+      'orders_count': len(orders),
+
+      'products': products,
+      'orders': orders,
+      'recent_orders': recent_orders,
+    })
+
+class OrdersAPI(GenericAPIView):
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
 
   def get(self, request):
     delivered_query = Q()
     delivered = self.request.query_params.get('delivered', None)
     if delivered == 'true':
-      if request.user.is_superuser:
-        delivered_query.add(Q(is_delivered=True), Q.AND)
-      else:
-        delivered_query.add(Q(is_delivered=True, rider=request.user), Q.AND)
-
+      delivered_query.add(Q(is_delivered=True), Q.AND)
     elif delivered == 'false':
       delivered_query.add(Q(is_delivered=False), Q.AND)
 
-    claimed_query = Q()
-    claimed = self.request.query_params.get('claimed', None)
-    if claimed == 'true':
-      if request.user.is_superuser:
-        claimed_query.add(Q(rider__isnull=False), Q.AND)
-      else:
-        claimed_query.add(Q(rider__isnull=False, rider=request.user), Q.AND)
-    elif claimed == 'false':
-      claimed_query.add(Q(rider__isnull=True), Q.AND)
+    processed_query = Q()
+    processed = self.request.query_params.get('processed', None)
+    if processed == 'true':
+      processed_query.add(Q(is_processed=True), Q.AND)
+    elif processed == 'false':
+      processed_query.add(Q(is_processed=False), Q.AND)
 
-    pickedup_query = Q()
-    pickedup = self.request.query_params.get('pickedup', None)
-    if pickedup == 'true':
-      if request.user.is_superuser:
-        pickedup_query.add(Q(is_pickedup=True), Q.AND)
-      else:
-        pickedup_query.add(Q(is_pickedup=True, rider=request.user), Q.AND)
-    elif pickedup == 'false':
-      pickedup_query.add(Q(is_pickedup=False), Q.AND)
+    prepared_query = Q()
+    prepared = self.request.query_params.get('prepared', None)
+    if prepared == 'true':
+      prepared_query.add(Q(is_prepared=True), Q.AND)
+    elif prepared == 'false':
+      prepared_query.add(Q(is_prepared=False), Q.AND)
 
     keywords_query = Q()
     keywords = self.request.query_params.get('keywords', None)
     if keywords:
       keywords_query.add(Q(ref_code__icontains=keywords), Q.AND)
     
-    results_full_length = Order.objects.filter(Q(is_ordered=True) & delivered_query & claimed_query & pickedup_query & keywords_query).count()
+    queryset = Order.objects.filter(Q(is_ordered=True) & delivered_query & processed_query & prepared_query & keywords_query)
+    results_full_length = queryset.count()
 
     range_query = self.request.query_params.get('range', None)
     if range_query == None:
@@ -139,12 +184,11 @@ class OrdersAPI(GenericAPIView):
       'loc2_address': order.loc2_address,
       'payment_type': order.payment_type,
       'shipping': order.shipping,
-      'total': order.total,
-      'count': order.count,
-      'ordered_count': order.ordered_count,
-      'subtotal': sum([item.quantity*item.ordered_price if item.ordered_price else 0 for item in order.order_items.all()]),
+      'total': order.ordered_total,
+      'count': order.ordered_count,
+      'subtotal': order.ordered_subtotal,
       'date_ordered': order.date_ordered,
-    } for order in Order.objects.filter(Q(is_ordered=True) & delivered_query & claimed_query & pickedup_query & keywords_query).order_by('-date_delivered','-date_claimed','-date_ordered')[from_item:to_item]]
+    } for order in queryset.order_by('-date_delivered','-date_processed','-date_ordered')[from_item:to_item]]
 
     return Response({
       'count': len(orders),
@@ -166,8 +210,8 @@ class OrderAPI(RetrieveAPIView):
     order_items = [{
       'id': order_item.id,
       'quantity': order_item.quantity,
+      'is_prepared': order_item.is_prepared,
       'is_delivered': order_item.is_delivered,
-      'is_pickedup': order_item.is_pickedup,
       'ordered_price': order_item.ordered_price if order_item.ordered_price else 0,
       'product': {
         'id': order_item.product_variant.product.id,
@@ -279,53 +323,100 @@ class OrderItemsAPI(GenericAPIView):
       'results': order_items,
     })
 
-class ClaimOrderAPI(UpdateAPIView):
+class ProcessOrderAPI(UpdateAPIView):
   serializer_class = OrderSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser, HasGroupPermission]
-  required_groups = {
-    'GET': ['rider'],
-    'POST': ['rider'],
-    'PUT': ['rider'],
-  }
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
 
   def get_object(self):
     return get_object_or_404(Order, id=self.kwargs['order_id'])
 
   def update(self, request, order_id=None):
     order = self.get_object()
-    if order.rider:
+    if order.is_processed:
       return Response({
         'status': 'error',
-        'msg': 'Order already claimed'
+        'msg': 'Order already processed'
       })
 
     else:
-      order.rider = self.request.user
-      order.date_claimed = timezone.now()
+      order.is_processed = True
+      order.date_processed = timezone.now()
       order.save()
 
       return Response(OrderSerializer(order, context=self.get_serializer_context()).data)
 
-class DeliverOrderItemAPI(UpdateAPIView):
+class PrepareOrderItemAPI(UpdateAPIView):
   serializer_class = AdminOrderItemSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser, HasGroupPermission, IsOrderItemRider]
-  required_groups = {
-    'GET': ['rider'],
-    'POST': ['rider'],
-    'PUT': ['rider'],
-  }
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
 
   def check_object_permissions(self, request, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        if obj.order.rider == request.user and obj.order.is_ordered == True and obj.order.is_pickedup:
-          return True
-        else:
-          raise PermissionDenied
+    if obj.order.is_ordered == True:
+      return True
     else:
-      return False
+      raise PermissionDenied
+
+  def get_object(self):
+    self.check_object_permissions(self.request, get_object_or_404(OrderItem, id=self.kwargs['pk']))
+    return get_object_or_404(OrderItem, id=self.kwargs['pk'])
+
+  def update(self, request, pk=None):
+    order_item = self.get_object()
+    if order_item.is_prepared:
+      return Response({
+        'status': 'error',
+        'msg': 'Item already prepared',
+      })
+
+    else:
+      order_item.is_prepared = True
+      order_item.date_prepared = timezone.now()
+      order_item.save()
+
+      if order_item.order.order_items.filter(is_prepared=False).count() == 0:
+        order_item.order.is_prepared = True
+        order_item.order.date_prepared = timezone.now()
+        order_item.order.save()
+
+      return Response(AdminOrderItemSerializer(order_item, context=self.get_serializer_context()).data)
+
+class PrepareOrderAPI(UpdateAPIView):
+  serializer_class = AdminOrderSerializer
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
+
+  def check_object_permissions(self, request, obj):
+    if obj.is_ordered == True:
+      return True
+    else:
+      raise PermissionDenied
+
+  def get_object(self):
+    self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['pk']))
+    return get_object_or_404(Order, id=self.kwargs['pk'])
+
+  def update(self, request, pk=None):
+    order = self.get_object()
+    if order.is_prepared:
+      return Response({
+        'status': 'error',
+        'msg': 'Order already prepared',
+      })
+
+    else:
+      order.is_prepared = True
+      order.date_prepared = timezone.now()
+      order.save()
+
+      return Response(AdminOrderSerializer(order, context=self.get_serializer_context()).data)
+
+class DeliverOrderItemAPI(UpdateAPIView):
+  serializer_class = AdminOrderItemSerializer
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
+
+  def check_object_permissions(self, request, obj):
+    if obj.order.is_ordered == True and obj.order.is_prepared:
+      return True
+    else:
+      raise PermissionDenied
 
   def get_object(self):
     self.check_object_permissions(self.request, get_object_or_404(OrderItem, id=self.kwargs['pk']))
@@ -339,10 +430,10 @@ class DeliverOrderItemAPI(UpdateAPIView):
         'msg': 'Item already delivered',
       })
 
-    elif order_item.is_pickedup == False:
+    elif order_item.is_prepared == False:
       return Response({
         'status': 'error',
-        'msg': 'Item not yet picked up',
+        'msg': 'Item not yet prepared',
       })
 
     else:
@@ -361,24 +452,13 @@ class DeliverOrderItemAPI(UpdateAPIView):
 
 class DeliverOrderAPI(UpdateAPIView):
   serializer_class = AdminOrderSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser, HasGroupPermission, IsOrderRider]
-  required_groups = {
-    'GET': ['rider'],
-    'POST': ['rider'],
-    'PUT': ['rider'],
-  }
+  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
 
   def check_object_permissions(self, request, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        if obj.rider == request.user and obj.is_ordered == True and obj.is_pickedup:
-          return True
-        else:
-          raise PermissionDenied
+    if obj.is_ordered == True and obj.is_pickedup:
+      return True
     else:
-      return False
+      raise PermissionDenied
 
   def get_object(self):
     self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['pk']))
@@ -397,91 +477,6 @@ class DeliverOrderAPI(UpdateAPIView):
       order.date_delivered = timezone.now()
       order.is_paid = True
       order.date_paid = timezone.now()
-      order.save()
-
-      return Response(AdminOrderSerializer(order, context=self.get_serializer_context()).data)
-
-class PickupOrderItemAPI(UpdateAPIView):
-  serializer_class = AdminOrderItemSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser, HasGroupPermission, IsOrderItemRider]
-  required_groups = {
-    'GET': ['rider'],
-    'POST': ['rider'],
-    'PUT': ['rider'],
-  }
-
-  def check_object_permissions(self, request, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        if obj.order.rider == request.user and obj.order.is_ordered == True:
-          return True
-        else:
-          raise PermissionDenied
-    else:
-      return False
-
-  def get_object(self):
-    self.check_object_permissions(self.request, get_object_or_404(OrderItem, id=self.kwargs['pk']))
-    return get_object_or_404(OrderItem, id=self.kwargs['pk'])
-
-  def update(self, request, pk=None):
-    order_item = self.get_object()
-    if order_item.is_pickedup:
-      return Response({
-        'status': 'error',
-        'msg': 'Item already picked up',
-      })
-
-    else:
-      order_item.is_pickedup = True
-      order_item.date_pickedup = timezone.now()
-      order_item.save()
-
-      if order_item.order.order_items.filter(is_pickedup=False).count() == 0:
-        order_item.order.is_pickedup = True
-        order_item.order.date_pickedup = timezone.now()
-        order_item.order.save()
-
-      return Response(AdminOrderItemSerializer(order_item, context=self.get_serializer_context()).data)
-
-class PickupOrderAPI(UpdateAPIView):
-  serializer_class = AdminOrderSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser, HasGroupPermission, IsOrderRider]
-  required_groups = {
-    'GET': ['rider'],
-    'POST': ['rider'],
-    'PUT': ['rider'],
-  }
-
-  def check_object_permissions(self, request, obj):
-    if request.user:
-      if request.user.is_superuser:
-        return True
-      else:
-        if obj.rider == request.user and obj.is_ordered == True:
-          return True
-        else:
-          raise PermissionDenied
-    else:
-      return False
-
-  def get_object(self):
-    self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['pk']))
-    return get_object_or_404(Order, id=self.kwargs['pk'])
-
-  def update(self, request, pk=None):
-    order = self.get_object()
-    if order.pickedup:
-      return Response({
-        'status': 'error',
-        'msg': 'Order already delivered',
-      })
-
-    else:
-      order.pickedup = True
-      order.date_delivered = timezone.now()
       order.save()
 
       return Response(AdminOrderSerializer(order, context=self.get_serializer_context()).data)

@@ -13,13 +13,13 @@ import {
   GET_MANAGER_ORDER,
   MANAGER_ORDER_ERROR,
 
-  CLAIM_ORDER,
+  PROCESS_ORDER,
 
   DELIVER_ORDER_ITEM,
   DELIVER_ORDER,
 
-  PICKUP_ORDER_ITEM,
-  PICKUP_ORDER,
+  PREPARE_ORDER_ITEM,
+  PREPARE_ORDER,
 } from '../actions/types'
 
 const initialState = {
@@ -101,9 +101,9 @@ export default (state = initialState, action) => {
         order: null
       }
 
-    case CLAIM_ORDER:
+    case PROCESS_ORDER:
     case DELIVER_ORDER:
-    case PICKUP_ORDER:
+    case PREPARE_ORDER:
       return {
         ...state,
         orders: {
@@ -127,7 +127,7 @@ export default (state = initialState, action) => {
         }
       }
 
-    case PICKUP_ORDER_ITEM:
+    case PREPARE_ORDER_ITEM:
       const newPickedupItems = state.order.order_items.map(orderItem => {
         if (orderItem.id === action.payload.id) {
           orderItem.is_delivered = true

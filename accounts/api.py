@@ -2,8 +2,11 @@
 from rest_framework import viewsets
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin, CreateModelMixin
 from rest_framework.generics import GenericAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ChangePasswordSerializer, ResetPasswordSerializer, SocialAuthSerializer, AddressSerializer
+
+# Permissions
+from rest_framework.permissions import IsAuthenticated
+from agrimart.permissions import SiteEnabled
 
 # Exceptions
 from django.core.exceptions import ValidationError
@@ -12,11 +15,11 @@ from django.core.validators import validate_email
 #Auth
 from rest_framework.response import Response
 from knox.models import AuthToken
-from agrimart.permissions import IsOwner
 
 # Models
 from django.conf import settings
 from .models import Address
+from logistics.models import Order
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -44,10 +47,11 @@ def get_user_data(user) :
   } for address in user.addresses.all()]
 
   groups = [group.name for group in user.groups.all()]
+
+  menu_notification = False
+
   if user.is_staff:
-    groups.append('admin')
-  if user.is_superuser:
-    groups.append('superuser')
+    menu_notification = Order.objects.filter(is_ordered=True, is_delivered=False).count() >= 1
 
   return {
     'id': user.id,
@@ -66,6 +70,8 @@ def get_user_data(user) :
 
     'is_staff': user.is_staff,
     'is_superuser': user.is_superuser,
+
+    'menu_notification': menu_notification,
   }
 
 
@@ -85,7 +91,7 @@ class LoginAPI(GenericAPIView):
     })
 
     request.session['auth_token'] = token
-    request.session.set_expiry(60*60)
+    request.session.set_expiry(60*60*24*30)
 
     return response
 
@@ -118,7 +124,7 @@ class SocialAuthAPI(GenericAPIView):
           })
 
           request.session['auth_token'] = token
-          request.session.set_expiry(60*60)
+          request.session.set_expiry(60*60*24*30)
 
           return response
 
@@ -154,7 +160,7 @@ class SocialAuthAPI(GenericAPIView):
         })
 
         request.session['auth_token'] = token
-        request.session.set_expiry(60*60)
+        request.session.set_expiry(60*60*24*30)
 
         return response
     else:
@@ -233,7 +239,7 @@ class ActivateAPI(GenericAPIView):
       })
 
       request.session['auth_token'] = token
-      request.session.set_expiry(60*60)
+      request.session.set_expiry(60*60*24*30)
       # response.set_cookie('token', value=token, max_age=60*60, httponly=True, samesite='strict')
 
       return response
