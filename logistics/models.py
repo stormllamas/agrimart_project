@@ -55,7 +55,7 @@ class Category(models.Model):
     return len(Seller.objects.filter(categories=self.id))
 
 class Seller(models.Model):
-  user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='seller', on_delete=models.CASCADE, null=True)
+  user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='seller', on_delete=models.SET_NULL, null=True, blank=True)
   name = models.CharField(max_length=50, unique=True)
   contact = models.CharField(max_length=50)
   description = models.TextField(max_length=4000, default='')
