@@ -20,7 +20,7 @@ from knox.models import AuthToken
 from django.conf import settings
 from .models import Address
 from logistics.models import Order
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 User = get_user_model()
 
 # For Email
@@ -32,10 +32,14 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
 # Tools
+from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 import datetime
 import re
+
+def makeID(length):
+  return get_random_string(length=length, allowed_chars='01234567889')
 
 def get_user_data(user) :
   addresses = [{
@@ -79,21 +83,31 @@ class LoginAPI(GenericAPIView):
   serializer_class = LoginSerializer
 
   def post(self, request, *args, **kwargs):
-    serializer = self.get_serializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = serializer.validated_data
+    try:
+      user_exists = User.objects.get(email=request.data.get('email'), is_active=True)
+    except:
+      return Response({
+        'status': 'error',
+        'msg': 'Email does not exist, Please Sign Up first'
+      })
 
-    _, token = AuthToken.objects.create(user)
+    user = authenticate(**request.data)
+    if user:
+      _, token = AuthToken.objects.create(user)
 
-    response = Response({
-      'user': get_user_data(user),
-      'token': token
-    })
+      request.session['auth_token'] = token
+      request.session.set_expiry(60*60*24*29)
 
-    request.session['auth_token'] = token
-    request.session.set_expiry(60*60*24*30)
-
-    return response
+      return Response({
+        'status': 'ok',
+        'user': get_user_data(user),
+        'token': token
+      })
+    else:
+      return Response({
+        'status': 'error',
+        'msg': 'The usename or password you have entered is incorrect'
+      })
 
 class SocialAuthAPI(GenericAPIView):
   serializer_class = SocialAuthSerializer
@@ -172,15 +186,54 @@ class SingupAPI(GenericAPIView):
   serializer_class = RegisterSerializer
 
   def post(self, request, *args, **kwargs):
-    serializer = self.get_serializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = serializer.save()
+    try:
+      try:
+        user_exists = User.objects.get(email=request.data.get('email'), is_active=True)
+      except:
+        user_exists = None
+      
+      if not user_exists:
+        fn = request.data.get('first_name').split()
+        ln = request.data.get('last_name').split()
+        name = ((fn[0]+ln[0]).lower())+makeID(4)
 
-    user.is_active = False
-    user.save()
+        try:
+          user = User.objects.get(email=request.data.get('email'))
+        except:
+          user = None
+
+        if user:
+          user.username = name
+          user.first_name = request.data.get('first_name')
+          user.last_name = request.data.get('last_name')
+          user.set_password(request.data.get('password'))
+          user.save()
+        
+        else:
+          user = User.objects.create_user(
+            username=name,
+            email=request.data.get('email'),
+            password=request.data.get('password'),
+            first_name=request.data.get('first_name'),
+            last_name=request.data.get('last_name'),
+          )
+          user.is_active=False
+          user.save()
+
+      else:
+        return Response({
+          'status': 'error',
+          'msg': 'Email has already been used'
+        })
+
+    except:
+      return Response({
+        'status': 'error',
+        'msg': 'Something went wrong. Please try again'
+      })
     
     current_site = get_current_site(self.request)
-    mail_subject = 'Activate your OPA account'
+    mail_subject = 'Activate your Agrimart account'
     message = render_to_string(
       'acc_active_email.html',
       {
@@ -201,6 +254,66 @@ class SingupAPI(GenericAPIView):
     )
 
     return Response({'status': 'okay'})
+
+class ResendActivationAPI(GenericAPIView):
+
+  def post(self, request, *args, **kwargs):
+    try:
+      try:
+        user_exists = User.objects.get(email=request.data.get('email'), is_active=True)
+      except:
+        user_exists = None
+      
+      if not user_exists:
+        try:
+          user = User.objects.get(email=request.data.get('email'), is_active=False)
+        except:
+          user = None
+        
+        if user:
+          current_site = get_current_site(self.request)
+          mail_subject = 'Activate your Agrimart account'
+          message = render_to_string(
+            'acc_active_email.html',
+            {
+              'user': user,
+              'domain': current_site.domain,
+              'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+              'token':account_activation_token.make_token(user),
+            }
+          )
+          
+          email = user.email
+          send_mail(
+            mail_subject,
+            message,
+            'Quezon Agrimart',
+            [email],
+            fail_silently=False
+          )
+
+          return Response({
+            'status': 'okay',
+            'msg': 'Activation email resent!'
+          })
+        
+        else:
+          return Response({
+            'status': 'error',
+            'msg': 'Email does not exist. Please signup first'
+          })
+
+      else:
+        return Response({
+          'status': 'error',
+          'msg': 'Email already activated'
+        })
+
+    except:
+      return Response({
+        'status': 'error',
+        'msg': 'Something went wrong. Please try again'
+      })
 
 class ActivateAPI(GenericAPIView):
 

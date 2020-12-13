@@ -28,14 +28,17 @@
 }
 
 .sidenav {
-  li.active {
-    background-color: $green !important;
-    color: #fff !important;
-
-    &>a {
+  
+  &.main-sidenav {
+    li.active {
+      background-color: $green !important;
       color: #fff !important;
-      i {
-        color: #fff;
+  
+      &>a {
+        color: #fff !important;
+        i {
+          color: #fff;
+        }
       }
     }
   }

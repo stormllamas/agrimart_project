@@ -21,6 +21,9 @@ const Signup = ({
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
 
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+
   const makeID = (length) => {
     let result = '';
     let characters = '0123456789';
@@ -108,12 +111,14 @@ const Signup = ({
                     <span className="helper-text" data-error="Please enter a valid email"></span>
                   </div>
                   <div className="input-field">
-                    <input type="password" id="password1" onChange={e => setPassword1(e.target.value)} className="validate" required/>
+                    <span className="visibility"><i className="material-icons waves-effect" onClick={() => setShowPassword1(!showPassword1)}>visibility</i></span>
+                    <input type={showPassword1 ? 'text' : 'password'} id="password1" onChange={e => setPassword1(e.target.value)} className="validate" required/>
                     <label htmlFor="password1">Password</label>
                     <span className="helper-text" data-error="Please enter a valid email">Your password must contain at least 8 characters</span>
                   </div>
                   <div className="input-field">
-                    <input type="password" id="password2" onChange={e => setPassword2(e.target.value)} className="validate" required/>
+                    <span className="visibility-2"><i className="material-icons waves-effect" onClick={() => setShowPassword2(!showPassword2)}>visibility</i></span>
+                    <input type={showPassword2 ? 'text' : 'password'} id="password2" onChange={e => setPassword2(e.target.value)} className="validate" required/>
                     <label htmlFor="password2">Re-enter Password</label>
                   </div>
                   <button type="submit" className="btn btn-large btn-extended green">Create account</button>

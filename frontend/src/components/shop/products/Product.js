@@ -94,7 +94,7 @@ const Products = ({
                     <div className="pt-2">
                       <h5>{product.name}</h5>
                       <p className="mt-1"><Link to={`/seller?brand=${product.seller.name_to_url}`} className="grey-text text-darken-1">by {product.seller.name}</Link></p>
-                      <div>
+                      <div className="mb-5">
                         {product.review_count > 0 ? [...Array(product.total_rating).keys()].map(star => <i key={star} className="fas fa-star amber-text fs-22 mr-1"></i>) : <span className="m-0 grey lighten-2 rad-2 p-2">No Rating</span>}
                         {product.review_count > 0 && [...Array(Math.max(5-product.total_rating, 0)).keys()].map(star => <i key={star} className="fas fa-star grey-text text-lighten-3 fs-24 mr-1"></i>)}
                       </div>
@@ -102,13 +102,20 @@ const Products = ({
                         product.variants.length > 0 && !currentOrderLoading && (
                           <form method="POST" className="mt-2">
                             {product.variants.map((variant, index) => (
-                              <p key={variant.id} className="flex-row separate">
-                                <label>
-                                  <input className="with-gap green-text" name="group1" type="radio" value={variant.id} onChange={e => setSelectedVariant(e.target.value)} required/>
-                                  <span className="grey-text text-darken-2">{variant.name}</span>
-                                </label>
-                                <span className="grey-text text-darken-2 right">₱ {variant.price}</span>
-                              </p>
+                              <Fragment key={variant.id}>
+                                <p className="flex-row separate">
+                                  <label>
+                                    <input className="with-gap green-text" name="group1" type="radio" value={variant.id} onChange={e => setSelectedVariant(e.target.value)} required/>
+                                    <span className="grey-text text-darken-2">{variant.name}</span>
+                                  </label>
+                                  {variant.sale_price_active ? (
+                                    <span className="grey-text text-darken-2 right no-white-space ml-2"><span className="grey-text">₱ { variant.price }</span><span className="grey-text">-{ variant.percent_off }%</span><span className="ml-1 fs-16">₱ {variant.final_price.toFixed(2)}</span></span>
+                                  ) : (
+                                    <span className="grey-text text-darken-2 right no-white-space ml-2">₱ {variant.final_price}</span>
+                                  )}
+                                </p>
+                                <div className="divider"></div>
+                              </Fragment>
                             ))}
                             <button className="btn btn-full btn-large light-green darken-2 mt-5" onClick={e => addToOrder(e)}>
                               Add To Order
@@ -129,7 +136,7 @@ const Products = ({
                 <div className="row">
                   <div className="col s12">
                     <h5>Description</h5>
-                    <p>{product.description}</p>
+                    <p className="linebreak">{product.description}</p>
                   </div>
                 </div>
                 {/* {similarProducts.length > 0 && (

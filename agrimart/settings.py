@@ -110,7 +110,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'accounts.User'
 
 # Customized authentication for email
-AUTHENTICATION_BACKENDS = ['accounts.backends.EmailOrUsernameModelBackend']
+# AUTHENTICATION_BACKENDS = ['accounts.backends.EmailOrUsernameModelBackend']
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

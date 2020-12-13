@@ -48,9 +48,9 @@ const Processed = ({
     const centerLatLng = new google.maps.LatLng(13.938080242321387, 121.61336104698454)
 
     const LUCENA_BOUNDS = {
-      north: 13.990870,
-      south: 13.889484,
-      west: 121.554958,
+      north: 14.056553,
+      south: 13.880757,
+      west: 121.511323,
       east: 121.709314,
     }
     // Map options
@@ -117,7 +117,7 @@ const Processed = ({
       position: pickupLatLng,
       map: currentMap,
       icon: {
-        url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+        url: '/static/frontend/img/google-marker-green.png'
       },
       draggable: false,
       animation: google.maps.Animation.DROP
@@ -126,7 +126,7 @@ const Processed = ({
     const newDeliveryMarker = new google.maps.Marker({
       position: deliveryLatLng,
       icon: {
-        url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        url: '/static/frontend/img/google-marker-blue.png'
       },
       map: currentMap,
       draggable: false,
@@ -298,7 +298,7 @@ const Processed = ({
                         <h5 className="mt-0 mb-2">Order Summary <small>({order.ref_code})</small></h5>
                       </div>
                       <div className="col s12 m6 l6 flex-row right-middle">
-                        <button className={`btn green right ${order.order_items.filter(orderItem => orderItem.is_delivered === false).length < 2 ? 'modal-close' : ''}`} onClick={() => onSubmit()}>Mark as Picked Up</button>
+                        <button className={`btn green right ${order.order_items.filter(orderItem => orderItem.is_delivered === false).length < 2 ? 'modal-close' : ''}`} onClick={() => onSubmit()}>Mark as Prepared</button>
                       </div>
                     </div>
                     <ul className="collection transparent no-shadow rad-3">

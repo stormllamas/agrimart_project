@@ -7,15 +7,15 @@ from django.db.models import Q
 
 
 class EmailOrUsernameModelBackend(ModelBackend):
-  def authenticate(self, request, username=None, password=None, email=None, facebook_id=None):
-    if username and password:
+  def authenticate(self, request, email=None, password=None, facebook_id=None):
+    if email and password:
       try:
-        user = User.objects.get(Q(email__exact=username))
+        user = User.objects.get(Q(email__exact=email))
 
         if user.check_password(password):
           return user
         else:
-          raise ValidationError("The usename or password you have entered is incorrect")
+          return None
       except ObjectDoesNotExist:
         return None
 
@@ -25,7 +25,7 @@ class EmailOrUsernameModelBackend(ModelBackend):
         if user.facebook_id == facebook_id:
           return user
         else:
-          raise ValidationError("Facebook not synced with this account")
+          return None
       except user.DoesNotExist:
         return None
     else:

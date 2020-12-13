@@ -152,7 +152,7 @@ class ProductsAPI(GenericAPIView):
         'final_price': product.cheapest_variant.final_price,
         'percent_off': product.cheapest_variant.percent_off,
         'total_rating': product.cheapest_variant.total_rating,
-        'sale_price_active': product.cheapest_variant.sale_price_active()
+        'sale_price_active': product.cheapest_variant.sale_price_active
       },
       'seller': {
         'id': product.seller.id,
@@ -180,7 +180,10 @@ class ProductAPI(GenericAPIView):
     variants = [{
       'id': variant.id,
       'name': variant.name,
-      'price': float(variant.price)
+      'price': float(variant.price),
+      'sale_price_active': variant.sale_price_active,
+      'final_price': variant.final_price,
+      'percent_off': variant.percent_off
     } for variant in product.variants.all()]
 
     return Response({

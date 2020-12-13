@@ -102,8 +102,8 @@ class SellerDashboardDataAPI(RetrieveAPIView):
       'final_price': variant.final_price,
       'percent_off': variant.percent_off,
       'stock': variant.stock,
-      'orders': variant.orders,
-    } for variant in ProductVariant.objects.filter(product__seller=request.user.seller)]
+      'orders': variant.total_orders,
+    } for variant in sorted(ProductVariant.objects.filter(product__seller=request.user.seller), key=lambda a: a.total_orders, reverse=True)]
 
     return Response({
       'seller' : {
@@ -372,13 +372,19 @@ class PrepareOrderItemAPI(UpdateAPIView):
       order_item.date_prepared = timezone.now()
       order_item.save()
 
+      order_prepared = False
+
       if order_item.order.order_items.filter(is_prepared=False).count() == 0:
         order_item.order.is_prepared = True
         order_item.order.date_prepared = timezone.now()
         order_item.order.save()
+        order_prepared = True
 
-      return Response(AdminOrderItemSerializer(order_item, context=self.get_serializer_context()).data)
-
+      return Response({
+        'status': 'ok',
+        'msg': 'Item picked up',
+        'order_prepared': order_prepared,
+      })
 class PrepareOrderAPI(UpdateAPIView):
   serializer_class = AdminOrderSerializer
   permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
@@ -441,15 +447,21 @@ class DeliverOrderItemAPI(UpdateAPIView):
       order_item.date_delivered = timezone.now()
       order_item.save()
 
+      order_delivered = False
+
       if order_item.order.order_items.filter(is_delivered=False).count() == 0:
         order_item.order.is_delivered = True
         order_item.order.date_delivered = timezone.now()
         order_item.order.is_paid = True
         order_item.order.date_paid = timezone.now()
         order_item.order.save()
+        order_delivered = True
 
-      return Response(AdminOrderItemSerializer(order_item, context=self.get_serializer_context()).data)
-
+      return Response({
+        'status': 'ok',
+        'msg': 'Item delivered',
+        'order_delivered': order_delivered,
+      })
 class DeliverOrderAPI(UpdateAPIView):
   serializer_class = AdminOrderSerializer
   permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]

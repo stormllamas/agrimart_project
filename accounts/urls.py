@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .api import UserAPI, SingupAPI, LoginAPI, LogoutAPI, ActivateAPI, ChangePasswordAPI, PasswordResetAPI, VerifyPasswordResetAPI, ResetPasswordAPI, TokenAPI, PayPalKeysAPI, SocialAuthAPI, FacebookKeysAPI, AddressAPI
+from .api import UserAPI, SingupAPI, ResendActivationAPI, LoginAPI, LogoutAPI, ActivateAPI, ChangePasswordAPI, PasswordResetAPI, VerifyPasswordResetAPI, ResetPasswordAPI, TokenAPI, PayPalKeysAPI, SocialAuthAPI, FacebookKeysAPI, AddressAPI
 from knox import views as knox_views
 
 router = routers.DefaultRouter()
@@ -14,6 +14,7 @@ urlpatterns = [
   path('api/auth/facebook_keys', FacebookKeysAPI.as_view(), name='facebook_keys'),
 
   path('api/auth/signup', SingupAPI.as_view(), name='signup'),
+  path('api/auth/resend_activation', ResendActivationAPI.as_view(), name='resend_activation'),
   path('api/auth/social_auth', SocialAuthAPI.as_view(), name='social_auth'),
 
   path('api/auth/activate', ActivateAPI.as_view(), name='activate'),

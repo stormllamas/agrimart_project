@@ -117,7 +117,7 @@ class Product(models.Model):
 
   @property
   def total_orders(self):
-    return sum([int(variant.orders) for variant in self.variants.all()])
+    return sum([int(variant.total_orders) for variant in self.variants.all()])
 
   @property
   def total_views(self):
@@ -136,13 +136,13 @@ class ProductVariant(models.Model):
   # Tracking
   stock = models.IntegerField(default=0)
   views = models.PositiveIntegerField(default=0)
-  orders = models.PositiveIntegerField(default=0)
   date_published = models.DateTimeField(default=timezone.now, blank=True)
   is_published = models.BooleanField(default=True)
 
   def __str__(self):
     return f'{self.name}'
 
+  @property
   def sale_price_active(self):
     if self.sale_price:
       if self.sale_price_start_date:
@@ -168,14 +168,14 @@ class ProductVariant(models.Model):
 
   @property
   def final_price(self):
-    if self.sale_price_active():
+    if self.sale_price_active:
       return self.sale_price
     else:
       return self.price
 
   @property
   def percent_off(self):
-    if self.sale_price_active():
+    if self.sale_price_active:
       return str(normal_round((1-self.sale_price/self.price)*100))
     else:
       return None
@@ -187,6 +187,10 @@ class ProductVariant(models.Model):
     except:
       rating = None
     return rating
+
+  @property
+  def total_orders(self):
+    return sum([order_item.quantity for order_item in OrderItem.objects.filter(product_variant=self, order__is_delivered=True)])
 
   @property
   def final_stock(self):

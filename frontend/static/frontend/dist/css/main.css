@@ -722,6 +722,15 @@
   margin: auto;
   margin-top: 20px; }
 
+.visibility {
+  position: absolute;
+  bottom: 35px;
+  right: 15px; }
+  .visibility-2 {
+    position: absolute;
+    bottom: 20px;
+    right: 15px; }
+
 .modal-close.cancel-fixed {
   position: absolute;
   top: 35%;
@@ -1645,12 +1654,12 @@ input[disabled] {
 .f-style-breeserif {
   font-family: 'Bree Serif'; }
 
-.sidenav li.active {
+.sidenav.main-sidenav li.active {
   background-color: #689F38 !important;
   color: #fff !important; }
-  .sidenav li.active > a {
+  .sidenav.main-sidenav li.active > a {
     color: #fff !important; }
-    .sidenav li.active > a i {
+    .sidenav.main-sidenav li.active > a i {
       color: #fff; }
 
 #topbar .brand-logo {

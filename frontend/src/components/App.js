@@ -77,7 +77,7 @@ const App = () => {
           <Switch>
             <AccountsRoute exact path="/login" component={Login} />
             <AccountsRoute exact path="/signup" component={Signup} />
-            <PublicRoute exact path="/confirm_email/:email" component={ConfirmEmail} />
+            <AccountsRoute exact path="/confirm_email/:email" component={ConfirmEmail} />
             <Route exact path="/activate/:uidb64/:token" component={Activate} />
             <PublicRoute exact path="/password_reset" component={PasswordReset} />
             <PublicRoute exact path="/password_reset_form/:uidb64/:token" component={PasswordResetForm} />

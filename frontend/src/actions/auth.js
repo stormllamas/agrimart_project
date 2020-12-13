@@ -14,17 +14,29 @@ import {
 
 import axios from 'axios';
 
-export const login = (username, password, history) => async dispatch => {
+export const login = ({email, password}) => async dispatch => {
   dispatch({ type: USER_LOADING })
-  const body = {username, password};
+  const body = {email, password};
 
   try {
     const res = await axios.post('/api/auth/login', body)
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: res.data
-    })
-    M.Toast.dismissAll();
+    if (res.data.status === 'ok') {
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: {
+          'user': res.data.user,
+          'token': res.data.token
+        }
+      })
+      M.Toast.dismissAll();
+    } else {
+      M.toast({
+        html: res.data.msg,
+        displayLength: 3500,
+        classes: 'red',
+      });
+      dispatch({ type: LOGIN_FAIL });
+    }
   } catch (err) {
     M.toast({
       html: 'Incorrect authentication details',
@@ -47,7 +59,7 @@ export const logout = () => async (dispatch, getState) => {
 }
 
 export const signup = ({first_name, last_name, username, email, password}, history) => async dispatch => {
-  dispatch({ type: USER_LOADING })
+  // dispatch({ type: USER_LOADING })
   const body = {
     first_name,
     last_name,
@@ -58,6 +70,7 @@ export const signup = ({first_name, last_name, username, email, password}, histo
 
   try {
     const res = await axios.post('/api/auth/signup', body)
+    console.log(res.data)
     if (res.data.status === "okay") {
       dispatch({ type: SIGNUP_SUCCESS })
       history.push(`/confirm_email/${email}`)
@@ -66,13 +79,53 @@ export const signup = ({first_name, last_name, username, email, password}, histo
         displayLength: 3500,
         classes: 'blue'
       });
+    } else {
+      M.toast({
+        html: res.data.msg,
+        displayLength: 3500,
+        classes: 'red'
+      });
     }
   } catch (err) {
     dispatch({ type: SIGNUP_FAIL });
     M.toast({
-      html: 'That email is taken',
+      html: 'Something went wrong. Please try again',
       displayLength: 3500,
       classes: 'orange'
+    });
+  }
+}
+export const resendActivation = ({ email }, history) => async dispatch => {
+  const body = {
+    email
+  }
+  try {
+    const res = await axios.post('/api/auth/resend_activation', body)
+    if (res.data.status === "okay") {
+      // dispatch({ type: SIGNUP_SUCCESS })
+      M.toast({
+        html: res.data.msg,
+        displayLength: 3500,
+        classes: 'green'
+      });
+    } else {
+      M.toast({
+        html: res.data.msg,
+        displayLength: 3500,
+        classes: 'red'
+      });
+      if (res.data.msg === 'Email already activated') {
+        history.push(`/login`)
+      } else if (res.data.msg === 'Email does not exist. Please signup first') {
+        history.push(`/signup`)
+      }
+    }
+  } catch (err) {
+    // dispatch({ type: SIGNUP_FAIL });
+    M.toast({
+      html: 'Something went wrong. Please try again',
+      displayLength: 3500,
+      classes: 'red'
     });
   }
 }

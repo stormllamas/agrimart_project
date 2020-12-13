@@ -81,7 +81,7 @@ const Topbar = ({
           </div>
         </nav>
       </div>
-      <ul id="mobile-nav" className="sidenav">
+      <ul id="mobile-nav" className="sidenav main-sidenav">
         <li className="light-green-text text-darken-2 flex-row middle center pt-3 pb-3 pr-2">
           <i className="material-icons fs-32">eco</i><span className="f-style-breeserif fs-22">AGRIMART</span>
         </li>

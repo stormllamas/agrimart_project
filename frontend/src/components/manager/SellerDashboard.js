@@ -60,7 +60,7 @@ const SellerDashboard = ({
 
   const createChartData = (orders, range) => {
     const rangedList = []
-    for (let i = 0; i < range; i++) {
+    for (let i = 0; i < range+1; i++) {
       rangedList.unshift (
         { x: new Date(moment(toDate).subtract(i ,'days').format("YYYY-MM-DD")), y: 0},
       )
@@ -219,9 +219,10 @@ const SellerDashboard = ({
                       <thead>
                         <tr className="grey lighten-3">
                           <th>Name</th>
+                          <th>Orders</th>
                           <th>Stocks</th>
                           <th>Price</th>
-                          <th>Sale</th>
+                          <th>% Off</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -229,6 +230,7 @@ const SellerDashboard = ({
                           <tr key={variant.id} className="collection-item avatar pr-5 relative mt-3">
                             {/* <td className="grey lighten-2 circle bg-cover" style={{ backgroundImage: `url(${variant.thumbnail})`, height: "50px", width: "50px"}}></td> */}
                             <td className="title mw-large">{variant.name}</td>
+                            <td className="title">{variant.orders}</td>
                             <td className="title">{(variant.stock)}</td>
                             <td className="title">₱ {(variant.final_price).toFixed(2)}</td>
                             <td className="title">{(variant.percent_off)}%</td>

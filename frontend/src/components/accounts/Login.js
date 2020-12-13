@@ -15,14 +15,19 @@ const Login = ({
 }) => {
   const history = useHistory()
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async e => {
     e.preventDefault();
 
-    if(username && password) {
-      await login(username, password, history)
+    if(email && password) {
+      login({
+        email,
+        password,
+      })
     }
   }
 
@@ -48,12 +53,13 @@ const Login = ({
               <form method="post" onSubmit={onSubmit} noValidate>
                 <div className="input-field">
                   <i className="material-icons prefix">person</i>
-                  <input type="text" id="user" className="validate" required onChange={e => setUsername(e.target.value)}/>
+                  <input type="text" id="user" className="validate" required onChange={e => setEmail(e.target.value)}/>
                   <label htmlFor="user">Email</label>
                 </div>
                 <div className="input-field">
+                  <span className="visibility-2"><i className="material-icons waves-effect" onClick={() => setShowPassword(!showPassword)}>visibility</i></span>
                   <i className="material-icons prefix">lock</i>
-                  <input type="password" id="password" className="validate" onChange={e => setPassword(e.target.value)} required/>
+                  <input type={showPassword ? 'text' : 'password'} id="password" className="validate" onChange={e => setPassword(e.target.value)} required/>
                   <label htmlFor="password">Password</label>
                 </div>
                 <button type="submit" className="btn btn-large btn-extended green">Login</button>

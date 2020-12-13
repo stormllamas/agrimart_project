@@ -66,7 +66,7 @@ export const renderRevenueGraph = data => (dispatch, getState) => {
       {
         type: "line",
         showInLegend: true,
-        name: "Food",
+        name: "Sale",
         markerType: "square",
         xValueFormatString: "DD MMM, YYYY",
         color: "#F08080",
@@ -228,48 +228,39 @@ export const prepareOrderItem = ({ id }) => async (dispatch, getState) => {
     await dispatch(getOrder({
       id: getState().manager.order.id
     }))
-    if (res.data.status) {
-      if (res.data.status === 'error') {
-        M.toast( {
-          html: res.data.msg,
-          displayLength: 5000,
-          classes: 'red'
-        });
-      }
+    if (res.data.status === 'error') {
+      M.toast( {
+        html: res.data.msg,
+        displayLength: 5000,
+        classes: 'red'
+      });
     } else {
       await dispatch({
         type: PREPARE_ORDER_ITEM,
         payload: res.data
       });
       M.toast({
-        html: 'Item marked as pickedup',
+        html: 'Item marked as prepared',
         displayLength: 5000,
         classes: 'orange'
       });
-    }
-    if (getState().manager.order.order_items.filter(orderItem => orderItem.is_pickedup === false).length < 1) {
-      if (getState().manager.order.is_pickedup === false) {
-        await dispatch(deliverOrder({ id: getState().manager.order.id }));
-      } else {
+      if (res.data.order_prepared) {
         await dispatch({
           type: PREPARE_ORDER,
           payload: getState().manager.order
         });
         M.toast({
-          html: 'Order picked up',
+          html: 'Order prepared',
           displayLength: 5000,
           classes: 'blue'
         });
-        $('.loader').fadeOut();
       }
-    } else {
-      $('.loader').fadeOut();
     }
+    $('.loader').fadeOut();
   } catch (error) {
     $('.loader').fadeOut();
   }
 }
-
 export const prepareOrder = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
@@ -314,14 +305,12 @@ export const deliverOrderItem = ({ id }) => async (dispatch, getState) => {
     await dispatch(getOrder({
       id: getState().manager.order.id
     }))
-    if (res.data.status) {
-      if (res.data.status === 'error') {
-        M.toast( {
-          html: res.data.msg,
-          displayLength: 5000,
-          classes: 'red'
-        });
-      }
+    if (res.data.status === 'error') {
+      M.toast( {
+        html: res.data.msg,
+        displayLength: 5000,
+        classes: 'red'
+      });
     } else {
       await dispatch({
         type: DELIVER_ORDER_ITEM,
@@ -332,30 +321,23 @@ export const deliverOrderItem = ({ id }) => async (dispatch, getState) => {
         displayLength: 5000,
         classes: 'orange'
       });
-    }
-    if (getState().manager.order.order_items.filter(orderItem => orderItem.is_delivered === false).length < 1) {
-      if (getState().manager.order.is_delivered === false) {
-        await dispatch(deliverOrder({ id: getState().manager.order.id }));
-      } else {
+      if (res.data.order_delivered) {
         await dispatch({
           type: DELIVER_ORDER,
           payload: getState().manager.order
         });
         M.toast({
-          html: 'Order fulfilled',
+          html: 'Order delivered',
           displayLength: 5000,
           classes: 'blue'
         });
-        $('.loader').fadeOut();
       }
-    } else {
-      $('.loader').fadeOut();
     }
+    $('.loader').fadeOut();
   } catch (error) {
     $('.loader').fadeOut();
   }
 }
-
 export const deliverOrder = ({ id }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
