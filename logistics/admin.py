@@ -18,6 +18,7 @@ class ProductAdmin(admin.ModelAdmin):
   ]
   inlines = [ProductVariantInLine]
   list_display = ('name', 'is_published', 'date_published')
+  list_filter = ('seller',)
   list_display_links = ('name',)
   list_per_page = 50
   search_fields = ('name',)
