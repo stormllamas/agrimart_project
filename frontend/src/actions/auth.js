@@ -70,7 +70,6 @@ export const signup = ({first_name, last_name, username, email, password}, histo
 
   try {
     const res = await axios.post('/api/auth/signup', body)
-    console.log(res.data)
     if (res.data.status === "okay") {
       dispatch({ type: SIGNUP_SUCCESS })
       history.push(`/confirm_email/${email}`)

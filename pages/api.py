@@ -233,7 +233,7 @@ class ContactViewSet(CreateModelMixin, viewsets.GenericViewSet):
     send_mail(
       mail_subject,
       success_message,
-      'Quezon Agrimart Support',
+      'Quezon Agrimart <info@quezonagrimart.com.ph>',
       [email],
       connection=connection,
       fail_silently=False
@@ -254,7 +254,7 @@ class ContactViewSet(CreateModelMixin, viewsets.GenericViewSet):
     send_mail(
       mail_subject,
       message_notification,
-      'Quezon Agrimart Support',
+      'Quezon Agrimart <info@quezonagrimart.com.ph>',
       ['support@quezonagrimart.com.ph'],
       connection=connection,
       fail_silently=False
