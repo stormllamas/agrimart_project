@@ -122,12 +122,9 @@ class OrdersAPI(GenericAPIView):
   permission_classes = [IsAuthenticated, SiteEnabled, IsAdminUser]
 
   def get(self, request):
-    delivered_query = Q()
-    delivered = self.request.query_params.get('delivered', None)
-    if delivered == 'true':
-      delivered_query.add(Q(is_delivered=True), Q.AND)
-    elif delivered == 'false':
-      delivered_query.add(Q(is_delivered=False), Q.AND)
+    print(self.request.query_params.get('delivered', None))
+    print(self.request.query_params.get('processed', None))
+    print(self.request.query_params.get('prepared', None))
 
     processed_query = Q()
     processed = self.request.query_params.get('processed', None)
@@ -142,6 +139,13 @@ class OrdersAPI(GenericAPIView):
       prepared_query.add(Q(is_prepared=True), Q.AND)
     elif prepared == 'false':
       prepared_query.add(Q(is_prepared=False), Q.AND)
+    
+    delivered_query = Q()
+    delivered = self.request.query_params.get('delivered', None)
+    if delivered == 'true':
+      delivered_query.add(Q(is_delivered=True), Q.AND)
+    elif delivered == 'false':
+      delivered_query.add(Q(is_delivered=False), Q.AND)
 
     keywords_query = Q()
     keywords = self.request.query_params.get('keywords', None)
@@ -149,6 +153,8 @@ class OrdersAPI(GenericAPIView):
       keywords_query.add(Q(ref_code__icontains=keywords), Q.AND)
     
     queryset = Order.objects.filter(Q(is_ordered=True) & delivered_query & processed_query & prepared_query & keywords_query)
+    print(Order.objects.filter(Q(is_ordered=True, is_processed=False, is_prepared=False, is_delivered=False) & keywords_query))
+    print(queryset)
     results_full_length = queryset.count()
 
     range_query = self.request.query_params.get('range', None)
