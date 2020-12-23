@@ -206,6 +206,7 @@ export default (state = initialState, action) => {
           ...state.sellerFilter,
           action.payload
         ],
+        productsPage: 1
       }
     case REMOVE_SELLER:
       return {
@@ -221,6 +222,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         keywordsFilter: action.payload,
+        productsPage: 1
       }
     case CLEAR_KEYWORDS:
       return {

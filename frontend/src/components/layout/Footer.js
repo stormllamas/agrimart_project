@@ -27,17 +27,17 @@ const Footer = ({
             <div className="col s12 m4 l3">
               <h5 className="grey-text text-lighten-3">Our Services</h5>
               <ul>
-                <li>
+                {/* <li>
                   <Link to="" className="white-text">Tracking</Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link to="" className="white-text">Shipping</Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link to="" className="white-text">Locations</Link>
-                </li>
+                </li> */}
                 <li>
-                  <Link to="" className="white-text">My Profile</Link>
+                  <Link to="/profile" className="white-text">My Profile</Link>
     
                 </li>
               </ul>
@@ -46,7 +46,7 @@ const Footer = ({
               <h5 className="grey-text text-lighten-3">Information</h5>
               <ul>
                 <li>
-                  <Link to="" className="white-text">About Camel Cart</Link>
+                  <Link to="" className="white-text">About Agrimart</Link>
                 </li>
               </ul>
             </div>

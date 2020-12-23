@@ -160,13 +160,13 @@ class SocialAuthAPI(GenericAPIView):
             'domain': current_site.domain,
           }
         )
-        # send_mail(
-        #   mail_subject,
-        #   message,
-        #   'Quezon Agrimart',
-        #   [user.email],
-        #   fail_silently=False
-        # )
+        send_mail(
+          mail_subject,
+          message,
+          'Quezon Agrimart <info@quezonagrimart.com.ph>',
+          [user.email],
+          fail_silently=False
+        )
         _, token = AuthToken.objects.create(user)
         response = Response({
           'user': get_user_data(user),
@@ -248,7 +248,7 @@ class SingupAPI(GenericAPIView):
     send_mail(
       mail_subject,
       message,
-      'Quezon Agrimart',
+      'Quezon Agrimart <info@quezonagrimart.com.ph>',
       [email],
       fail_silently=False
     )
@@ -287,7 +287,7 @@ class ResendActivationAPI(GenericAPIView):
           send_mail(
             mail_subject,
             message,
-            'Quezon Agrimart',
+            'Quezon Agrimart <info@quezonagrimart.com.ph>',
             [email],
             fail_silently=False
           )
@@ -339,7 +339,7 @@ class ActivateAPI(GenericAPIView):
       send_mail(
         mail_subject,
         message,
-        'Quezon Agrimart',
+        'Quezon Agrimart <info@quezonagrimart.com.ph>',
         [user.email],
         fail_silently=False
       )
@@ -468,7 +468,7 @@ class PasswordResetAPI(GenericAPIView):
       user = None
     if user is not None:
       current_site = get_current_site(self.request)
-      mail_subject = 'Reset your Camel Cart account\'s Password'
+      mail_subject = 'Reset your Quezon Agrimart account\'s Password'
       message = render_to_string(
         'password_reset_email.html',
         {
@@ -478,14 +478,13 @@ class PasswordResetAPI(GenericAPIView):
           'token':account_activation_token.make_token(user),
         }
       )
-      print(message)
-      # send_mail(
-      #   mail_subject,
-      #   message,
-      #   'Camel Cart',
-      #   [email],
-      #   fail_silently=False
-      # )
+      send_mail(
+        mail_subject,
+        message,
+        'Quezon Agrimart <info@quezonagrimart.com.ph>',
+        [email],
+        fail_silently=False
+      )
       
       return Response({
         'status': 'okay',

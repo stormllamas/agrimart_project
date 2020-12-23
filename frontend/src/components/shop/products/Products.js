@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { setProductsPage, clearCategory, clearSeller, updateQuery, getProducts, setCategory, setSeller, setKeywords, clearKeywords } from '../../../actions/logistics';
+import { clearCategory, clearSeller, updateQuery, getProducts, setCategory, setSeller, setKeywords, clearKeywords } from '../../../actions/logistics';
 import { getFilterDetails } from '../../../actions/logistics';
 import Preloader from '../../common/Preloader'
 import ProductItem from './ProductItem'
@@ -21,7 +21,7 @@ const Products = ({
   },
   getProducts, getFilterDetails, 
 
-  setProductsPage, updateQuery,
+  updateQuery,
   clearCategory, setCategory,
   clearSeller, setSeller,
   clearKeywords, setKeywords,
@@ -50,7 +50,7 @@ const Products = ({
     const setQuery = (query, filter, set) => {
       query.split('--').forEach(q => {
         if (!filter.includes(q)) {
-          set(q.replaceAll('-', ' '), true);
+          set(q.replaceAll('-', ' ').replaceAll('and', '&'), true);
         }
       })
     }
@@ -95,7 +95,6 @@ const Products = ({
   const onSubmit = e => {
     e.preventDefault();
     setKeywords(search),
-    setProductsPage(1),
     updateQuery(history);
   }
   
@@ -151,7 +150,6 @@ const Products = ({
                               <input type="checkbox" id={ seller.name } name={`${ seller.name }`} className="filled-in" 
                                 onChange={e => {
                                   setSeller(seller.name, e.target.checked),
-                                  setProductsPage(1),
                                   updateQuery(history)
                                 }}
                                 checked={sellerFilter.includes(seller.name) && true}
@@ -243,7 +241,6 @@ const Products = ({
                             <input type="checkbox" id={ seller.name } name={`${ seller.name }`} className="filled-in" 
                               onChange={e => {
                                 setSeller(seller.name, e.target.checked),
-                                setProductsPage(1),
                                 updateQuery(history)
                               }}
                               checked={sellerFilter.includes(seller.name) && true}
@@ -268,7 +265,6 @@ Products.propTypes = {
   getFilterDetails: PropTypes.func.isRequired,
   getProducts: PropTypes.func.isRequired,
 
-  setProductsPage: PropTypes.func.isRequired,
   clearCategory: PropTypes.func.isRequired,
   clearSeller: PropTypes.func.isRequired,
   updateQuery: PropTypes.func.isRequired,
@@ -282,4 +278,4 @@ const mapStateToProps = state => ({
   logistics: state.logistics,
 });
 
-export default connect(mapStateToProps, { getFilterDetails, setProductsPage, clearCategory, clearSeller, clearKeywords, updateQuery, getProducts, setCategory, setSeller, setKeywords })(Products);
+export default connect(mapStateToProps, { getFilterDetails, clearCategory, clearSeller, clearKeywords, updateQuery, getProducts, setCategory, setSeller, setKeywords })(Products);

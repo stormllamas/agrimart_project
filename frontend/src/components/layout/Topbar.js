@@ -140,25 +140,39 @@ const Topbar = ({
         <li className={history.location.pathname === '/events' ? "active" : ''}>
           <Link to="/events" className="sidenav-close waves-effect" ><i className="material-icons">calendar_today</i>Quezon Events</Link>
         </li>
-        {!userLoading && isAuthenticated ? (
-          <Fragment>
-            <li>
-              <div className="divider"></div>
-            </li>
-            <li>
-              <a className="subheader">Account Controls</a>
-            </li>
-            <li className={history.location.pathname === '/profile' ? "active" : ''}>
-              <Link to="/profile" className="sidenav-close waves-effect" ><i className="material-icons">account_circle</i>My Profile</Link>
-            </li>
-            <li className={history.location.pathname === '/security' ? "active" : ''}>
-              <Link to="/security" className="sidenav-close waves-effect" ><i className="material-icons">security</i>Security</Link>
-            </li>
-            <li>
-              <a className="sidenav-close waves-effect" onClick={() => logout()}><i className="material-icons">logout</i>Logout</a>
-            </li>
-          </Fragment>
-        ) : undefined}
+        {!userLoading && (
+          isAuthenticated ? (
+            <Fragment>
+              <li>
+                <div className="divider"></div>
+              </li>
+              <li>
+                <a className="subheader">Account Controls</a>
+              </li>
+              <li className={history.location.pathname === '/profile' ? "active" : ''}>
+                <Link to="/profile" className="sidenav-close waves-effect" ><i className="material-icons">account_circle</i>My Profile</Link>
+              </li>
+              <li className={history.location.pathname === '/security' ? "active" : ''}>
+                <Link to="/security" className="sidenav-close waves-effect" ><i className="material-icons">security</i>Security</Link>
+              </li>
+              <li>
+                <a className="sidenav-close waves-effect" onClick={() => logout()}><i className="material-icons">logout</i>Logout</a>
+              </li>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <li>
+                <div className="divider"></div>
+              </li>
+              <li>
+                <a className="subheader">Account Controls</a>
+              </li>
+              <li>
+                <Link to="/login" className="sidenav-close waves-effect" ><i className="material-icons">login</i>Login</Link>
+              </li>
+            </Fragment>
+          )
+        )}
       </ul>
     </Fragment>
   )

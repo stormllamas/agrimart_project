@@ -121,7 +121,6 @@ const FoodPayment = ({
   useEffect(() => {
     if(!currentOrderLoading) {
       if (currentOrder) {
-        console.log(checkCurrentOrder(currentOrder))
         if (checkCurrentOrder(currentOrder)) {
           M.updateTextFields();
           $('.collapsible').collapsible({
