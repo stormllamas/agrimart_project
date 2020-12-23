@@ -148,9 +148,8 @@ export const getOrders = ({ page, processed, prepared, delivered, keywords, rang
     if (range) {
       res = await axios.get(`/api/manager/orders?range=${range}/`, tokenConfig(getState))
     } else {
-      res = await axios.get(`/api/manager/orders?page=${page ? page : '0'}${processed !== undefined ? `&processed=${processed}` : ''}${prepared !== undefined ? `&prepared=${prepared}` : ''}${delivered !== undefined ? `&delivered=${delivered}` : ''}${keywords !== undefined ? `&keywords=${keywords}` : ''}`, tokenConfig(getState))
+      res = await axios.get(`/api/manager/orders?page=${page ? page : '0'}${processed !== undefined ? `&processed=${processed}` : ''}${prepared !== undefined ? `&prepared=${prepared}` : ''}${delivered !== undefined ? `&delivered=${delivered}` : ''}${keywords ? `&keywords=${keywords}` : ''}`, tokenConfig(getState))
     }
-    console.log(res.data)
     dispatch({
       type: GET_MANAGER_ORDERS,
       payload: res.data
