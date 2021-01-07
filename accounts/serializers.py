@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
   class Meta:
     model = Address
-    fields = ['id', 'user', 'latitude', 'longitude', 'address']
+    fields = ['id', 'user', 'latitude', 'longitude', 'address', 'name']
 
 class RegisterSerializer(serializers.ModelSerializer):
   class Meta:

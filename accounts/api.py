@@ -48,6 +48,7 @@ def get_user_data(user) :
     'latitude': address.latitude,
     'longitude': address.longitude,
     'address': address.address,
+    'name': address.name,
   } for address in user.addresses.all()]
 
   groups = [group.name for group in user.groups.all()]

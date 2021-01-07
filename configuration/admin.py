@@ -10,7 +10,7 @@ class SingletonModelAdminModified(admin.ModelAdmin):
     ('Contact Information', {'fields': ['phone', 'email', 'location', 'office_hours']}),
     ('Shop Highlights Page', {'fields': ['highlight_1', 'highlight_2', 'highlight_3', 'highlight_4', 'highlight_5', 'highlight_6', 'shop_spiel_title', 'shop_spiel_text']}),
     ('About Page', {'fields': ['about_sub_header', 'about_text']}),
-    ('Deliveries', {'fields': ['per_km_price']}),
+    ('Deliveries', {'fields': ['shipping_base', 'per_km_price']}),
   ]
 
   def has_delete_permission(self, request, obj=None):

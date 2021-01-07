@@ -22,7 +22,7 @@ class User(AbstractUser):
     return self.email
    
 class Address(models.Model):
-  # Basic Details
+  name = models.CharField(max_length=225, null=True, blank=True)
   user = models.ForeignKey(User, related_name='addresses', on_delete=models.CASCADE)
 
   latitude = models.CharField(max_length=91)

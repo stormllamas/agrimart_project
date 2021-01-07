@@ -89,10 +89,9 @@ const Cart = ({
           setDistanceValue(distanceValue);
           setDurationText(durationString);
           setDurationValue(durationValue);
-          
-          let total = Math.round((parseInt(distanceValue)/1000))*siteInfo.per_km_price
-          if (total < 25) total = 25
-          setDelivery(total)
+          let perKmTotal = parseInt(distanceValue)/1000*siteInfo.per_km_price
+          let total = siteInfo.shipping_base+perKmTotal
+          setDelivery(Math.round(total))
         }
       });
     } catch (err) {
@@ -143,8 +142,8 @@ const Cart = ({
       $('.collapsible').collapsible({
         accordion: false
       });
-      setPickupLat(13.965670)
-      setPickupLng(121.655024)
+      setPickupLat(13.928825528110426)
+      setPickupLng(121.6143637648055)
       setPickupAddress('Sitio Fori, Brgy. Talipan, (Agriculture Complex) Pagbilao, Quezon')
       $('.form-notification').attr('style', 'opacity: 1')
       M.updateTextFields();
@@ -244,7 +243,7 @@ const Cart = ({
                               <option value="" disabled>Select an address</option>
                               {user && (
                                 user.addresses.map(address => (
-                                  <option key={address.id} value={address.id}>{address.address}</option>
+                                  <option key={address.id} value={address.id}>{address.name ? address.name+':' : 'Unnamed Address:'} {address.address}</option>
                                 ))
                               )}
                             </select>

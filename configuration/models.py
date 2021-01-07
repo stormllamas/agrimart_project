@@ -39,6 +39,7 @@ class SiteConfiguration(SingletonModel):
   about_text = models.TextField(max_length=4000, default='Insert About Text Here')
   
   per_km_price = models.PositiveIntegerField(default=20, null=False)
+  shipping_base = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
   def __str__(self):
     return f"{self.site_name}"

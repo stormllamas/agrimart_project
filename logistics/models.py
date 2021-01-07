@@ -287,10 +287,9 @@ class Order(models.Model):
 
   @property
   def shipping(self):
-    total = round((self.distance_value/1000), 0)*site_config.per_km_price if type(self.distance_value) == int else 50
-    if total < 50:
-      total = 50
-    return total
+    per_km_total = round((self.distance_value/1000)*(site_config.per_km_price if type(self.distance_value) == int else 0), 0)
+    total = float(site_config.shipping_base)+per_km_total
+    return round(total, 0)
 
   @property
   def has_valid_item(self):

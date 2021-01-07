@@ -27,6 +27,7 @@ class SiteInformationAPI(GenericAPIView):
       'location': site_config.location,
       'about_text': site_config.about_text,
       'per_km_price': site_config.per_km_price,
+      'shipping_base': site_config.shipping_base,
 
       'site_logo': site_config.site_logo.url,
       'main_header_image': site_config.main_header_image.url,
