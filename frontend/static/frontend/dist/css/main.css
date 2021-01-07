@@ -1951,6 +1951,8 @@ input[disabled] {
 
 @media (max-width: 700px) {
   .addressmodal-input {
+    width: 92% !important; }
+  .addressmodal-name-input {
     width: 92% !important; } }
 
 @media (max-width: 600px) {
@@ -1995,6 +1997,8 @@ input[disabled] {
 
 @media (max-width: 400px) {
   .addressmodal-input {
+    width: 90% !important; }
+  .addressmodal-name-input {
     width: 90% !important; }
   .section-product-review .collection-item {
     padding: 10px 0.25rem; } }

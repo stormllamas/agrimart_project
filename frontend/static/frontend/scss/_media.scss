@@ -94,6 +94,9 @@
   .addressmodal-input {
     width: 92% !important;
   }
+  .addressmodal-name-input {
+    width: 92% !important;
+  }
 }
 
 // Small
@@ -198,6 +201,9 @@
 
 @media (max-width: 400px) {
   .addressmodal-input {
+    width: 90% !important;
+  }
+  .addressmodal-name-input {
     width: 90% !important;
   }
 
