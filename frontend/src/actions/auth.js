@@ -4,7 +4,7 @@ import {
 
   USER_LOADED, USER_LOADING, ACTIVATING_USER, USER_ACTIVATED, ACTIVATION_FAILED, USER_UPDATED,
   PASSWORD_UPDATE,
-  ADDRESS_ADDED, ADDRESS_DELETED,
+  ADDRESS_ADDED, ADDRESS_DELETED, ADDRESS_UPDATED,
   
   UPDATE_ERROR, AUTH_ERROR,
 
@@ -260,6 +260,19 @@ export const getAddress = id => async (dispatch, getState) => {
     } catch (error) {
       return null
     }
+  }
+}
+
+export const updateAddressName = body => async (dispatch, getState) => {
+  dispatch({ type: USER_LOADING });
+  try {
+    const res = await axios.put(`/api/auth/address/${body.id}/`, body, tokenConfig(getState))
+    dispatch({ 
+      type: ADDRESS_UPDATED,
+      payload: body
+    })
+  } catch (error) {
+    dispatch({ type: AUTH_ERROR })
   }
 }
 

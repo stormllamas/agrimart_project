@@ -4,11 +4,11 @@ import { Redirect, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux';
 
-import { addAddress, deleteAddress, updateUser } from '../../actions/auth'
+import { addAddress, deleteAddress, updateUser, getAddress, updateAddressName } from '../../actions/auth'
 
 const Profile = ({
   auth: { userLoading, user, isAuthenticated },
-  addAddress, deleteAddress,
+  addAddress, deleteAddress, getAddress, updateAddressName,
   updateUser,
   setCurLocation
 }) => {
@@ -22,6 +22,9 @@ const Profile = ({
   const [longitude, setLongitude] = useState('');
   const [address, setAddress] = useState('');
   const [addressName, setAddressName] = useState('');
+
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddressName, setSelectedAddressName] = useState('');
 
   const [firstName, setFirstName] = useState(user ? (user.first_name ? user.first_name : '') : '');
   const [lastName, setLastName] = useState(user ? (user.last_name ? user.last_name : '') : '');
@@ -192,7 +195,7 @@ const Profile = ({
   }
 
   const addNewAddress = () => {
-    if (addressName) {
+    // if (addressName) {
       const body = {
         user: user.id,
         latitude,
@@ -201,13 +204,13 @@ const Profile = ({
         name: addressName
       }
       addAddress(body)
-    } else {
-      M.toast({
-        html: 'Label this Address',
-        displayLength: 5500,
-        classes: 'orange'
-      });
-    }
+    // } else {
+    //   M.toast({
+    //     html: 'Label this Address',
+    //     displayLength: 5500,
+    //     classes: 'orange'
+    //   });
+    // }
   }
 
   const saveUserChanges = () => {
@@ -219,6 +222,24 @@ const Profile = ({
       gender: gender
     }
     updateUser(body)
+  }
+
+  const addressSelected = async (id) => {
+    const address = await getAddress(id)
+    setSelectedAddress(address)
+    setSelectedAddressName(address.name ? address.name : '')
+  }
+
+  const saveAddressChanges = async () => {
+    const body = {
+      id: selectedAddress.id,
+      user: selectedAddress.user,
+      latitude: selectedAddress.latitude,
+      longitude: selectedAddress.longitude,
+      address: selectedAddress.address,
+      name: selectedAddressName
+    }
+    await updateAddressName(body)
   }
   
   useEffect(() => {
@@ -296,7 +317,7 @@ const Profile = ({
             <ul className="collection">
               {user.addresses.map(address => (
                 <li key={address.id} className="collection-item pr-5 relative">
-                  <p className="m-0 grey-text text-darken-3 fw-6">{address.name ? address.name : 'Unnamed Address'}</p>
+                <p className="m-0 grey-text text-darken-1 fw-6">{address.name ? address.name : 'Unnamed Address'} <Link to="" className="ml-1 blue-text pt-2 modal-trigger" data-target="update_addressmodal" onClick={() => addressSelected(address.id)}><i className="fas fa-edit fs-14"></i> Edit</Link></p>
                   <div>{address.address}</div>
                   <Link to="" className="secondary-content top-right" onClick={e => {e.preventDefault(), deleteAddress(address.id)}}>
                     <i className="material-icons red-text">delete_forever</i>
@@ -336,6 +357,25 @@ const Profile = ({
         <div className="modal-footer">
           <a className="modal-action modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
           <a className={`${addressName && 'modal-action modal-close'} waves-effect waves-blue btn center blue btn-large btn-extended`} onClick={() => addNewAddress()} disabled={!latitude || !longitude || !address ? true : false}>Add New Address</a>
+        </div>
+      </div>
+
+      <div id="update_addressmodal" className="modal">
+        <div className="modal-content relative">
+          <a className="modal-action modal-close cancel"><i className="material-icons grey-text">close</i></a>
+          <div className="row  m-0 mt-1">
+            <div className="col s12 m8 l6">
+              <div className="input-field relative">
+                <input type="text" id="address_name" className="validate grey-text text-darken-2 m-0 fs-18 fw-6" placeholder="Address Name" value={selectedAddressName} onChange={e => setSelectedAddressName(e.target.value)}/>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col s12 mb-3">
+              <span className="grey-text">{selectedAddress.address}</span>
+            </div>
+            <a className="modal-action modal-close waves-effect waves-blue btn center blue btn-extended" onClick={() => saveAddressChanges()}>Save Name</a>
+          </div>
         </div>
       </div>
 
@@ -388,6 +428,8 @@ const Profile = ({
 Profile.propTypes = {
   addAddress: PropTypes.func.isRequired,
   deleteAddress: PropTypes.func.isRequired,
+  getAddress: PropTypes.func.isRequired,
+  updateAddressName: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
 }
 
@@ -396,4 +438,4 @@ const mapStateToProps = state => ({
   logistics: state.logistics,
 });
 
-export default connect(mapStateToProps, { addAddress, deleteAddress, updateUser })(Profile);
+export default connect(mapStateToProps, { addAddress, deleteAddress, getAddress, updateAddressName, updateUser })(Profile);

@@ -414,7 +414,7 @@ class UserAPI(RetrieveAPIView, UpdateAPIView):
     
     return Response(get_user_data(user))
 
-class AddressAPI(CreateModelMixin, DestroyModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
+class AddressAPI(CreateModelMixin, DestroyModelMixin, RetrieveModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
   serializer_class = AddressSerializer
   permission_classes = [IsAuthenticated]
 
