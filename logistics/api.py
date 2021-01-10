@@ -67,7 +67,7 @@ class FilterDetailsAPI(GenericAPIView):
 class SellerAPI(GenericAPIView):
 
   def get(self, request, seller_name=None):
-    sn = seller_name.replace('-',' ').replace('and', '&')
+    sn = seller_name.replace('-and-', '-&-').replace('-',' ')
     seller = Seller.objects.get(name=sn)
 
     return Response({
@@ -172,7 +172,7 @@ class ProductAPI(GenericAPIView):
   permission_classes = [SiteEnabled]
 
   def get(self, request, product_name=None):
-    pn = product_name.replace('-',' ')
+    pn = product_name.replace('-and-', '-&-').replace('-',' ')
     product = Product.objects.get(name=pn)
 
     categories = [category.name for category in product.categories.all()]

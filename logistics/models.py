@@ -70,7 +70,7 @@ class Seller(models.Model):
 
   @property
   def name_to_url(self):
-    return self.name.replace(' ','-').replace('&', 'and')
+    return self.name.replace(' & ', ' and ').replace(' ','-')
 
 class Product(models.Model):
   # Basic Details
@@ -100,7 +100,7 @@ class Product(models.Model):
 
   @property
   def name_to_url(self):
-    return self.name.replace(' ','-')
+    return self.name.replace(' & ', ' and ').replace(' ','-')
 
   @property
   def cheapest_variant(self):
