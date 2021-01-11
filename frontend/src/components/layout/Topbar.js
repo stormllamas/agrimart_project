@@ -9,6 +9,7 @@ import { getCurrentOrder } from '../../actions/logistics';
 
 
 const Topbar = ({
+  siteConfig: { siteInfoLoading, siteInfo },
   auth: { isAuthenticated, userLoading, user },
   logistics: { currentOrderLoading, currentOrder },
   logout, getCurrentOrder,
@@ -44,8 +45,7 @@ const Topbar = ({
         <nav className="light-green darken-2 white-text">
           <div className="container">
             <div className="nav-wrapper">
-              {/* <Link to="/" className="brand-logo"><img src={ !siteInfoLoading ? siteInfo.site_logo : ''} alt="came cart logo" className="responsive-img mr-1"/> <span className="">AGRIMART</span></Link> */}
-              <Link to="/" className="brand-logo"><i className="material-icons fs-32">eco</i> <span className="f-style-breeserif">AGRIMART</span></Link>
+              <Link to="/" className="brand-logo"><img src={ !siteInfoLoading ? siteInfo.site_logo : ''} alt="came cart logo" style={{ width: "45px" }} className="responsive-img mr-1"/> <span className="f-style-breeserif">AGRIMART</span></Link>
               <a href="#" data-target="mobile-nav" className="sidenav-trigger show-on-large white-text show-on-small-and-up menu-wrapper relative">
                 <i className="material-icons">menu</i>
                 {!userLoading && (
@@ -185,7 +185,8 @@ Topbar.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  logistics: state.logistics
+  siteConfig: state.siteConfig,
+  logistics: state.logistics,
 });
 
 export default connect(mapStateToProps, { logout, getCurrentOrder })(Topbar);

@@ -36,7 +36,9 @@ INSTALLED_APPS = [
   'logistics',
   'configuration',
   'frontend',
-  'manager'
+  'manager',
+
+  'channels',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +51,8 @@ MIDDLEWARE = [
   'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'agrimart.urls'
+ROOT_URLCONF = f'{config("PROJECT_NAME")}.urls'
+ASGI_APPLICATION = f'{config("PROJECT_NAME")}.asgi.application'
 
 TEMPLATES = [
   {
@@ -67,7 +70,7 @@ TEMPLATES = [
   },
 ]
 
-WSGI_APPLICATION = 'agrimart.wsgi.application'
+WSGI_APPLICATION = f'{config("PROJECT_NAME")}.wsgi.application'
 
 DATABASES = {
   'default': {

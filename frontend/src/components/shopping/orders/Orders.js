@@ -27,6 +27,8 @@ const Bookings = ({
 
   const [order, setOrder] = useState('');
   const [showCurrentOnly, setShowCurrentOnly] = useState(false);
+
+  const [socket, setSocket] = useState('')
   
   useEffect(() => {
     setCurrentOnly({
@@ -58,6 +60,37 @@ const Bookings = ({
       $('.middle-content').hide();
     }
   }, [ordersLoading]);
+
+  
+  useEffect(() => {
+    let wsStart = 'ws://'
+    let port = ''
+    if (window.location.protocol === 'https:') {
+      wsStart = 'wss://'
+      port = ':8001'
+    }
+    let endpoint = wsStart + window.location.host + port
+    setSocket(new ReconnectingWebSocket(endpoint+'/order_update/'))
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = function(e){
+        // console.log('message', e)
+        const data = JSON.parse(e.data)
+        syncOrder({ data })
+      }
+      socket.onopen = function(e){
+        // console.log('open', e)
+      }
+      socket.onerror = function(e){
+        // console.log('error', e)
+      }
+      socket.onclose = function(e){
+        // console.log('close', e)
+      }
+    }
+  }, [socket]);
 
   return (
     isAuthenticated ? (

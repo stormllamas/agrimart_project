@@ -20,7 +20,7 @@ const Footer = ({
                   <img className="responsive-img" src={ siteInfo.header_logo_1 ? siteInfo.header_logo_1 : '' } style={{ maxHeight: '80px' }}/>
                 </div>
                 <div className="col s6">
-                  <img className="responsive-img" src={ siteInfo.site_logo ? siteInfo.site_logo : '' } style={{ maxHeight: '80px' }}/>
+                  <img className="responsive-img" src={ siteInfo.header_logo_2 ? siteInfo.header_logo_2 : '' } style={{ maxHeight: '80px' }}/>
                 </div>
               </div>
             </div>
