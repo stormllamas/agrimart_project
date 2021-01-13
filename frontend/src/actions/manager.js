@@ -177,7 +177,7 @@ export const getOrder = ({ id }) => async (dispatch, getState) => {
   }
 }
 
-export const processOrder = ({ id }) => async (dispatch, getState) => {
+export const processOrder = ({ id, socket }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
   try {
     const res = await axios.put(`/api/manager/process_order/${id}/`, null, tokenConfig(getState))
@@ -206,6 +206,10 @@ export const processOrder = ({ id }) => async (dispatch, getState) => {
         displayLength: 5000,
         classes: 'orange'
       });
+      socket.send(JSON.stringify({
+        'mark' : 'process',
+        'order_id' : id,
+      }))
     }
     $('.loader').fadeOut();
   } catch (err) {
@@ -220,7 +224,7 @@ export const processOrder = ({ id }) => async (dispatch, getState) => {
   }
 }
 
-export const prepareOrderItem = ({ id }) => async (dispatch, getState) => {
+export const prepareOrderItem = ({ id, socket }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
@@ -254,6 +258,10 @@ export const prepareOrderItem = ({ id }) => async (dispatch, getState) => {
           displayLength: 5000,
           classes: 'blue'
         });
+        socket.send(JSON.stringify({
+          'mark' : 'prepare',
+          'order_id' : getState().manager.order.id,
+        }))
       }
     }
     $('.loader').fadeOut();
@@ -261,7 +269,7 @@ export const prepareOrderItem = ({ id }) => async (dispatch, getState) => {
     $('.loader').fadeOut();
   }
 }
-export const prepareOrder = ({ id }) => async (dispatch, getState) => {
+export const prepareOrder = ({ id, socket }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
@@ -290,6 +298,10 @@ export const prepareOrder = ({ id }) => async (dispatch, getState) => {
         displayLength: 5000,
         classes: 'blue'
       });
+      socket.send(JSON.stringify({
+        'mark' : 'prepare',
+        'order_id' : id,
+      }))
     }
     $('.loader').fadeOut();
   } catch (error) {
@@ -297,7 +309,7 @@ export const prepareOrder = ({ id }) => async (dispatch, getState) => {
   }
 }
 
-export const deliverOrderItem = ({ id }) => async (dispatch, getState) => {
+export const deliverOrderItem = ({ id, socket }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
@@ -331,6 +343,10 @@ export const deliverOrderItem = ({ id }) => async (dispatch, getState) => {
           displayLength: 5000,
           classes: 'blue'
         });
+        socket.send(JSON.stringify({
+          'mark' : 'deliver',
+          'order_id' : getState().manager.order.id,
+        }))
       }
     }
     $('.loader').fadeOut();
@@ -338,7 +354,7 @@ export const deliverOrderItem = ({ id }) => async (dispatch, getState) => {
     $('.loader').fadeOut();
   }
 }
-export const deliverOrder = ({ id }) => async (dispatch, getState) => {
+export const deliverOrder = ({ id, socket }) => async (dispatch, getState) => {
   $('.loader').fadeIn();
 
   try {
@@ -367,6 +383,10 @@ export const deliverOrder = ({ id }) => async (dispatch, getState) => {
         displayLength: 5000,
         classes: 'blue'
       });
+      socket.send(JSON.stringify({
+        'mark' : 'deliver',
+        'order_id' : id,
+      }))
     }
     $('.loader').fadeOut();
   } catch (error) {

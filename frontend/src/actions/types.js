@@ -180,4 +180,4 @@ export const DELIVER_ORDER = 'DELIVER_ORDER';
 export const PREPARE_ORDER_ITEM = 'PREPARE_ORDER_ITEM';
 export const PREPARE_ORDER = 'PREPARE_ORDER';
 
-
+export const SYNC_ORDER = 'SYNC_ORDER';

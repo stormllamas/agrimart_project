@@ -807,6 +807,34 @@ class CompleteOrderAPI(UpdateAPIView):
         'status': 'error',
         'msg': 'No items'
       })
+class NewOrderUpdateAPI(GenericAPIView):
+  permission_classes = [IsAuthenticated, SiteEnabled]
+
+  def post(self, request, *args, **kwargs):
+    try:
+      for monitor in User.objects.filter(groups__name__in=['monitor'], is_active=True, is_staff=True).exclude(groups__name__in=['test']):
+        current_site = get_current_site(request)
+        mail_subject = 'New Order'
+        message = render_to_string(
+          'new_order_notification.html',
+          {
+            'monitor': monitor,
+            'domain': current_site.domain,
+            'ref_code': request.data.get('ref_code'),
+          }
+        )
+        email = monitor.email
+        
+        send_mail(
+          mail_subject,
+          message,
+          'Quezon Agrimart <info@quezonagrimart.com.ph>',
+          [email],
+          fail_silently=False
+        )
+      return Response({'status': 'okay'})
+    except:
+      return Response({'status': 'error'})
 
 class ProductReviewAPI(CreateAPIView):
   serializer_class = ProductReviewSerializer

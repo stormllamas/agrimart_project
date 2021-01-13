@@ -33,7 +33,11 @@ const BookingItem = ({ ordersLoading, order, orders, index, getOrders, setOrder 
                 !order.is_processed ? (
                   <p className="m-0 p-2 fs-16 rad-2 grey lighten-2 grey-text text-darken-1">Processing Order</p>
                 ) : (
-                  <p className="m-0 p-2 fs-16 rad-2 grey lighten-2 grey-text text-darken-1">Preparing Order</p>
+                  !order.is_prepared ? (
+                    <p className="m-0 p-2 fs-16 rad-2 grey lighten-2 grey-text text-darken-1">Preparing Order</p>
+                  ) : (
+                    <p className="m-0 p-2 fs-16 rad-2 grey lighten-2 grey-text text-darken-1">Delivering Order</p>
+                  )
                 )
               ) : (
                 !order.is_reviewed ? (

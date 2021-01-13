@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from .api import HighlightsAPI, ProductsAPI, ProductAPI, SellerAPI, SimilarProductsAPI, FilterDetailsAPI, OrdersAPI, OrderAPI, CurrentOrderAPI, CheckoutAPI, CompleteOrderAPI, OrderItemAPI, ChangeQuantityAPI, ProductReviewAPI, OrderReviewAPI
+from .api import HighlightsAPI, ProductsAPI, ProductAPI, SellerAPI, SimilarProductsAPI, FilterDetailsAPI, OrdersAPI, OrderAPI, CurrentOrderAPI, CheckoutAPI, CompleteOrderAPI, OrderItemAPI, ChangeQuantityAPI, NewOrderUpdateAPI, ProductReviewAPI, OrderReviewAPI
 
 router = routers.DefaultRouter()
 
@@ -26,6 +26,7 @@ urlpatterns = [
   
   path('api/checkout/', CheckoutAPI.as_view(), name='checkout'),
   path('api/complete_order/<int:paid>/', CompleteOrderAPI.as_view(), name='complete_order'),
+  path('api/new_order_update/', NewOrderUpdateAPI.as_view(), name='new_order_update'),
 
   path('api/review_product/', ProductReviewAPI.as_view(), name='review_product'),
   path('api/review_order/', OrderReviewAPI.as_view(), name='review_order'),

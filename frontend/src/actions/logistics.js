@@ -65,6 +65,8 @@ import {
 
   FAVORITES_LOADING, GET_FAVORITES, DELETE_FAVORITE,
   USER_UPDATED,
+
+  SYNC_ORDER,
   
   AUTH_ERROR,
 } from './types'
@@ -763,4 +765,11 @@ export const requestRefund = (orderItemID, reason, history) => async (dispatch, 
       dispatch(setAlert({type:'danger', msg:err.response.data.message}));
     }
   }
+}
+
+export const syncOrder = ({ data }) => async (dispatch, getState) => {
+  dispatch({
+    type: SYNC_ORDER,
+    payload: data
+  })
 }

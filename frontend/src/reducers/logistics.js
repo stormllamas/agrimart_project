@@ -65,6 +65,8 @@ import {
 
   FAVORITES_LOADING, GET_FAVORITES, DELETE_FAVORITE,
 
+  SYNC_ORDER,
+
 } from '../actions/types'
 
 const initialState = {
@@ -572,6 +574,28 @@ export default (state = initialState, action) => {
             comment: action.payload.data.comment
           }
         }
+      }
+
+    case SYNC_ORDER:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          results: state.orders.results.map(order => {
+            if (order.id === action.payload.order.id) {
+              if (action.payload.mark === 'process') {
+                order.is_processed = true
+              }
+              if (action.payload.mark === 'prepare') {
+                order.is_prepared = true
+              }
+              if (action.payload.mark === 'deliver') {
+                order.is_delivered = true
+              }
+            }
+            return order
+          }),
+        },
       }
     
     default:

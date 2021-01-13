@@ -34,6 +34,8 @@ const Unprocessed = ({
   const [deliveryMarker, setDeliveryMarker] = useState('');
 
   const [addressFocus, setAddressFocus] = useState('');
+  
+  const [socket, setSocket] = useState('')
 
   const onSubmit = () => {
     const checkedBoxes = $('.check:checked:not([disabled])')
@@ -45,6 +47,7 @@ const Unprocessed = ({
       // }
       processOrder({
         id: checkedBox.value,
+        socket
       })
     })
   }
@@ -211,6 +214,34 @@ const Unprocessed = ({
       })
     }
   }, [order]);
+  
+  useEffect(() => {
+    let wsStart = 'ws://'
+    let port = ''
+    if (window.location.protocol === 'https:') {
+      wsStart = 'wss://'
+      port = ':8001'
+    }
+    let endpoint = wsStart + window.location.host + port
+    setSocket(new ReconnectingWebSocket(endpoint+'/order_update/'))
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = function(e){
+        console.log('message', e)
+      }
+      socket.onopen = function(e){
+        console.log('open', e)
+      }
+      socket.onerror = function(e){
+        console.log('error', e)
+      }
+      socket.onclose = function(e){
+        console.log('close', e)
+      }
+    }
+  }, [socket]);
   
   return (
     !ordersLoading && (

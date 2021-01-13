@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import OrderItem from './OrderItem'
 import Preloader from '../../common/Preloader'
 
-import { getOrders, setCurrentOnly } from '../../../actions/logistics'
+import { getOrders, setCurrentOnly, syncOrder } from '../../../actions/logistics'
 
 
 const Bookings = ({
@@ -21,7 +21,8 @@ const Bookings = ({
   },
   getOrders,
   setCurrentOnly,
-  setCurLocation
+  setCurLocation,
+  syncOrder
 }) => {
   const history = useHistory()
 
@@ -76,7 +77,7 @@ const Bookings = ({
   useEffect(() => {
     if (socket) {
       socket.onmessage = function(e){
-        // console.log('message', e)
+        console.log('message', e)
         const data = JSON.parse(e.data)
         syncOrder({ data })
       }
@@ -130,6 +131,7 @@ const Bookings = ({
 Bookings.propTypes = {
   getOrders: PropTypes.func.isRequired,
   setCurrentOnly: PropTypes.func.isRequired,
+  syncOrder: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
@@ -137,4 +139,4 @@ const mapStateToProps = state => ({
   logistics: state.logistics,
 });
 
-export default connect(mapStateToProps, { getOrders, setCurrentOnly })(Bookings);
+export default connect(mapStateToProps, { getOrders, setCurrentOnly, syncOrder })(Bookings);

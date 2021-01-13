@@ -66,7 +66,7 @@ class OrderAdmin(admin.ModelAdmin):
     ('Status', {'fields': ['is_ordered', 'date_ordered', 'ordered_shipping', 'is_paid', 'date_paid', 'is_processed', 'date_processed', 'is_prepared', 'date_prepared', 'is_delivered', 'date_delivered']}),
   ]
   inlines = [OrderItemInLine]
-  list_display = ('ref_code', 'user', 'is_ordered', 'is_processed', 'is_delivered', 'payment_type', 'is_paid')
+  list_display = ('ref_code', 'user', 'is_ordered', 'date_ordered', 'is_processed', 'is_delivered', 'payment_type', 'is_paid')
   list_display_links = ('ref_code',)
   list_filter = ('payment_type', 'is_ordered', 'is_delivered', 'is_paid')
   list_per_page = 50

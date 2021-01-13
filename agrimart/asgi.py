@@ -12,7 +12,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import OriginValidator
 
-# from logistics.consumers import OrderConsumer
+from logistics.consumers import OrderConsumer
 
 application = ProtocolTypeRouter({
     # Django's ASGI application to handle traditional HTTP requests
@@ -22,7 +22,7 @@ application = ProtocolTypeRouter({
     "websocket": OriginValidator(
       AuthMiddlewareStack(
         URLRouter([
-          # url(r"^order_update/$", OrderConsumer.as_asgi()),
+          url(r"^order_update/$", OrderConsumer.as_asgi()),
         ])
       ),
       config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
