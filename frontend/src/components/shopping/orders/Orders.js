@@ -82,13 +82,13 @@ const Bookings = ({
         syncOrder({ data })
       }
       socket.onopen = function(e){
-        // console.log('open', e)
+        console.log('open', e)
       }
       socket.onerror = function(e){
-        // console.log('error', e)
+        console.log('error', e)
       }
       socket.onclose = function(e){
-        // console.log('close', e)
+        console.log('close', e)
       }
     }
   }, [socket]);

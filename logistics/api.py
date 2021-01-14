@@ -6,6 +6,10 @@ from rest_framework.response import Response
 
 # Models
 from .models import Product, Seller, CategoryGroup, Category, Order, OrderItem, RefundRequest, Favorite, ProductReview, OrderReview
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 from configuration.models import SiteConfiguration
 try:
   site_config = SiteConfiguration.objects.first()
@@ -19,6 +23,11 @@ from agrimart.pagination import StandardResultsSetPagination, ProductsPagination
 
 # Serializers
 from .serializers import ProductSerializer, SellerSerializer, CategoryGroupSerializer, CategorySerializer, OrderSerializer, OrderItemSerializer, RefundRequestSerializer, FavoriteSerializer, ProductReviewSerializer, OrderReviewSerializer
+
+# For Email
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 # Tools
 from django.shortcuts import get_object_or_404

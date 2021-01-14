@@ -485,6 +485,9 @@ export const payWithCOD = ({ history }) => async (dispatch, getState) => {
         classes: 'green'
       });
       history.push('/cart')
+      console.log(res.data.ref_code)
+      const update = await axios.post('/api/new_order_update/', { 'ref_code': res.data.ref_code }, tokenConfig(getState))
+      console.log(update.data)
     } else {
       dispatch({ type: COMPLETE_ORDER_FAILED });
       M.toast({
@@ -495,6 +498,7 @@ export const payWithCOD = ({ history }) => async (dispatch, getState) => {
       history.push('/cart')
     }
   } catch (err) {
+    console.log(err)
     dispatch({ type: COMPLETE_ORDER_FAILED });
     dispatch({ type: AUTH_ERROR});
     M.toast({
