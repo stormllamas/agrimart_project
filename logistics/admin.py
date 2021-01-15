@@ -27,12 +27,12 @@ admin.site.register(Product, ProductAdmin)
 
 class SellerAdmin(admin.ModelAdmin):
   fieldsets = [
-    (None, {'fields': ['name', 'contact', 'categories', 'user']}),
+    (None, {'fields': ['name', 'contact', 'categories', 'user', 'description']}),
     ('Location', {'fields': ['latitude', 'longitude', 'address']}),
     ('Display', {'fields': ['thumbnail']}),
   ]
   # inlines = [ProductInLine]
-  list_display = ('name', 'contact')
+  list_display = ('name', 'contact', 'latitude', 'longitude', 'address')
   list_display_links = ('name',)
   list_per_page = 50
   search_fields = ('name',)
