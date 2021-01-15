@@ -46,7 +46,7 @@ const Footer = ({
               <h5 className="grey-text text-lighten-3">Information</h5>
               <ul>
                 <li>
-                  <Link to="" className="white-text">About Agrimart</Link>
+                  <Link to="/about" className="white-text">About Agrimart</Link>
                 </li>
               </ul>
             </div>

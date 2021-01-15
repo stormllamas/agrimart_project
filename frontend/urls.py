@@ -25,7 +25,7 @@ urlpatterns = [
   path('events', views.IndexView.as_view(), name='events'),
   path('services', views.IndexView.as_view(), name='services'),
   path('contact', views.IndexView.as_view(), name='contact'),
-  # path('about', views.IndexView.as_view(), name='about'),
+  path('about', views.IndexView.as_view(), name='about'),
 
   path('shop', views.IndexView.as_view(), name='shophighlights'),
   path('shop/products', views.IndexView.as_view(), name='products'),

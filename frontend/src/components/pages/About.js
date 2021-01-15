@@ -7,10 +7,10 @@ import Footer from '../layout/Footer';
 
 import { connect } from 'react-redux';
 
-const About = ({ siteConfig: { siteConfigLoading, data }, history }) => {
+const About = ({ siteConfig: { siteConfigLoading, siteInfo }, history }) => {
 
   useEffect(() => {
-    getSiteConfig();
+    // getSiteConfig();
   // eslint-disable-next-line
   }, [history.location.key]); // This retriggers if same link is clicked
 
@@ -19,19 +19,19 @@ const About = ({ siteConfig: { siteConfigLoading, data }, history }) => {
       {siteConfigLoading && <Preloader />}
       <Header />
       <section id="about-page" className="page col center">
-        <div className="card container-short full-height">
+        <div className="container-short full-height">
           {!siteConfigLoading && (
             <Fragment>
               <div className="row-1">
                 <div className="card-title col center middle">
-                  <h2>About Us</h2>
+                  <h3 className="mt-5">About Us</h3>
                   <hr/>
                 </div>
               </div>
-              <div className="row-2">
+              <div className="row-2 mb-5">
                 <div className="about-text">
-                  <h3>{ data.about_sub_header ? data.about_sub_header : 'Insert Subheader Here' }</h3>
-                  <p>{ data.about_text ? data.about_text : 'Insert About Text Here' }</p>
+                  <h4 className="mt-0">{ siteInfo.about_sub_header ? siteInfo.about_sub_header : 'Insert Subheader Here' }</h4>
+                  <p>{ siteInfo.about_text ? siteInfo.about_text : 'Insert About Text Here' }</p>
                 </div>
               </div>
             </Fragment>
