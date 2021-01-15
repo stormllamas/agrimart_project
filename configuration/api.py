@@ -25,6 +25,7 @@ class SiteInformationAPI(GenericAPIView):
       'phone': site_config.phone,
       'email': site_config.email,
       'location': site_config.location,
+      'about_sub_header': site_config.about_sub_header,
       'about_text': site_config.about_text,
       'per_km_price': site_config.per_km_price,
       'shipping_base': site_config.shipping_base,

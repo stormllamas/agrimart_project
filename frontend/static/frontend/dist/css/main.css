@@ -1792,12 +1792,6 @@ input[disabled] {
 #about-page .card-title hr {
   width: 50%; }
 
-#about-page .about-text {
-  white-space: pre-line;
-  padding: 1.5rem 2.5rem; }
-  #about-page .about-text p {
-    font-size: 14px; }
-
 .section-events .event-list {
   max-height: 400px;
   overflow-y: auto; }
