@@ -139,15 +139,14 @@ DEFAULT_RENDERER_CLASSES = (
   'rest_framework.renderers.JSONRenderer',
 )
 
-# if DEBUG == True:
-#   DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
-#     'rest_framework.renderers.BrowsableAPIRenderer',
-#   )
+if DEBUG:
+  DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
+    'rest_framework.renderers.BrowsableAPIRenderer',
+  )
 
 REST_FRAMEWORK = {
-  # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-  # 'PAGE_SIZE': 100
-  'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',)
+  'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+  'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
 
 REST_KNOX = {
