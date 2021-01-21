@@ -33,7 +33,7 @@ export const setPage = (page, history) => async dispatch => {
 
 export const updateQuery = history => async (dispatch, getState) => {
   let pagePath = ''
-  const { currentPage } = getState().manager;
+  const { currentPage } = getState().articles;
 
   // Set Paths
   if (currentPage) pagePath = `page=${currentPage}`
