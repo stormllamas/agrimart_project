@@ -168,6 +168,28 @@ const Delivered = ({
                         <h5 className="mt-0 mb-2">Order Summary <small>({order.ref_code})</small></h5>
                       </div>
                     </div>
+                    <div className="row">
+                      <div className="col s12 m6 mb-1">
+                        <small>First Name</small>
+                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.first_name}</p>
+                      </div>
+                      <div className="col s12 m6 mb-1">
+                        <small>Last Name</small>
+                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.last_name}</p>
+                      </div>
+                      <div className="col s12 mb-1">
+                        <small>Contact</small>
+                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.contact}</p>
+                      </div>
+                      <div className="col s12 mb-1">
+                        <small>Email</small>
+                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.email}</p>
+                      </div>
+                      <div className="col s12 mb-1">
+                        <small>Gender</small>
+                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.gender}</p>
+                      </div>
+                    </div>
                     <ul className="collection transparent no-shadow rad-3">
                       {order.order_items.map(orderItem => (
                         <li key={orderItem.id} className="collection-item flex-row middle">
