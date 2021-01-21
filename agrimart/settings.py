@@ -139,10 +139,10 @@ DEFAULT_RENDERER_CLASSES = (
   'rest_framework.renderers.JSONRenderer',
 )
 
-if DEBUG:
-  DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
-    'rest_framework.renderers.BrowsableAPIRenderer',
-  )
+# if DEBUG == True:
+#   DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
+#     'rest_framework.renderers.BrowsableAPIRenderer',
+#   )
 
 REST_FRAMEWORK = {
   # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
