@@ -16,7 +16,7 @@ class MyUserAdmin(UserAdmin):
         ('Social Authentication', {'fields': ['facebook_id']}),
     )
 
-    list_display = ('username', 'first_name', 'last_name', 'email', 'contact')
+    list_display = ('username', 'date_joined', 'first_name', 'last_name', 'email', 'contact')
     list_display_links = ('username',)
     list_filter = ('is_active', 'is_staff', 'is_superuser')
     list_per_page = 25
