@@ -183,7 +183,7 @@ class OrdersAPI(GenericAPIView):
       'loc1_address': order.loc1_address,
       'loc2_address': order.loc2_address,
       'payment_type': order.payment_type,
-      'shipping': order.shipping,
+      'shipping': order.ordered_shipping,
       'total': order.ordered_total,
       'count': order.ordered_count,
       'subtotal': order.ordered_subtotal,

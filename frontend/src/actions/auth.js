@@ -39,7 +39,7 @@ export const login = ({email, password}) => async dispatch => {
     }
   } catch (err) {
     M.toast({
-      html: 'Incorrect authentication details',
+      html: 'Oops something went wrong, Try again later',
       displayLength: 3500,
       classes: 'red',
     });
