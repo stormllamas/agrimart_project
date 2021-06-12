@@ -144,7 +144,7 @@ const Cart = ({
       });
       setPickupLat(13.928825528110426)
       setPickupLng(121.6143637648055)
-      setPickupAddress('Provincial Capitol')
+      setPickupAddress('Sitio Fori, Brgy. Talipan, (Agriculture Complex) Pagbilao, Quezon')
       $('.form-notification').attr('style', 'opacity: 1')
       M.updateTextFields();
     } else {

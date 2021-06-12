@@ -9,7 +9,7 @@ import Preloader from '../common/Preloader'
 import Pagination from '../common/Pagination'
 import ManagerBreadcrumbs from './ManagerBreadcrumbs'
 
-import { processOrder, getOrders, getOrder } from '../../actions/manager'
+import { getOrders, getOrder, processOrder, cancelOrder } from '../../actions/manager'
 
 const Unprocessed = ({
   manager: {
@@ -21,6 +21,7 @@ const Unprocessed = ({
   getOrders,
   getOrder,
   processOrder,
+  cancelOrder,
   setCurLocation
 }) => {
   const history = useHistory()
@@ -34,6 +35,8 @@ const Unprocessed = ({
   const [deliveryMarker, setDeliveryMarker] = useState('');
 
   const [addressFocus, setAddressFocus] = useState('');
+
+  const [orderToDelete, setOrderToDelete] = useState('');
   
   const [socket, setSocket] = useState('')
 
@@ -297,6 +300,7 @@ const Unprocessed = ({
                           <th>Order Total</th>
                           <th>Subtotal</th>
                           <th>Shipping</th>
+                          <th>Cancel Order</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -318,6 +322,11 @@ const Unprocessed = ({
                               <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
                               <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
                               <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                              <td className="center">
+                                <a href="#" className="modal-trigger" data-target="cancel-modal" onClick={() => setOrderToDelete(order.id)}>
+                                  <i className="material-icons red-text">delete_forever</i>
+                                </a>
+                              </td>
                             </tr>
                           ))
                         ) : (
@@ -340,28 +349,6 @@ const Unprocessed = ({
                 <Fragment>
                   <div className="modal-content">
                     <h5 className="mt-0 mb-2">Order Summary <small>({order.ref_code})</small></h5>
-                    <div className="row">
-                      <div className="col s12 m6 mb-1">
-                        <small>First Name</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.first_name}</p>
-                      </div>
-                      <div className="col s12 m6 mb-1">
-                        <small>Last Name</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.last_name}</p>
-                      </div>
-                      <div className="col s12 mb-1">
-                        <small>Contact</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.contact}</p>
-                      </div>
-                      <div className="col s12 mb-1">
-                        <small>Email</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.email}</p>
-                      </div>
-                      <div className="col s12 mb-1">
-                        <small>Gender</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.gender}</p>
-                      </div>
-                    </div>
                     <ul className="collection transparent no-shadow">
                       {order.order_items.map(orderItem => (
                         <li key={orderItem.id} className="collection-item avatar transparent">
@@ -388,6 +375,13 @@ const Unprocessed = ({
                 <a className="modal-action modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
               </div>
             </div>
+            <div id="cancel-modal" className="modal">
+              <div className="modal-content center">
+                <h5>Are you sure?</h5>
+                <a className="modal-action modal-close btn btn-large btn-extended red" onClick={() => cancelOrder({ id: orderToDelete })}>Cancel Order</a>
+                <a className="modal-action modal-close cancel"><i className="material-icons grey-text">close</i></a>
+              </div>
+            </div>
           </div>
         </section>
       </Fragment>
@@ -399,10 +393,11 @@ Unprocessed.propTypes = {
   getOrders: PropTypes.func.isRequired,
   getOrder: PropTypes.func.isRequired,
   processOrder: PropTypes.func.isRequired,
+  cancelOrder: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   manager: state.manager,
 });
 
-export default connect(mapStateToProps, { getOrders, getOrder, processOrder })(Unprocessed);
+export default connect(mapStateToProps, { getOrders, getOrder, processOrder, cancelOrder })(Unprocessed);

@@ -17,6 +17,7 @@ import {
   MANAGER_ORDER_ERROR,
 
   PROCESS_ORDER,
+  MONITOR_CANCEL_ORDER,
 
   DELIVER_ORDER_ITEM,
   DELIVER_ORDER,
@@ -305,6 +306,55 @@ export const prepareOrder = ({ id, socket }) => async (dispatch, getState) => {
     }
     $('.loader').fadeOut();
   } catch (error) {
+    $('.loader').fadeOut();
+  }
+}
+
+export const cancelOrder = ({ id }) => async (dispatch, getState) => {
+  $('.loader').fadeIn();
+  try {
+    const res = await axios.put(`/api/manager/cancel_order/${id}/`, null, tokenConfig(getState))
+    if (res.data.status) {
+      if (res.data.status === 'error' && res.data.msg === 'Order already canceled') {
+        await dispatch(getOrders({
+          page: 1,
+          claimed: true,
+          pickedup: false,
+          delivered: false,
+          keywords: ''
+        }))
+        M.toast({
+          html: res.data.msg,
+          displayLength: 5000,
+          classes: 'red'
+        });
+      }
+    } else {
+      dispatch({
+        type: MONITOR_CANCEL_ORDER,
+        payload: res.data
+      });
+      M.toast({
+        html: 'Order Canceled',
+        displayLength: 5000,
+        classes: 'orange'
+      });
+    }
+    $('.loader').fadeOut();
+  } catch (err) {
+    console.log(err)
+    M.toast({
+      html: 'Opps something happened. Try again.',
+      displayLength: 5000,
+      classes: 'red'
+    });
+    await dispatch(getOrders({
+      page: 1,
+      claimed: true,
+      pickedup: false,
+      delivered: false,
+      keywords: ''
+    }))
     $('.loader').fadeOut();
   }
 }

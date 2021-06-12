@@ -52,7 +52,7 @@ const Home = ({setCurLocation}) => {
             <div className="col m6">
               <div className="card">
                 <div className="card-image">
-                  <img src="/static/frontend/img/stories-and-testimonies.jpg" alt=""/>
+                  <img src="/static/frontend/img/SS_truck.jpg" alt=""/>
                   <a className="btn-floating halfway-fab waves-effect blue activator hide-on-med-and-up">
                     <i className="material-icons">expand_less</i>
                   </a>
@@ -77,7 +77,7 @@ const Home = ({setCurLocation}) => {
             <div className="col m6">
               <div className="card">
                 <div className="card-image">
-                  <img src="/static/frontend/img/Shop.png" alt=""/>
+                  <img src="/static/frontend/img/Shop.jpg" alt=""/>
                   <a className="btn-floating halfway-fab waves-effect blue activator hide-on-med-and-up">
                     <i className="material-icons">expand_less</i>
                   </a>

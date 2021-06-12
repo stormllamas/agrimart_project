@@ -38,6 +38,13 @@ class ProductSerializer(serializers.ModelSerializer):
       'total_rating': {'read_only': True},
     }
 
+class AllProductSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Product
+    fields = [
+      'name'
+    ]
+
 class SellerSerializer(serializers.ModelSerializer):
   class Meta:
     model = Seller

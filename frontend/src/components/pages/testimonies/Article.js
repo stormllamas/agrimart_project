@@ -85,7 +85,7 @@ const Article = ({ auth: { userLoading }, articles: { article, error, articleLoa
               <div className="row">
                 <div className="col s12">
                   <div className="article-thumbnail" style={{ background: `url('${ article.thumbnail }') no-repeat center center/cover` }} ></div>
-                  <p className="linebreak">{ article.summary }</p>
+                  <p>{ article.summary }</p>
                 </div>
               </div>
             </Fragment>

@@ -9,7 +9,7 @@ import Preloader from '../common/Preloader'
 import Pagination from '../common/Pagination'
 import ManagerBreadcrumbs from './ManagerBreadcrumbs'
 
-import { deliverOrderItem, deliverOrder, getOrders, getOrder } from '../../actions/manager'
+import { deliverOrderItem, deliverOrder, getOrders, getOrder, cancelOrder } from '../../actions/manager'
 
 const Undelivered = ({
   manager: {
@@ -21,6 +21,7 @@ const Undelivered = ({
   getOrders,
   getOrder,
   deliverOrderItem, deliverOrder,
+  cancelOrder,
   setCurLocation
 }) => {
   const history = useHistory()
@@ -34,6 +35,8 @@ const Undelivered = ({
   const [deliveryMarker, setDeliveryMarker] = useState('');
 
   const [addressFocus, setAddressFocus] = useState('');
+
+  const [orderToDelete, setOrderToDelete] = useState('');
   
   const [socket, setSocket] = useState('')
 
@@ -288,6 +291,7 @@ const Undelivered = ({
                           <th>Order Total</th>
                           <th>Subtotal</th>
                           <th>Shipping</th>
+                          <th>Cancel Order</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -303,6 +307,11 @@ const Undelivered = ({
                               <td className="mw-medium">₱ {order.total.toFixed(2)}</td>
                               <td className="mw-medium">₱ {order.subtotal.toFixed(2)}</td>
                               <td className="mw-medium">₱ {order.shipping.toFixed(2)}</td>
+                              <td className="center">
+                                <a href="#" className="modal-trigger" data-target="cancel-modal" onClick={() => setOrderToDelete(order.id)}>
+                                  <i className="material-icons red-text">delete_forever</i>
+                                </a>
+                              </td>
                             </tr>
                           ))
                         ) : (
@@ -330,28 +339,6 @@ const Undelivered = ({
                       </div>
                       <div className="col s12 m6 l6 flex-row right-middle">
                         <button className={`btn green right ${order.order_type === 'delivery' ? 'modal-close' : (order.order_items.filter(orderItem => orderItem.is_delivered === false).length < 2 ? 'modal-close' : '')}`} onClick={() => onSubmit()}>Mark as Delivered</button>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col s12 m6 mb-1">
-                        <small>First Name</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.first_name}</p>
-                      </div>
-                      <div className="col s12 m6 mb-1">
-                        <small>Last Name</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.last_name}</p>
-                      </div>
-                      <div className="col s12 mb-1">
-                        <small>Contact</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.contact}</p>
-                      </div>
-                      <div className="col s12 mb-1">
-                        <small>Email</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.email}</p>
-                      </div>
-                      <div className="col s12 mb-1">
-                        <small>Gender</small>
-                        <p className="grey lighten-3 p-1 m-0 rad-2 summary">{order.gender}</p>
                       </div>
                     </div>
                     <ul className="collection transparent no-shadow rad-3">
@@ -383,12 +370,19 @@ const Undelivered = ({
             </div>
             </div>
           </div>
-            <div id="addressmodal" className="modal supermodal">
-              <div id="googlemap"></div>
-              <div className="modal-footer">
-                <a className="modal-action modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
-              </div>
+          <div id="addressmodal" className="modal supermodal">
+            <div id="googlemap"></div>
+            <div className="modal-footer">
+              <a className="modal-action modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
             </div>
+          </div>
+          <div id="cancel-modal" className="modal">
+            <div className="modal-content center">
+              <h5>Are you sure?</h5>
+              <a className="modal-action modal-close btn btn-large btn-extended red" onClick={() => cancelOrder({ id: orderToDelete })}>Cancel Order</a>
+              <a className="modal-action modal-close cancel"><i className="material-icons grey-text">close</i></a>
+            </div>
+          </div>
         </section>
       </Fragment>
     )
@@ -400,10 +394,11 @@ Undelivered.propTypes = {
   getOrder: PropTypes.func.isRequired,
   deliverOrderItem: PropTypes.func.isRequired,
   deliverOrder: PropTypes.func.isRequired,
+  cancelOrder: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   manager: state.manager,
 });
 
-export default connect(mapStateToProps, { getOrders, getOrder, deliverOrderItem, deliverOrder })(Undelivered);
+export default connect(mapStateToProps, { getOrders, getOrder, deliverOrderItem, deliverOrder, cancelOrder })(Undelivered);

@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from .api import HighlightsAPI, ProductsAPI, ProductAPI, SellerAPI, SimilarProductsAPI, FilterDetailsAPI, OrdersAPI, OrderAPI, CurrentOrderAPI, CheckoutAPI, CompleteOrderAPI, OrderItemAPI, ChangeQuantityAPI, NewOrderUpdateAPI, ProductReviewAPI, OrderReviewAPI
+from .api import HighlightsAPI, ProductsAPI, ProductAPI, SellerAPI, SimilarProductsAPI, AllProductsAPI, FilterDetailsAPI, OrdersAPI, OrderAPI, CurrentOrderAPI, CheckoutAPI, CompleteOrderAPI, OrderItemAPI, ChangeQuantityAPI, NewOrderUpdateAPI, ProductReviewAPI, OrderReviewAPI
 
 router = routers.DefaultRouter()
 
@@ -12,8 +12,9 @@ urlpatterns = [
 
   path('api/seller/<str:seller_name>/', SellerAPI.as_view(), name='seller'),
   
+  path('api/all_products/', AllProductsAPI.as_view(), name='all_products'),
   path('api/products', ProductsAPI.as_view(), name='products'),
-  path('api/product/<str:product_name>/', ProductAPI.as_view(), name='product'),
+  path('api/product/<str:product_name>/<str:seller_name>/', ProductAPI.as_view(), name='product'),
 
   path('api/current_order/', CurrentOrderAPI.as_view(), name='current_order'),
 

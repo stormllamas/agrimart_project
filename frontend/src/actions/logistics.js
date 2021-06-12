@@ -215,11 +215,11 @@ export const updateQuery = history => async (dispatch, getState) => {
 }
 
 // PRODUCT
-export const getProduct = ({ productQuery }) => async (dispatch, getState) => {
+export const getProduct = ({ productQuery, sellerQuery }) => async (dispatch, getState) => {
 
   try {
     dispatch({ type: PRODUCT_LOADING });
-    const res = await axios.get(`/api/product/${productQuery}/`)
+    const res = await axios.get(`/api/product/${productQuery}/${sellerQuery}`)
     dispatch({
       type: GET_PRODUCT,
       payload: res.data,
@@ -306,7 +306,6 @@ export const addOrderItem = ({ productId }) => async (dispatch, getState) => {
   try {
     const res = await axios.post(`/api/order_item/`, body, tokenConfig(getState))
     await dispatch(getCurrentOrder({
-      type: 'food',
       updateOnly: true
     }));
     M.toast({

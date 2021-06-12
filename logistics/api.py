@@ -22,7 +22,7 @@ from agrimart.permissions import SiteEnabled
 from agrimart.pagination import StandardResultsSetPagination, ProductsPagination, ManagerPagination
 
 # Serializers
-from .serializers import ProductSerializer, SellerSerializer, CategoryGroupSerializer, CategorySerializer, OrderSerializer, OrderItemSerializer, RefundRequestSerializer, FavoriteSerializer, ProductReviewSerializer, OrderReviewSerializer
+from .serializers import AllProductSerializer, ProductSerializer, SellerSerializer, CategoryGroupSerializer, CategorySerializer, OrderSerializer, OrderItemSerializer, RefundRequestSerializer, FavoriteSerializer, ProductReviewSerializer, OrderReviewSerializer
 
 # For Email
 from django.core.mail import send_mail
@@ -46,6 +46,11 @@ class HighlightsAPI(GenericAPIView):
       'name': product.name,
       'thumbnail': product.thumbnail.url,
       'name_to_url': product.name_to_url,
+      'seller': {
+        'id': product.seller.id,
+        'name': product.seller.name,
+        'name_to_url': product.seller.name_to_url
+      },
     } for product in sorted(Product.objects.all(), key=lambda a: a.total_orders, reverse=True)[0:12]]
     
     return Response({
@@ -90,6 +95,13 @@ class SellerAPI(GenericAPIView):
       'thumbnail': seller.thumbnail.url,
       'name_to_url': seller.name_to_url,
     })
+
+class AllProductsAPI(ListAPIView):
+  serializer_class = AllProductSerializer
+  permission_classes = [SiteEnabled]
+
+  def get_queryset(self):
+    return Product.objects.all().order_by('id')
 
 class ProductsAPI(GenericAPIView):
 
@@ -165,7 +177,8 @@ class ProductsAPI(GenericAPIView):
       },
       'seller': {
         'id': product.seller.id,
-        'name': product.seller.name
+        'name': product.seller.name,
+        'name_to_url': product.seller.name_to_url
       },
     } for product in queryset[from_item:to_item]]
 
@@ -180,9 +193,10 @@ class ProductAPI(GenericAPIView):
   serializer_class = ProductSerializer
   permission_classes = [SiteEnabled]
 
-  def get(self, request, product_name=None):
+  def get(self, request, product_name=None, seller_name=None):
     pn = product_name.replace('-and-', '-&-').replace('-',' ')
-    product = Product.objects.get(name=pn)
+    sn = seller_name.replace('-and-', '-&-').replace('-',' ')
+    product = Product.objects.get(name=pn, seller__name=sn)
 
     categories = [category.name for category in product.categories.all()]
 
@@ -269,6 +283,7 @@ class CurrentOrderAPI(RetrieveAPIView, UpdateAPIView):
         'name': order_item.product_variant.product.name,
         'description': order_item.product_variant.product.description,
         'thumbnail': order_item.product_variant.product.thumbnail.url,
+        'is_published': order_item.product_variant.product.is_published,
       },
       'product_variant': {
         'id': order_item.product_variant.id,
@@ -422,40 +437,6 @@ class OrderAPI(RetrieveAPIView):
         'id': order.user.id
       },
     })
-class CancelOrderAPI(UpdateAPIView):
-  serializer_class = OrderSerializer
-  permission_classes = [IsAuthenticated, SiteEnabled]
-
-  def check_object_permissions(self, request, obj):
-    if obj.is_ordered == True and obj.user == request.user:
-      return True
-    else:
-      raise PermissionDenied
-
-  def get_object(self):
-    self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['order_id']))
-    return get_object_or_404(Order, id=self.kwargs['order_id'])
-
-  def update(self, request, order_id=None):
-    order = self.get_object()
-    if order.is_canceled:
-      return Response({
-        'status': 'error',
-        'msg': 'Order already canceled'
-      })
-    
-    if order.rider != None:
-      return Response({
-        'status': 'error',
-        'msg': 'Order can no longer be canceled'
-      })
-
-    else:
-      order.is_canceled = True
-      order.date_canceled = timezone.now()
-      order.save()
-
-      return Response(OrderSerializer(order, context=self.get_serializer_context()).data)
 
 class OrderItemAPI(DestroyAPIView, CreateAPIView):
   serializer_class = OrderItemSerializer

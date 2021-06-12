@@ -38,8 +38,10 @@ const Products = ({
   
   useEffect(() => {
     const productQuery = query.get('p')
+    const sellerQuery = query.get('b')
     getProduct({
-      productQuery: productQuery
+      productQuery,
+      sellerQuery
     })
   }, []);
 

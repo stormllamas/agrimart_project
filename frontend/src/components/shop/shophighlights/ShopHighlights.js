@@ -31,9 +31,9 @@ const ShopHighlights = ({
             <h5 className="center uppercase fw-6 mb-2">Best Selling Products</h5>
             <div className="divider mb-3"></div>
             <div className="flex-row">
-              {!highlightsLoading ? (
+              {!highlightsLoading > 0 ? (
                 highlights.best_sellers.map(highlight => (
-                  <Link key={highlight.id} to={`/shop/product?p=${highlight.name_to_url}`}>
+                  <Link key={highlight.id} to={`/shop/product?p=${highlight.name_to_url}&b=${highlight.seller.name_to_url}`}>
                     <div className={`flex-col center mb-2 waves-effect waves-grey rad-2`}>
                       <div to="/" className="list-img bg-cover rad-2 grey" style={{ backgroundImage: `url(${highlight.thumbnail})` }}></div>
                       <div to="/" className={`grey-text mt-1`}>{highlight.name}</div>

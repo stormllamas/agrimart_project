@@ -22,10 +22,10 @@ const ProductItem = ({ moreProductsLoading, next, product, products, index, getP
       <div className="col s6 m6 l4" ref={products.results.length === index + 1 ? lastProductElement : undefined }>
         <div className="card small">
           <div className="card-image valign-wrapper">
-            <Link to={`/shop/product?p=${product.name_to_url}`}><img src={product.thumbnail}/></Link>
+            <Link to={`/shop/product?p=${product.name_to_url}&b=${product.seller.name_to_url}`}><img src={product.thumbnail}/></Link>
           </div>
           <div className="card-content">
-          <p className="fs-16 lh-4"><Link to={`/shop/product?p=${product.name_to_url}`}>{ product.name.slice(0, 35) }</Link></p>
+          <p className="fs-16 lh-4"><Link to={`/shop/product?p=${product.name_to_url}&b=${product.seller.name_to_url}`}>{ product.name.slice(0, 35) }</Link></p>
           </div>
           <div className="card-action">
             <div className="col s12 m6 l6 p-0 mb-2">

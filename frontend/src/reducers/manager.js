@@ -14,6 +14,7 @@ import {
   MANAGER_ORDER_ERROR,
 
   PROCESS_ORDER,
+  MONITOR_CANCEL_ORDER,
 
   DELIVER_ORDER_ITEM,
   DELIVER_ORDER,
@@ -104,6 +105,7 @@ export default (state = initialState, action) => {
     case PROCESS_ORDER:
     case DELIVER_ORDER:
     case PREPARE_ORDER:
+    case MONITOR_CANCEL_ORDER:
       return {
         ...state,
         orders: {

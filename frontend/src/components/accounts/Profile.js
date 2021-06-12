@@ -361,7 +361,7 @@ const Profile = ({
         />
         <div className="modal-footer">
           <a className="modal-action modal-close cancel-fixed"><i className="material-icons grey-text">close</i></a>
-          <a className="waves-effect waves-blue btn center blue btn-large btn-extended modal-close" onClick={() => addNewAddress()} disabled={!latitude || !longitude || !address ? true : false}>Add New Address</a>
+          <a className={`${addressName && 'modal-action modal-close'} waves-effect waves-blue btn center blue btn-large btn-extended`} onClick={() => addNewAddress()} disabled={!latitude || !longitude || !address ? true : false}>Add New Address</a>
         </div>
       </div>
 

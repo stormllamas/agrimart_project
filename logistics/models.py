@@ -227,6 +227,9 @@ class Order(models.Model):
   date_ordered = models.DateTimeField(null=True, blank=True)
   ordered_shipping = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+  is_canceled = models.BooleanField(default=False)
+  date_canceled = models.DateTimeField(null=True, blank=True)
+
   is_paid = models.BooleanField(default=False)
   date_paid = models.DateTimeField(null=True, blank=True)
   payment_type = models.PositiveIntegerField(default=1) # (1) for COD (2) for Card or Detail

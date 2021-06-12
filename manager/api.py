@@ -148,7 +148,7 @@ class OrdersAPI(GenericAPIView):
     if keywords:
       keywords_query.add(Q(ref_code__icontains=keywords), Q.AND)
     
-    queryset = Order.objects.filter(Q(is_ordered=True) & delivered_query & processed_query & prepared_query & keywords_query)
+    queryset = Order.objects.filter(Q(is_ordered=True, is_canceled=False) & delivered_query & processed_query & prepared_query & keywords_query)
     results_full_length = queryset.count()
 
     range_query = self.request.query_params.get('range', None)
@@ -183,7 +183,7 @@ class OrdersAPI(GenericAPIView):
       'loc1_address': order.loc1_address,
       'loc2_address': order.loc2_address,
       'payment_type': order.payment_type,
-      'shipping': order.ordered_shipping,
+      'shipping': order.shipping,
       'total': order.ordered_total,
       'count': order.ordered_count,
       'subtotal': order.ordered_subtotal,
@@ -341,6 +341,41 @@ class ProcessOrderAPI(UpdateAPIView):
     else:
       order.is_processed = True
       order.date_processed = timezone.now()
+      order.save()
+
+      return Response(OrderSerializer(order, context=self.get_serializer_context()).data)
+
+class CancelOrderAPI(UpdateAPIView):
+  serializer_class = OrderSerializer
+  permission_classes = [IsAuthenticated, HasGroupPermission]
+  required_groups = {
+    'GET': ['monitor'],
+    'POST': ['monitor'],
+    'PUT': ['monitor'],
+  }
+
+  def check_object_permissions(self, request, obj):
+    if obj.is_ordered == True:
+      return True
+    else:
+      raise PermissionDenied
+
+  def get_object(self):
+    self.check_object_permissions(self.request, get_object_or_404(Order, id=self.kwargs['order_id']))
+    return get_object_or_404(Order, id=self.kwargs['order_id'])
+
+  def update(self, request, order_id=None):
+    order = self.get_object()
+    print(order.is_canceled == False)
+    if order.is_canceled:
+      return Response({
+        'status': 'error',
+        'msg': 'Order already canceled'
+      })
+
+    else:
+      order.is_canceled = True
+      order.date_canceled = timezone.now()
       order.save()
 
       return Response(OrderSerializer(order, context=self.get_serializer_context()).data)
