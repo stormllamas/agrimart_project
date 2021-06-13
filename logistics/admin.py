@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, ProductVariant, Seller, Category, CategoryGroup, Order, OrderItem, ProductReview, OrderReview, RefundRequest
+from .models import Product, ProductVariant, Seller, Category, CategoryGroup, Order, OrderItem, ProductReview, OrderReview, RefundRequest, PromoCode
 
 class CategoryInLine(admin.TabularInline):
   model = Category
@@ -107,3 +107,15 @@ class RefundRequestAdmin(admin.ModelAdmin):
     search_fields = ('ref_code', 'order_item')
 
 admin.site.register(RefundRequest, RefundRequestAdmin)
+
+class PromoCodeAdmin(admin.ModelAdmin):
+  fieldsets = [
+    (None, {'fields': ['code', 'affiliate', 'reusable', 'is_published', 'delivery_discount', 'order_discount', 'affiliate_commission', 'rider_commission']}),
+  ]
+  list_display = ('code', 'affiliate', 'reusable', 'is_published', 'delivery_discount', 'order_discount', 'affiliate_commission', 'rider_commission')
+  list_editable = ('affiliate', 'reusable', 'is_published', 'delivery_discount', 'order_discount', 'affiliate_commission', 'rider_commission')
+  list_display_links = ('code',)
+  list_per_page = 50
+  search_fields = ('code',)
+
+admin.site.register(PromoCode,PromoCodeAdmin)

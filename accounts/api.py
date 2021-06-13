@@ -53,6 +53,8 @@ def get_user_data(user) :
 
   groups = [group.name for group in user.groups.all()]
 
+  promo_codes_used = [promo_code_used.code for promo_code_used in user.promo_codes_used.all()]
+
   menu_notification = False
 
   if user.is_staff:
@@ -70,6 +72,7 @@ def get_user_data(user) :
 
     'addresses': addresses,
     'groups': groups,
+    'promo_codes_used': promo_codes_used,
     
     'date_joned': user.date_joined,
 

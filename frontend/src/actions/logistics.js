@@ -375,6 +375,8 @@ export const checkout = ({ formData, history }) => async (dispatch, getState) =>
       distance_value: formData.distanceValue,
       duration_text: formData.durationText,
       duration_value: formData.durationValue,
+
+      promo_code: formData.promoCode
     }
     const res = await axios.put('/api/checkout/', orderBody, tokenConfig(getState))
     if (res.data.status === "okay") {

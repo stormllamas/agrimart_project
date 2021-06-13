@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 # Models
 from django.conf import settings
 from .models import SiteConfiguration
+from logistics.models import PromoCode
 
 # Serializers
 from rest_framework import viewsets, mixins
@@ -49,6 +50,16 @@ class SiteInformationAPI(GenericAPIView):
       'shop_spiel_text': site_config.shop_spiel_text,
 
       'version': settings.APPLICATION_VERSION,
+
+      'promo_code_list': [{
+        'id': promo_code.id,
+        'code': promo_code.code,
+        'reusable': promo_code.reusable,
+        'delivery_discount': promo_code.delivery_discount,
+        'promo_code_active': promo_code.promo_code_active,
+        'final_delivery_discount': promo_code.final_delivery_discount,
+        'final_order_discount': promo_code.final_order_discount,
+      } for promo_code in PromoCode.objects.filter(is_published=True)],
     })
     
 class PayPalKeysAPI(GenericAPIView):

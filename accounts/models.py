@@ -4,6 +4,9 @@ from django.conf import settings
 # Custom User
 from django.contrib.auth.models import UserManager, AbstractUser
 
+# Models
+from logistics.models import PromoCode
+
 class User(AbstractUser):
   # Additional fields
   facebook_id = models.CharField(max_length=25, blank=True, null=True)
@@ -13,6 +16,7 @@ class User(AbstractUser):
   contact = models.CharField(max_length=55, blank=True, null=True)
   gender = models.CharField(max_length=10, blank=True, null=True)
   picture = models. URLField(max_length=500, blank=True, null=True)
+  promo_codes_used = models.ManyToManyField(PromoCode, blank=True)
 
   objects = UserManager()
   USERNAME_FIELD = 'email'

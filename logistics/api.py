@@ -5,7 +5,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
 
 # Models
-from .models import Product, Seller, CategoryGroup, Category, Order, OrderItem, RefundRequest, Favorite, ProductReview, OrderReview
+from .models import Product, Seller, CategoryGroup, Category, Order, OrderItem, RefundRequest, Favorite, ProductReview, OrderReview, PromoCode
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -361,9 +361,10 @@ class OrdersAPI(GenericAPIView):
       'loc2_address': order.loc2_address,
 
       'payment_type': order.payment_type,
-      'count': order.ordered_count, 'shipping': order.ordered_shipping, 'total': order.ordered_total,
+      'count': order.ordered_count, 'shipping': order.ordered_shipping, 'initial_shipping': order.initial_shipping, 'total': order.ordered_total,
       
-      'ordered_subtotal': sum([item.quantity*item.ordered_price if item.is_ordered and item.ordered_price else 0 for item in order.order_items.all()]),
+      'subtotal': order.subtotal,
+      'ordered_subtotal': order.ordered_subtotal,
       'date_ordered': order.date_ordered,
 
       'is_processed': order.is_processed, 'date_processed': order.date_processed,
@@ -371,6 +372,11 @@ class OrdersAPI(GenericAPIView):
       'is_delivered': order.is_delivered, 'date_delivered': order.date_delivered,
       
       'is_reviewed': True if OrderReview.objects.filter(order=order).exists() else False,
+
+      'promo_code': {
+        'order_discount': order.promo_code.order_discount,
+        'delivery_discount': order.promo_code.delivery_discount,
+      } if order.promo_code else None,
       
       'order_items': [{
         'id': order_item.id,
@@ -688,6 +694,12 @@ class CheckoutAPI(UpdateAPIView):
     serializer.is_valid(raise_exception=True)
 
     order = self.get_object()
+
+    try:
+      PromoCode.objects.get(id=request.data.get('promo_code'))
+      order.promo_code = PromoCode.objects.get(id=request.data.get('promo_code'))
+    except:
+      promo_code = None
 
     order.first_name = serializer.validated_data.get('first_name')
     order.last_name = serializer.validated_data.get('last_name')

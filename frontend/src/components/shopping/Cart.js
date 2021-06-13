@@ -52,6 +52,14 @@ const Cart = ({
   const [durationText, setDurationText] = useState("");
   const [durationValue, setDurationValue] = useState("");
 
+  const [promoCode, setPromoCode] = useState('');
+  const [promoCodeSet, setPromoCodeSet] = useState(false);
+
+
+  const getPromoCode = type => {
+    return siteInfo.promo_code_list.filter(promo_code => promo_code.code.toLowerCase() === promoCode.toLowerCase())[0]
+  }
+
   const addressSelected = async () => {
     $('.loader').fadeIn();
     let addressInfo;
@@ -100,6 +108,57 @@ const Cart = ({
     $('.loader').fadeOut();
   }
 
+  const promoCodeButtonClicked = (e) => {
+    e.preventDefault()
+    if (promoCodeSet) {
+      setPromoCodeSet(false)
+      setPromoCode('')
+    } else {
+      // Check if Promo code exists
+      if(siteInfo.promo_code_list.map(promo_code => promo_code.code.toLowerCase()).includes(promoCode.toLowerCase())) {
+        let promoCodeUsed = siteInfo.promo_code_list.filter(promo_code => promo_code.code.toLowerCase() === promoCode.toLowerCase())[0]
+        // Check if active
+        if (promoCodeUsed.promo_code_active) {
+          if (promoCodeUsed.reusable) {
+            setPromoCodeSet(promoCodeUsed.id)
+            M.toast({
+              html: 'Promo Code Set!',
+              displayLength: 3500,
+              classes: 'green',
+            });
+          } else {
+            if (!user.promo_codes_used.includes(promoCodeUsed.code)) {
+              setPromoCodeSet(promoCodeUsed.id)
+              M.toast({
+                html: 'Promo Code Set!',
+                displayLength: 3500,
+                classes: 'green',
+              });
+            } else {
+              M.toast({
+                html: 'Code already used',
+                displayLength: 3500,
+                classes: 'red',
+              });
+            }
+          }
+        } else {
+          M.toast({
+            html: 'Invalid Promo Code',
+            displayLength: 3500,
+            classes: 'red',
+          });
+        }
+      } else {
+        M.toast({
+          html: 'Invalid Promo Code',
+          displayLength: 3500,
+          classes: 'red',
+        });
+      }
+    }
+  }
+
   const proceedToPayments = async e => {
     e.preventDefault();
     if(pickupLat && pickupLng && pickupAddress &&
@@ -112,6 +171,7 @@ const Cart = ({
         pickupLat, pickupLng, pickupAddress,
         deliveryLat, deliveryLng, deliveryAddress,
         distanceText, distanceValue, durationText, durationValue,
+        promoCode: promoCodeSet
       }
       await checkout({
         formData,
@@ -133,6 +193,17 @@ const Cart = ({
       addressSelected()
     }
   }, [address]);
+  
+  useEffect(() => {
+    if (promoCodeSet) {
+      let promoCodeUsed = siteInfo.promo_code_list.filter(promo_code => promo_code.code.toLowerCase() === promoCode.toLowerCase())[0]
+      setDelivery(Math.round(delivery*(1-promoCodeUsed.final_delivery_discount)))
+    } else {
+      let perKmTotal = Math.round((parseInt(distanceValue)/1000)*siteInfo.per_km_price)
+      let total = siteInfo.shipping_base+perKmTotal
+      setDelivery(Math.round(total))
+    }
+  }, [promoCodeSet]);
   
   useEffect(() => {
     if (!currentOrderLoading && currentOrder !== null) {
@@ -301,24 +372,45 @@ const Cart = ({
                         <Link to="/food" className="title green-text">Add more items...</Link>
                       </div>
                     </div>
+                    
+                    <div className="card transparent summary no-shadow mt-2 mb-0">
+                      <div className="card-content relative">
+                        <input type="text" id="promo_code" maxLength={15} disabled={promoCodeSet || (!delivery && delivery !== 0)} placeholder="Enter a promo code" className={`${promoCodeSet || (!delivery && delivery !== 0) ? 'grey lighten-3' : 'grey lighten-4'} simple-input grey-text text-darken-4`} onChange={e => setPromoCode(e.target.value.toUpperCase())} value={promoCode}/>
+                        <button disabled={(!delivery && delivery !== 0) && delivery !== 0} className={`btn ${promoCodeSet ? 'red' : (!delivery && delivery !== 0) ? 'grey' : 'green'} promo-button`}
+                          onClick={e => promoCodeButtonClicked(e)}
+                        >
+                          {promoCodeSet ? 'REMOVE' : 'APPLY'}
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="card transparent summary no-shadow mt-2 mb-0">
                       <div className="card-content">
                         <p className="title">Subtotal</p>
-                        <p className="secondary-content grey-text text-darken-2 larger">₱ {currentOrder.subtotal.toFixed(2)}</p>
+                        {/* <p className="secondary-content grey-text text-darken-2 larger">₱ {currentOrder.subtotal.toFixed(2)}</p> */}
+                        <p className="secondary-content grey-text text-darken-2 larger">
+                          <span className="green-text mr-1">{promoCodeSet && (getPromoCode().final_order_discount*100 === 0 ? '' : (`saved ${Math.round(getPromoCode().final_order_discount*100)}%`))}</span>
+                          ₱ {promoCodeSet && getPromoCode().final_order_discount > 0 ? Math.round(currentOrder.subtotal*((1-getPromoCode().final_order_discount))-0.1).toFixed(2) : currentOrder.subtotal.toFixed(2)}
+                        </p>
                       </div>
                     </div>
                     <div className="card transparent summary no-shadow">
                       <div className="card-content">
                         <p className="title">Delivery</p>
-                        <p className="secondary-content grey-text text-darken-2">{delivery ? `₱ ${delivery.toFixed(2)}` : '-'}</p>
+                        <p className="secondary-content grey-text text-darken-2">
+                          <span className="green-text mr-1">{promoCodeSet && ((getPromoCode().final_delivery_discount*100) === 100 ? 'FREE': getPromoCode().final_delivery_discount*100 === 0 ? '' : (`saved ${getPromoCode().final_delivery_discount*100}%`))}</span>
+                          {delivery ? `₱ ${delivery.toFixed(2)}` : promoCodeSet ? '' : '-'}
+                        </p>
                       </div>
                     </div>
                     <button className="modal-close btn btn-extended btn-large green mt-5 mobile-btn relative"
-                      disabled={currentOrder.count < 1 || address === '' || !delivery || !lastName || !firstName || !contact || !email || !gender ? true : false}
+                      disabled={currentOrder.count < 1 || address === '' || (!delivery && delivery !== 0) || !lastName || !firstName || !contact || !email || !gender ? true : false}
                       onClick={proceedToPayments}
                     >
-                      <span className="btn-float-text">{currentOrder.count < 1 || address === '' || !delivery || !lastName || !firstName || !contact || !email || !gender ? '' : `₱${(parseInt(currentOrder.subtotal)+parseInt(delivery)).toFixed(2)}`}</span>
-                      {currentOrder.count < 1 ? 'No items to checkout' : (currentOrder.count < 1 || address === '' || !delivery || !lastName || !firstName || !contact || !email || !gender ? 'Provide details above' : 'Checkout')}
+                      <span className="btn-float-text">
+                        {currentOrder.count < 1 || address === '' || (!delivery && delivery !== 0) || !lastName || !firstName || !contact || !email || !gender ? '' : `₱${(((promoCodeSet && getPromoCode().final_order_discount > 0) ? Math.round((currentOrder.subtotal*((1-getPromoCode().final_order_discount)))-0.1) : currentOrder.subtotal)+parseInt(delivery)).toFixed(2)}`}
+                      </span>
+                      {currentOrder.count < 1 ? 'No items to checkout' : (currentOrder.count < 1 || address === '' || (!delivery && delivery !== 0) || !lastName || !firstName || !contact || !email || !gender ? 'Provide details above' : 'Checkout')}
                     </button>
                   </form>
                 </div>

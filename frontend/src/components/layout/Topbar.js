@@ -64,7 +64,7 @@ const Topbar = ({
                       {!currentOrderLoading && (
                         currentOrder && (
                           currentOrder.count > 0 && (
-                            <i className="material-icons red-text form-notification-btl fs-16">stop_circle</i>
+                            <i className="material-icons red-text form-notification-btl fs-16">circle</i>
                           )
                         )
                       )}

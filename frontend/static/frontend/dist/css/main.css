@@ -1896,6 +1896,21 @@ input[disabled] {
         box-shadow: none !important;
         outline: none !important; }
 
+.simple-input {
+  background-color: #ffffff !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  border-radius: 5px !important;
+  border-bottom: none !important;
+  font-size: 1rem !important;
+  box-shadow: none !important;
+  font-weight: 600; }
+
+.promo-button {
+  position: absolute;
+  right: 1.5rem;
+  top: 4px; }
+
 @media (max-width: 1150px) {
   .section-restaurants .restaurant-item {
     width: calc(50% - 24px);

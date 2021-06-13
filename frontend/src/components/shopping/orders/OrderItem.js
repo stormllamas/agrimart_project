@@ -81,7 +81,7 @@ const BookingItem = ({ ordersLoading, order, orders, index, getOrders, setOrder 
                   <p className="left m-0">Subtotal</p>
                 </div>
                 <div className="col s6 flex-col end p-0">
-                  <p className="left m-0">₱ {order.ordered_subtotal.toFixed(2)}</p>
+                  <p className="left m-0">{order.promo_code && (order.promo_code.order_discount && <span className="sale">₱ {order.subtotal.toFixed(2)}</span>)} ₱ {order.ordered_subtotal.toFixed(2)}</p>
                 </div>
               </div>
               <div className="row m-0">
@@ -89,7 +89,7 @@ const BookingItem = ({ ordersLoading, order, orders, index, getOrders, setOrder 
                   <p className="left m-0">Shipping</p>
                 </div>
                 <div className="col s6 flex-col end p-0">
-                  <p className="left m-0">₱ {order.shipping.toFixed(2)}</p>
+                  <p className="left m-0">{order.promo_code && (order.promo_code.delivery_discount && <span className="sale">₱ {order.initial_shipping.toFixed(2)}</span>)} ₱ {order.shipping.toFixed(2)}</p>
                 </div>
               </div>
             </Fragment>

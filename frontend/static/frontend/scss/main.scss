@@ -409,4 +409,22 @@
   }
 }
 
+.simple-input{
+  background-color: #ffffff !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  border-radius: 5px !important;
+  border-bottom: none !important;
+  font-size: 1rem !important;
+  box-shadow: none !important;
+  font-weight: 600
+}
+
+.promo-button {
+  position: absolute;
+  right: 1.5rem;
+  // height: 32px;
+  top: 4px;
+}
+
 @import 'media';

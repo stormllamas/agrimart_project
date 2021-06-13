@@ -196,6 +196,63 @@ class ProductVariant(models.Model):
   def final_stock(self):
     return self.stock - sum([item.quantity if item.checkout_valid else 0 for item in self.order_items.filter(is_ordered=False)])
 
+
+class PromoCode(models.Model):
+  affiliate = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='promo_codes', on_delete=models.CASCADE, null=True, blank=True)
+  code = models.CharField(max_length=15, unique=True)
+  reusable = models.BooleanField(default=False)
+
+  delivery_discount = models.DecimalField(max_digits=30, decimal_places=2, default=0.10)
+  order_discount = models.DecimalField(max_digits=30, decimal_places=2, default=0.00)
+
+  affiliate_commission = models.DecimalField(max_digits=30, decimal_places=2, default=0.10)
+  rider_commission = models.DecimalField(max_digits=30, decimal_places=2, default=0.10)
+
+  start_date = models.DateTimeField(default=None, blank=True, null=True)
+  end_date = models.DateTimeField(default=None, blank=True, null=True)
+  is_published = models.BooleanField(default=True)
+
+  def __str__(self):
+    return f'{self.code}'
+
+  @property
+  def promo_code_active(self):
+    if self.delivery_discount or self.order_discount:
+      if self.start_date:
+        if self.start_date < timezone.now() or self.start_date == None:
+          if self.end_date:
+            if self.end_date > timezone.now() or self.end_date == None:
+              return True
+            else:
+              return False
+          else:
+            return True
+        else:
+          return False
+      elif self.end_date:
+        if self.end_date > timezone.now() or self.end_date == None:
+          return True
+        else:
+          return False
+      else:
+        return True
+    else:
+      return False
+
+  @property
+  def final_delivery_discount(self):
+    if self.promo_code_active:
+      return self.delivery_discount
+    else:
+      return float(0)
+
+  @property
+  def final_order_discount(self):
+    if self.promo_code_active:
+      return self.order_discount
+    else:
+      return float(0)
+
 class Order(models.Model):
   # Basic Details
   ref_code = models.CharField(max_length=15, blank=True, null=True)
@@ -234,6 +291,8 @@ class Order(models.Model):
   date_paid = models.DateTimeField(null=True, blank=True)
   payment_type = models.PositiveIntegerField(default=1) # (1) for COD (2) for Card or Detail
 
+  promo_code = models.ForeignKey(PromoCode, related_name='orders', on_delete=models.SET_NULL, blank=True, null=True)
+
   # rider = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='accepted_orders', on_delete=models.SET_NULL, blank=True, null=True)
   is_processed = models.BooleanField(default=False)
   date_processed = models.DateTimeField(null=True, blank=True)
@@ -271,28 +330,64 @@ class Order(models.Model):
   @property
   def subtotal(self):
     return sum([item.quantity*item.product_variant.final_price if item.product_variant.final_stock > 0 else 0 for item in self.order_items.all()])
+
   @property
   def checkout_subtotal(self):
-    return sum([item.quantity*item.product_variant.final_price for item in self.order_items.filter(checkout_validity__gte=timezone.now())])
+    if self.promo_code:
+      return round(sum([item.quantity*item.product_variant.final_price for item in self.order_items.filter(checkout_validity__gte=timezone.now())])*(1-self.promo_code.order_discount))
+    else:
+      return sum([item.quantity*item.product_variant.final_price for item in self.order_items.filter(checkout_validity__gte=timezone.now())])
+
   @property
   def ordered_subtotal(self):
-    return sum([item.quantity*item.ordered_price if item.ordered_price else 0 for item in self.order_items.all()])
+    if self.promo_code:
+      return round(sum([item.quantity*item.ordered_price if item.ordered_price else 0 for item in self.order_items.all()])*(1-self.promo_code.order_discount))
+    else:
+      return sum([item.quantity*item.ordered_price if item.ordered_price else 0 for item in self.order_items.all()])
 
   @property
   def total(self):
     return float(self.subtotal)+float(self.shipping)
+
   @property
   def checkout_total(self):
     return float(self.checkout_subtotal)+float(self.shipping)
+
   @property
   def ordered_total(self):
     return float(self.ordered_subtotal)+float(self.ordered_shipping)
+
 
   @property
   def shipping(self):
     per_km_total = round((self.distance_value/1000)*(site_config.per_km_price if type(self.distance_value) == int else 0), 0)
     total = float(site_config.shipping_base)+per_km_total
+
+    if self.promo_code:
+      # -.1 in the end to solve the rounding of .5 discounts.
+      # When .5, round delivery down.
+      return round((total*(1-float(self.promo_code.delivery_discount))), 0)
+    else:
+      return round(total, 0)
+
+  @property
+  def initial_shipping(self):
+    per_km_total = round((self.distance_value/1000)*(site_config.per_km_price if type(self.distance_value) == int else 0), 0)
+    total = float(site_config.shipping_base)+per_km_total
+
     return round(total, 0)
+
+  @property
+  def promo_discount(self):
+    if self.promo_code:
+      per_km_total = round((self.distance_value/1000)*(site_config.per_km_price if type(self.distance_value) == int else 0), 0)
+      total = float(site_config.shipping_base)+per_km_total
+      if self.two_way:
+        total = total*float(site_config.two_way_multiplier)
+
+      return round((total*(float(self.promo_code.delivery_discount))), 0)
+    else:
+      return None
 
   @property
   def has_valid_item(self):
