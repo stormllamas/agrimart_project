@@ -164,13 +164,19 @@ class SocialAuthAPI(GenericAPIView):
             'domain': current_site.domain,
           }
         )
-        send_mail(
-          mail_subject,
-          message,
-          'Quezon Agrimart <info@quezonagrimart.com.ph>',
-          [user.email],
-          fail_silently=False
-        )
+        if settings.DEBUG == False:
+          send_mail(
+            mail_subject,
+            message,
+            'Quezon Agrimart <info@quezonagrimart.com.ph>',
+            [user.email],
+            fail_silently=False
+          )
+        else:
+          print('mail_subject', mail_subject)
+          print('message', message)
+
+          
         _, token = AuthToken.objects.create(user)
         response = Response({
           'user': get_user_data(user),
@@ -249,13 +255,17 @@ class SingupAPI(GenericAPIView):
     )
     
     email = user.email
-    send_mail(
-      mail_subject,
-      message,
-      'Quezon Agrimart <info@quezonagrimart.com.ph>',
-      [email],
-      fail_silently=False
-    )
+    if settings.DEBUG == False:
+      send_mail(
+        mail_subject,
+        message,
+        'Quezon Agrimart <info@quezonagrimart.com.ph>',
+        [email],
+        fail_silently=False
+      )
+    else:
+      print('mail_subject', mail_subject)
+      print('message', message)
 
     return Response({'status': 'okay'})
 
@@ -288,13 +298,17 @@ class ResendActivationAPI(GenericAPIView):
           )
           
           email = user.email
-          send_mail(
-            mail_subject,
-            message,
-            'Quezon Agrimart <info@quezonagrimart.com.ph>',
-            [email],
-            fail_silently=False
-          )
+          if settings.DEBUG == False:
+            send_mail(
+              mail_subject,
+              message,
+              'Quezon Agrimart <info@quezonagrimart.com.ph>',
+              [email],
+              fail_silently=False
+            )
+          else:
+            print('mail_subject', mail_subject)
+            print('message', message)
 
           return Response({
             'status': 'okay',
@@ -340,13 +354,17 @@ class ActivateAPI(GenericAPIView):
           'domain': current_site.domain,
         }
       )
-      send_mail(
-        mail_subject,
-        message,
-        'Quezon Agrimart <info@quezonagrimart.com.ph>',
-        [user.email],
-        fail_silently=False
-      )
+      if settings.DEBUG == False:
+        send_mail(
+          mail_subject,
+          message,
+          'Quezon Agrimart <info@quezonagrimart.com.ph>',
+          [user.email],
+          fail_silently=False
+        )
+      else:
+        print('mail_subject', mail_subject)
+        print('message', message)
 
       _, token = AuthToken.objects.create(user)
       response = Response({
@@ -482,13 +500,18 @@ class PasswordResetAPI(GenericAPIView):
           'token':account_activation_token.make_token(user),
         }
       )
-      send_mail(
-        mail_subject,
-        message,
-        'Quezon Agrimart <info@quezonagrimart.com.ph>',
-        [email],
-        fail_silently=False
-      )
+      if settings.DEBUG == False:
+        send_mail(
+          mail_subject,
+          message,
+          'Quezon Agrimart <info@quezonagrimart.com.ph>',
+          [email],
+          fail_silently=False
+        )
+      else:
+        print('mail_subject', mail_subject)
+        print('message', message)
+
       
       return Response({
         'status': 'okay',

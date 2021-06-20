@@ -18,6 +18,7 @@ import Login from './accounts/Login';
 import Signup from './accounts/Signup';
 import ConfirmEmail from './accounts/ConfirmEmail';
 import Activate from './accounts/Activate';
+import ActivateAccount from './accounts/ActivateAccount';
 import PasswordReset from './accounts/passwordReset/PasswordReset';
 import PasswordResetForm from './accounts/passwordReset/PasswordResetForm';
 
@@ -79,6 +80,7 @@ const App = () => {
             <AccountsRoute exact path="/signup" component={Signup} />
             <AccountsRoute exact path="/confirm_email/:email" component={ConfirmEmail} />
             <Route exact path="/activate/:uidb64/:token" component={Activate} />
+            <Route exact path="/activate_account/:uidb64/:token" component={ActivateAccount} />
             <PublicRoute exact path="/password_reset" component={PasswordReset} />
             <PublicRoute exact path="/password_reset_form/:uidb64/:token" component={PasswordResetForm} />
 

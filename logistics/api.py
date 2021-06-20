@@ -370,6 +370,7 @@ class OrdersAPI(GenericAPIView):
       'is_processed': order.is_processed, 'date_processed': order.date_processed,
       'is_prepared': order.is_prepared, 'date_prepared': order.date_prepared,
       'is_delivered': order.is_delivered, 'date_delivered': order.date_delivered,
+      'is_canceled': order.is_canceled, 'is_canceled': order.is_canceled,
       
       'is_reviewed': True if OrderReview.objects.filter(order=order).exists() else False,
 

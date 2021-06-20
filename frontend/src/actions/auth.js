@@ -172,6 +172,7 @@ export const activate = (uidb64, token, history) => async dispatch => {
     token,
   };
   const res = await axios.post('/api/auth/activate', body)
+  console.log('activate', res.data)
   if (res.data.status === 'okay') {
     dispatch({
       type: USER_ACTIVATED,
@@ -182,7 +183,13 @@ export const activate = (uidb64, token, history) => async dispatch => {
       displayLength: 3500,
       classes: 'green'
     });
-    history.push('/')
+    if (history) {
+      history.push('/')
+    }
+    return {
+      'status': 'okay',
+      'msg': 'You have successfully activated your account!'
+    }
   } else {
     M.toast({
       html: 'Activation error',

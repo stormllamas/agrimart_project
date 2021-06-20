@@ -389,7 +389,7 @@ const Cart = ({
                         <p className="title">Subtotal</p>
                         {/* <p className="secondary-content grey-text text-darken-2 larger">₱ {currentOrder.subtotal.toFixed(2)}</p> */}
                         <p className="secondary-content grey-text text-darken-2 larger">
-                          <span className="green-text mr-1">{promoCodeSet && (getPromoCode().final_order_discount*100 === 0 ? '' : (`saved ${Math.round(getPromoCode().final_order_discount*100)}%`))}</span>
+                          <span className="mr-1 sale">{promoCodeSet && (getPromoCode().final_order_discount*100 === 0 ? '' : (`₱${Math.round(currentOrder.subtotal).toFixed(2)} `))}</span>
                           ₱ {promoCodeSet && getPromoCode().final_order_discount > 0 ? Math.round(currentOrder.subtotal*((1-getPromoCode().final_order_discount))-0.1).toFixed(2) : currentOrder.subtotal.toFixed(2)}
                         </p>
                       </div>
@@ -398,8 +398,8 @@ const Cart = ({
                       <div className="card-content">
                         <p className="title">Delivery</p>
                         <p className="secondary-content grey-text text-darken-2">
-                          <span className="green-text mr-1">{promoCodeSet && ((getPromoCode().final_delivery_discount*100) === 100 ? 'FREE': getPromoCode().final_delivery_discount*100 === 0 ? '' : (`saved ${getPromoCode().final_delivery_discount*100}%`))}</span>
-                          {delivery ? `₱ ${delivery.toFixed(2)}` : promoCodeSet ? '' : '-'}
+                          <span className="mr-1 sale">{promoCodeSet && ((getPromoCode().final_delivery_discount*100) === 100 ? 'FREE': getPromoCode().final_delivery_discount*100 === 0 ? '' : (`₱${Math.round(delivery/(1-getPromoCode().final_delivery_discount)).toFixed(2)} `))}</span>
+                          {delivery ? `₱${delivery.toFixed(2)}` : '₱0.00' }
                         </p>
                       </div>
                     </div>
